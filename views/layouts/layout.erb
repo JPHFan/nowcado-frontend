@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title><%= render_partial :title %></title>
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/cerulean.css">
+		<link rel="stylesheet" href="/css/style.css">
+	</head>
+	
+	<body>
+		<div class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container" style="width: auto;">
+					<a class="brand" href="/"><%= render_partial :title %></a>
+					<div class="nav-collapse in collapse" style="height: auto;">
+						<form class="navbar-search" action="">				
+							<input class="search-query span4" type="text" placeholder="Search for local items"></input>
+							<a href="#" class="icon-search"></a>	
+						</form>
+						<ul class="nav pull-right">
+							<li class="divider-vertical"></li>
+							<% if @user %>
+							<li>
+								<div class="navbar-text">Welcome back, <%= @user[:username] %></div>
+							</li>
+							<li>
+								<%= link_to "Sign out", "/sign_out" %>
+							</li>
+							<% else %>
+							<li>
+								<a href="#">Sign Up</a>
+							</li>
+							<li class="divider-vertical"></li>
+							<li>
+								<form class="navbar-form">
+									<input class="input-small" type="text" placeholder="Email">
+									<input class="input-small" type="password" placeholder="Password">
+									<button class="btn" type="submit">Sign In</button>
+								</form>
+							</li>
+							<% end %>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container">	
+			<%= yield %>
+		</div>
+		<script src="http://code.jquery.com/jquery-latest.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+	</body>
+</html>
