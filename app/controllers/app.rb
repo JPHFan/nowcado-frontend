@@ -1,13 +1,26 @@
 get "/" do
-	@user = {:username => "Avi"}
-	erb :index
+  erb (settings.mobile+"index").to_sym
 end
 
 get "/sign_out" do
-	@user = nil
-	erb :index
+	session["user"] = nil
+  erb (settings.mobile+"index").to_sym
 end
 
 get "/settings" do
-	erb :settings
+  erb (settings.mobile+"settings").to_sym
+end
+
+# Partials
+get "/user_bar/:user_data" do
+  session["user"] = JSON.parse params[:user_data]
+  if mobile_request?
+    return
+  end
+  erb :user, :layout => false
+end
+
+# Mobile-specific pages
+get "/sign_in" do
+  erb "mobile/sign_in".to_sym
 end

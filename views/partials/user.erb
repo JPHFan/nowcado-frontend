@@ -1,0 +1,24 @@
+<ul class="nav pull-right">
+  <li class="divider-vertical"></li>
+  <% if session["user"] %>
+      <li>
+        <div class="navbar-text">Welcome back, <%= session["user"]["username"] %></div>
+      </li>
+      <li class="divider-vertical"></li>
+      <li>
+        <%= link_to "Sign out", "/sign_out" %>
+      </li>
+  <% else %>
+      <li>
+        <a href="#">Sign Up</a>
+      </li>
+      <li class="divider-vertical"></li>
+      <li>
+        <form class="navbar-form" data-placement="bottom">
+          <input class="input-small span2" type="text" placeholder="Email">
+          <input class="input-small" type="password" placeholder="Password">
+          <button class="btn" type="submit">Sign In</button>
+        </form>
+      </li>
+  <% end %>
+</ul>

@@ -1,7 +1,11 @@
 fieldset div {
-	min-width: 100%;
+  min-width: 100%;
 }
 
 img {
-	width: 100%;
+  width: 100%;
+}
+
+h3 {
+  text-align: center;
 }

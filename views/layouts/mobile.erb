@@ -1,34 +1,27 @@
-<!DOCTYPE html> 
-<html> 
-	<head> 
-		<title><%= render_partial :title %></title>
-		<meta charset="utf-8"> 
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
-		<link rel="stylesheet" href="/css/mobile-style.css" />
-        	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
-		<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
-	</head> 
-	
-	<body> 
-	
-		<div data-role="page"> 
-			<div data-theme="a" data-role="header">
-				<% if @user %>
-					<a id="sign_out_button" data-role="button" href="/sign_out" data-icon="delete" data-iconpos="left" class="ui-btn-left">Sign Out</a>
-					<a id="user_settings_button" data-role="button" href="/settings" data-icon="gear" data-iconpos="left" class="ui-btn-right">Settings</a>
-					<h3>Nowcado</h3>
-				<% else %>
-                			<a id="sign_up_button" data-role="button" href="#page1" data-icon="plus" data-iconpos="left" class="ui-btn-left">Sign Up</a>
-                			<a id="sign_in_button" data-role="button" href="#page1" data-icon="check" data-iconpos="left" class="ui-btn-right">Sign In</a>
-                			<h3>Nowcado</h3>
-				<% end %>
-			</div> 
-			
-			<div data-role="content">
-				<%= yield %>
-			</div> 
-		</div>
-	
-	</body>
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= render_partial :title %></title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+  <link rel="stylesheet" href="/css/mobile-style.css" />
+</head>
+
+<body>
+
+<div data-role="page">
+  <div data-theme="a" data-role="header" id="user-bar">
+    <%= render_partial "mobile/user".to_sym %>
+  </div>
+
+  <div data-role="content">
+    <%= yield %>
+  </div>
+</div>
+<input id="domain" type="hidden" value=<%= settings.domain %> />
+<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+<script src="/js/app.mobile.js"></script>
+</body>
 </html>

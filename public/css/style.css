@@ -1,32 +1,29 @@
-h1 {
-	margin-top: 20px;
-}
-
 body {
-	padding-left: 10px;
-	padding-right: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 #location_search {
-	min-width: 100%;
-	height: auto;
+  min-width: 100%;
+  height: auto;
 }
 
 .icon-search {
   position: relative;
-	right: 29px;
-	margin-top: 3px;
+  right: 20px;
+  margin-top: -2px;
+  z-index: 2;
 }
 
 a.brand {
-	margin-left: 0px !important;
+  margin-left: 0px !important;
 }
 
 .navbar-form button {
-	margin-right: 20px !important
+  margin-right: 10px !important;
 }
 
 .navbar-text {
   text-shadow: 1px 1px 0 rgba(0,0,0,0.2) !important;
-	color: #FFFFFF !important;
+  color: #FFFFFF !important;
 }

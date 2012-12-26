@@ -1,0 +1,9 @@
+<% if session["user"] %>
+    <a id="sign_out_button" data-role="button" href="/sign_out" data-icon="delete" data-iconpos="left" class="ui-btn-left" data-transition="flip">Sign Out</a>
+    <a id="user_settings_button" data-role="button" href="/settings" data-icon="gear" data-iconpos="left" class="ui-btn-right">Settings</a>
+    <h3><%= render_partial :title %></h3>
+<% else %>
+    <a id="sign_up_button" data-role="button" href="#page1" data-icon="plus" data-iconpos="left" class="ui-btn-left">Sign Up</a>
+    <a id="sign_in_button" data-role="button" href="/sign_in" data-icon="check" data-iconpos="left" class="ui-btn-right" data-ajax="false">Sign In</a>
+    <h3><%= render_partial :title %></h3>
+<% end %>
