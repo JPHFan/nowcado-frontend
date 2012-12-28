@@ -1,18 +1,23 @@
-get "/" do
+get "/?" do
   erb (settings.mobile+"index").to_sym
 end
 
-get "/sign_out" do
+get "/sign_out/?" do
 	session["user"] = nil
   erb (settings.mobile+"index").to_sym
 end
 
-get "/settings" do
+get "/settings/?" do
   erb (settings.mobile+"settings").to_sym
 end
 
+post "/set_location/?" do
+  session["latitude"] = params[:latitude].to_f
+  session["longitude"] = params[:longitude].to_f
+end
+
 # Partials
-get "/user_bar/:user_data" do
+get "/user_bar/:user_data/?" do
   session["user"] = JSON.parse params[:user_data]
   if mobile_request?
     return
@@ -21,6 +26,6 @@ get "/user_bar/:user_data" do
 end
 
 # Mobile-specific pages
-get "/sign_in" do
+get "/sign_in/?" do
   erb "mobile/sign_in".to_sym
 end
