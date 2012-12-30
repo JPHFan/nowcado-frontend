@@ -15,9 +15,11 @@
     <div class="container-fluid" style="width: auto;">
       <div class="nav-collapse in collapse" style="height: auto;">
         <a class="brand" href="/" data-placement="bottom" data-original-title="Set your location"><%= render_partial :title %></a>
-        <form class="navbar-search" data-placement="bottom">
+        <form class="navbar-search" data-placement="bottom" action="search" method="get">
           <div class="input-append">
-            <input class="search-query span4" type="text" placeholder="Search for local items" />
+            <input class="search-query span4" type="text" name="search" placeholder="Search for local items" />
+            <input id="latitude" name="latitude" type="hidden" value=<%= session["latitude"] %> />
+            <input id="longitude" name="longitude" type="hidden" value=<%= session["longitude"] %> />
             <a type="submit" href=""><i class="icon-search"></i></a>
           </div>
         </form>
@@ -29,9 +31,6 @@
   </div>
 </div>
 <input id="domain" type="hidden" value=<%= settings.domain %> />
-<input id="latitude" type="hidden" value=<%= session["latitude"] %> />
-<input id="longitude" type="hidden" value=<%= session["longitude"] %> />
-<input id="search_query" type="hidden" value=<%= session["search_query"] %> />
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>

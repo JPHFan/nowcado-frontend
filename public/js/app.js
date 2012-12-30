@@ -51,31 +51,18 @@ function latlon_defined() {
 }
 
 $(".navbar-search").submit(search_action);
-$(".navbar-search a").click(search_action);
+$(".navbar-search a").click(function(e) {
+  search_action(e);
+  e.preventDefault();
+  $(".navbar-search").submit();
+});
 
 function search_action(e) {
-  e.preventDefault();
   if(!latlon_defined()) {
+    e.preventDefault();
     window.location = "/?fail=true";
     return;
   }
-  var query = $(".navbar-search input").val();
-
-  $.getJSON(domain + "/search?callback=?", { latitude: $("#latitude").val(), longitude: $("#longitude").val(), search: query }, function(json) {
-    if(json.success) {
-      $("#search_query").val(query);
-      $(".navbar-search").tooltip("destroy");
-      $.post("/search/?q=" + query, json.result, function(search_result) {
-        $(".container:first").html(search_result);
-      });
-    }
-    else {
-      $(".navbar-search")
-        .attr("data-original-title", json.message)
-        .tooltip("show");
-    }
-  });
-
 }
 
 function getParameterByName(name) {

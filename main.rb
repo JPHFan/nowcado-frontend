@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/static_assets'
 require 'json'
+require 'rest_client'
 
 configure do
   set :views, ['views/layouts', 'views/pages', 'views/partials']

@@ -12,6 +12,19 @@ get "/settings/?" do
 end
 
 post "/set_location/?" do
+  set_location(params)
+end
+
+get "/search/?" do
+  set_location(params)
+  @search_results = JSON.parse RestClient.get (settings.domain + "/search"), params: params
+  if @search_results["success"]
+    @search_results = @search_results["result"]
+    erb (settings.mobile+"search").to_sym
+  end
+end
+
+def set_location(params)
   session["latitude"] = params[:latitude].to_f
   session["longitude"] = params[:longitude].to_f
 end
@@ -23,11 +36,6 @@ get "/user_bar/:user_data/?" do
     return
   end
   erb :user, :layout => false
-end
-
-post "/search/?" do
-  session["search_query"] = params[:q]
-  erb (settings.mobile+"search").to_sym, :layout => false
 end
 
 # Mobile-specific pages

@@ -3,23 +3,23 @@
     <div class="span4">
       <div class="well sidebar-nav">
         <ul class="nav nav-list">
-          <% params[:facets].each do |facet| %>
+          <% @search_results["facets"].each do |facet| %>
           <li class="nav-header"><%= facet[0] %></li>
           <% if facet[1]["_type"] == "terms" %>
             <% facet[1]["terms"].each do |term| %>
             <li>
-              <a href="link"><%= term[1]["term"].capitalize + " (" + term[1]["count"] + ")" %></a>
+              <a href="link"><%= term["term"].capitalize + " (" + term["count"].to_s + ")" %></a>
             </li>
             <% end %>
           <% else %>
             <% facet[1]["ranges"].each do |range| %>
             <li>
               <% context_string = (facet[1]["_type"] == "geo_distance" ? " mile" : " star") %>
-              <% to_string = (range[1]["to"] || "5") %>
+              <% to_string = (range["to"].to_s == "" ? "5" : range["to"].to_i.to_s) %>
               <% if to_string.to_s != "1" %>
                 <% context_string += "s" %>
               <% end %>
-              <a href="link"><%= "<= " + to_string + context_string + " (" + range[1]["total_count"] + ")" %></a>
+              <a href="link"><%= "<= " + to_string + context_string + " (" + range["total_count"].to_s + ")"  %></a>
             </li>
             <% end %>
           <% end %>
@@ -45,10 +45,10 @@
           </tr>
         </thead>
         <tbody>
-          <% params[:results].each do |result| %>
+          <% @search_results["results"].each do |result| %>
           <tr>
-            <td><%= result[1]["name"] %></td>
-            <% rating = result[1]["rating"] %>
+            <td><%= result["name"] %></td>
+            <% rating = result["rating"] %>
             <td>
             <% if rating.to_s == "" %>
             <% 5.times do %>
@@ -69,8 +69,8 @@
       </table>
       <div class="pagination pagination-centered">
         <ul>
-          <% (1..params[:pages].to_i).each do |page| %>
-            <% if params[:page].to_i == page %>
+          <% (1..@search_results["pages"].to_i).each do |page| %>
+            <% if @search_results["page"].to_i == page %>
             <li class="active">
               <span><%= page %></span>
             </li>
