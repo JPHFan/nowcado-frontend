@@ -25,6 +25,11 @@ get "/user_bar/:user_data/?" do
   erb :user, :layout => false
 end
 
+post "/search/?" do
+  session["search_query"] = params[:q]
+  erb (settings.mobile+"search").to_sym, :layout => false
+end
+
 # Mobile-specific pages
 get "/sign_in/?" do
   erb "mobile/sign_in".to_sym

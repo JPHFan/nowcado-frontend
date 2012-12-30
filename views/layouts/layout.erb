@@ -14,11 +14,11 @@
   <div class="navbar-inner">
     <div class="container-fluid" style="width: auto;">
       <div class="nav-collapse in collapse" style="height: auto;">
-        <a class="brand" href="/"><%= render_partial :title %></a>
-        <form class="navbar-search" action="">
+        <a class="brand" href="/" data-placement="bottom" data-original-title="Set your location"><%= render_partial :title %></a>
+        <form class="navbar-search" data-placement="bottom">
           <div class="input-append">
-            <input class="search-query span4" type="text" placeholder="Search for local items"></input>
-            <a href="#"><i class="icon-search"></i></a>
+            <input class="search-query span4" type="text" placeholder="Search for local items" />
+            <a type="submit" href=""><i class="icon-search"></i></a>
           </div>
         </form>
         <div id="user_bar" class="container-fluid">
@@ -28,15 +28,18 @@
     </div>
   </div>
 </div>
-<div class="container">
-  <%= yield %>
-</div>
 <input id="domain" type="hidden" value=<%= settings.domain %> />
+<input id="latitude" type="hidden" value=<%= session["latitude"] %> />
+<input id="longitude" type="hidden" value=<%= session["longitude"] %> />
+<input id="search_query" type="hidden" value=<%= session["search_query"] %> />
 <script src="http://code.jquery.com/jquery-latest.js"></script>
- <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
 <script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script src="/js/app.js"></script>
 <script src="/js/jquery.ui.addresspicker.js"></script>
+<div class="container">
+  <%= yield %>
+</div>
 </body>
 </html>

@@ -12,18 +12,21 @@
  *   jquery.ui.widget.js
  *   jquery.ui.autocomplete.js
  */
-(function( $, undefined ) {
 
+function map_center() {
+  return (latlon_defined()) ? new google.maps.LatLng($("#latitude").val(), $("#longitude").val()) : null;
+}
+
+(function( $, undefined ) {
   $.widget( "ui.addresspicker", {
     options: {
         appendAddressString: "",
         draggableMarker: true,
         regionBias: null,
         mapOptions: {
-            zoom: 5,
-            center: new google.maps.LatLng(39, -77),
-            scrollwheel: false,
-            mapTypeId: google.maps.MapTypeId.HYBRID
+            zoom: 17,
+            center: map_center(),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
         },
         elements: {
             map: false,
@@ -84,9 +87,7 @@
     },
 
     _initMap: function() {
-      if (this.lat && this.lat.val()) {
-        this.options.mapOptions.center = new google.maps.LatLng(this.lat.val(), this.lng.val());
-      }
+      this.options.mapOptions.center = map_center();
 
       this.gmap = new google.maps.Map(this.mapElement[0], this.options.mapOptions);
       this.gmarker = new google.maps.Marker({
@@ -98,11 +99,13 @@
     },
 
     _updatePosition: function(location) {
-      if (this.lat) {
-        this.lat.val(location.lat());
-      }
-      if (this.lng) {
-        this.lng.val(location.lng());
+      if(location != null) {
+        if (this.lat) {
+          this.lat.val(location.lat());
+        }
+        if (this.lng) {
+          this.lng.val(location.lng());
+        }
       }
     },
 
