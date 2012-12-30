@@ -56,10 +56,11 @@ $(".navbar-search a").click(search_action);
 function search_action(e) {
   e.preventDefault();
   if(!latlon_defined()) {
-    window.location = "/?fail=true"; //$(".container:first").load("/");
+    window.location = "/?fail=true";
     return;
   }
   var query = $(".navbar-search input").val();
+
   $.getJSON(domain + "/search?callback=?", { latitude: $("#latitude").val(), longitude: $("#longitude").val(), search: query }, function(json) {
     if(json.success) {
       $("#search_query").val(query);
@@ -74,6 +75,7 @@ function search_action(e) {
         .tooltip("show");
     }
   });
+
 }
 
 function getParameterByName(name) {

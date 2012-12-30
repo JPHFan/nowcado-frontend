@@ -1,17 +1,87 @@
 <div class="container-fluid">
   <div class="row-fluid">
-    <div class="span3">
+    <div class="span4">
       <div class="well sidebar-nav">
         <ul class="nav nav-list">
-          <li class="nav-header">Sidebar</li>
-          <li>
-            <a href="link">Link</a>
+          <% params[:facets].each do |facet| %>
+          <li class="nav-header"><%= facet[0] %></li>
+          <% if facet[1]["_type"] == "terms" %>
+            <% facet[1]["terms"].each do |term| %>
+            <li>
+              <a href="link"><%= term[1]["term"].capitalize + " (" + term[1]["count"] + ")" %></a>
+            </li>
+            <% end %>
+          <% else %>
+            <% facet[1]["ranges"].each do |range| %>
+            <li>
+              <% context_string = (facet[1]["_type"] == "geo_distance" ? " mile" : " star") %>
+              <% to_string = (range[1]["to"] || "5") %>
+              <% if to_string.to_s != "1" %>
+                <% context_string += "s" %>
+              <% end %>
+              <a href="link"><%= "<= " + to_string + context_string + " (" + range[1]["total_count"] + ")" %></a>
+            </li>
+            <% end %>
+          <% end %>
+          <% end %>
+          <li class="nav-header">Price</li>
+          <li>$
+            <input type="text" id="min_price" class="input-mini" /> to $
+            <input type="text" id="max_price" class="input-mini" />
           </li>
+          <li class="nav-header">Open Now</li>
+          <li><input type="checkbox" id="open_now"> Open now</li>
+          <li class="nav-header">In Stock</li>
+          <li><input type="checkbox" id="in_stock"> In stock</li>
         </ul>
       </div>
     </div>
-    <div class="span9">
-
+    <div class="span8">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% params[:results].each do |result| %>
+          <tr>
+            <td><%= result[1]["name"] %></td>
+            <% rating = result[1]["rating"] %>
+            <td>
+            <% if rating.to_s == "" %>
+            <% 5.times do %>
+              <i class="icon-star icon-white"></i>
+            <% end %>
+            <% else %>
+            <% rating.to_i.times do %>
+              <i class="icon-star"></i>
+            <% end %>
+            <% (5-rating.to_i).times do %>
+              <i class="icon-star-empty"></i>
+            <% end %>
+            <% end %>
+            </td>
+          </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <div class="pagination pagination-centered">
+        <ul>
+          <% (1..params[:pages].to_i).each do |page| %>
+            <% if params[:page].to_i == page %>
+            <li class="active">
+              <span><%= page %></span>
+            </li>
+            <% else %>
+            <li>
+              <a href="" id="<%= page %>"><%= page %></a>
+            </li>
+            <% end %>
+          <% end %>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

@@ -12,6 +12,7 @@ function geo_process(position) {
 }
 
 function geo_declined(error) {
+  $("#use_current_loc").button('reset');
   alert_error("#location_status",error_string.auto_location_denied);
 }
 
@@ -33,14 +34,17 @@ function map_location(latitude, longitude) {
   $("#location_search_map").addClass("alert");
   $(".navbar-search input").effect("highlight", {color: '#96F52F'}, 3000);
   $("#location_search_map").tooltip("destroy");
+  $("#use_current_loc").button('reset');
 }
 
 $("#use_current_loc").click(function(e) {
   e.preventDefault();
+  $(this).button('loading');
   if(navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(geo_process, geo_declined);
   } else {
     alert_error("#location_status",error_string.auto_location_support);
+    $(this).button('reset');
   }
 });
 
