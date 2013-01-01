@@ -16,12 +16,47 @@ post "/set_location/?" do
 end
 
 get "/search/?" do
-  set_location(params)
+  # Refresh the query string based on the params that have been previously set, provided they include the required entries
+  if(params[:latitude] && params[:longitude] && params[:search])
+    session[:query_string] = request.url
+  end
+  if(!get_or_set_session_var(params, ("latitude").to_sym) || !get_or_set_session_var(params, ("longitude").to_sym))
+    redirect '/?fail=true'
+    return
+  end
+  if(!get_or_set_session_var(params, ("search").to_sym))
+    params[:search] = ""
+  end
+  # Update params for in_stock and open_now if set to false
+  if params[:in_stock] == "false"
+    params.delete("in_stock")
+  end
+  if params[:open_now] == "false"
+    params.delete("open_now")
+  end
+  departments = params.select {|k,v| v=="true" && k.match(/department_/i)}.map {|k,v| k[11..-1]}
+  if !departments.empty?
+    params["departments"] = departments
+  end
+
   @search_results = JSON.parse RestClient.get (settings.domain + "/search"), params: params
   if @search_results["success"]
     @search_results = @search_results["result"]
     erb (settings.mobile+"search").to_sym
   end
+end
+
+def get_or_set_session_var(params, session_var_sym)
+  if params[session_var_sym].to_s.empty?
+    if session[session_var_sym].to_s.empty?
+      return false
+    else
+      params[session_var_sym] = session[session_var_sym]
+    end
+  else
+    session[session_var_sym] = params[session_var_sym]
+  end
+  return true
 end
 
 def set_location(params)

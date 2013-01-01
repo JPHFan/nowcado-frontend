@@ -4,25 +4,38 @@
       <div class="well sidebar-nav">
         <ul class="nav nav-list">
           <% @search_results["facets"].each do |facet| %>
-          <li class="nav-header"><%= facet[0] %></li>
-          <% if facet[1]["_type"] == "terms" %>
-            <% facet[1]["terms"].each do |term| %>
-            <li>
-              <a href="link"><%= term["term"].capitalize + " (" + term["count"].to_s + ")" %></a>
-            </li>
-            <% end %>
-          <% else %>
-            <% facet[1]["ranges"].each do |range| %>
-            <li>
-              <% context_string = (facet[1]["_type"] == "geo_distance" ? " mile" : " star") %>
-              <% to_string = (range["to"].to_s == "" ? "5" : range["to"].to_i.to_s) %>
-              <% if to_string.to_s != "1" %>
-                <% context_string += "s" %>
+              <% if facet[1]["_type"] == "terms" %>
+                  <li class="nav-header"><%= facet[0] %></li>
+                  <% facet[1]["terms"].each do |term| %>
+                      <li>
+                        <input type="checkbox" id="<%= term["term"].capitalize %>" facet="<%= facet[0].capitalize %>" <%= (params[facet[0].downcase + "_" + term["term"]] == "true") ? "checked" : "" %>/> <%= term["term"].capitalize %> (<%= term["count"].to_s %>)
+                      </li>
+                  <% end %>
+              <% elsif facet[1]["_type"] == "geo_distance" %>
+                  <li class="nav-header"><%= "Max Distance" %></li>
+                  <% facet[1]["ranges"].each do |range| %>
+                      <li>
+                        <% context_string = " mile" %>
+                        <% to_string = range["to"].to_i.to_s %>
+                        <% if !(to_string.include? "1") %>
+                            <% context_string += "s" %>
+                        <% end %>
+                        <a href="" value="<%= to_string %>" facet="<%= facet[0].capitalize %>"><%= to_string + context_string + " (" + range["total_count"].to_s + ")"  %></a>
+                      </li>
+                  <% end %>
+              <% else %>
+                  <li class="nav-header"><%= "Min Rating" %></li>
+
+                  <% facet[1]["ranges"].each do |range| %>
+                      <li>
+                        <% rating = (range["from"].to_s == "" ? 1 : range["from"].to_i) %>
+                        <input type="radio" name="rating" value="<%= rating %>" <%= (params[:min_rating].to_i == rating) ? "checked" : "" %>>
+                        <%= erb :rating, :locals => {:rating => rating}, :layout => false %>
+                        (<%= range["total_count"].to_s %>)
+                      </li>
+                  <% end %>
+
               <% end %>
-              <a href="link"><%= "<= " + to_string + context_string + " (" + range["total_count"].to_s + ")"  %></a>
-            </li>
-            <% end %>
-          <% end %>
           <% end %>
           <li class="nav-header">Price</li>
           <li>$
@@ -30,58 +43,58 @@
             <input type="text" id="max_price" class="input-mini" />
           </li>
           <li class="nav-header">Open Now</li>
-          <li><input type="checkbox" id="open_now"> Open now</li>
+          <li><input type="checkbox" id="open_now" <%= (params[:open_now] == "true") ? "checked" : "" %>> Open now</li>
           <li class="nav-header">In Stock</li>
-          <li><input type="checkbox" id="in_stock"> In stock</li>
+          <li><input type="checkbox" id="in_stock" <%= (params[:in_stock] == "true") ? "checked" : "" %>> In stock</li>
+          <li class="nav-header" style="text-transform: capitalize;"><button class="btn btn-link btn-inverse" id="filter_reset">Reset Filters</button></li>
         </ul>
       </div>
     </div>
     <div class="span8">
       <table class="table table-hover">
         <thead>
-          <tr>
-            <th>Item</th>
-            <th>Rating</th>
-          </tr>
+        <tr>
+          <th>Item</th>
+          <th>Rating</th>
+        </tr>
         </thead>
         <tbody>
-          <% @search_results["results"].each do |result| %>
-          <tr>
-            <td><%= result["name"] %></td>
-            <% rating = result["rating"] %>
-            <td>
-            <% if rating.to_s == "" %>
-            <% 5.times do %>
-              <i class="icon-star icon-white"></i>
-            <% end %>
-            <% else %>
-            <% rating.to_i.times do %>
-              <i class="icon-star"></i>
-            <% end %>
-            <% (5-rating.to_i).times do %>
-              <i class="icon-star-empty"></i>
-            <% end %>
-            <% end %>
-            </td>
-          </tr>
-          <% end %>
+        <% @search_results["results"].each do |result| %>
+            <tr>
+              <td><%= result["name"] %></td>
+              <% rating = result["rating"] %>
+              <td>
+                <% if rating.to_s == "" %>
+                    <% 5.times do %>
+                        <i class="icon-star icon-white"></i>
+                    <% end %>
+                <% else %>
+                    <%= erb :rating, :locals => {:rating => rating}, :layout => false %>
+                <% end %>
+              </td>
+            </tr>
+        <% end %>
         </tbody>
       </table>
       <div class="pagination pagination-centered">
         <ul>
           <% (1..@search_results["pages"].to_i).each do |page| %>
-            <% if @search_results["page"].to_i == page %>
-            <li class="active">
-              <span><%= page %></span>
-            </li>
-            <% else %>
-            <li>
-              <a href="" id="<%= page %>"><%= page %></a>
-            </li>
-            <% end %>
+              <% if @search_results["page"].to_i == page %>
+                  <li class="active">
+                    <span><%= page %></span>
+                  </li>
+              <% else %>
+                  <li>
+                    <a href="" id="<%= page %>"><%= page %></a>
+                  </li>
+              <% end %>
           <% end %>
         </ul>
       </div>
     </div>
   </div>
 </div>
+
+<input id="query_string" type="hidden" value = <%= session["query_string"] %> />
+
+<script src="/js/search.js"></script>

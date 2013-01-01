@@ -34,3 +34,7 @@ body {
 #location_found_div {
   margin-top: 20px;
 }
+
+input[type=checkbox] {
+  margin: 0;
+}
