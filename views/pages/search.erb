@@ -1,6 +1,6 @@
 <div class="container-fluid">
   <div class="row-fluid">
-    <div class="span4">
+    <div class="span3">
       <div class="well sidebar-nav">
         <ul class="nav nav-list">
           <% @search_results["facets"].each do |facet| %>
@@ -38,9 +38,20 @@
               <% end %>
           <% end %>
           <li class="nav-header">Price</li>
-          <li>$
-            <input type="text" id="min_price" class="input-mini" /> to $
-            <input type="text" id="max_price" class="input-mini" />
+          <li>
+            <table>
+              <tr>
+                <td>Min:</td>
+                <td>$<input type="text" id="min_price" class="input-mini" placeholder="0.00" value="<%= params[:min_price] %>" /></td>
+              </tr>
+              <tr>
+                <td>Max:</td>
+                <td>$<input type="text" id="max_price" class="input-mini" value="<%= params[:max_price] %>"/></td>
+              </tr>
+              <tr>
+                <td><button class="btn btn-mini btn-success btn-link" id="price_filter">Update</button></td>
+              </tr>
+            </table>
           </li>
           <li class="nav-header">Open Now</li>
           <li><input type="checkbox" id="open_now" <%= (params[:open_now] == "true") ? "checked" : "" %>> Open now</li>
@@ -50,7 +61,7 @@
         </ul>
       </div>
     </div>
-    <div class="span8">
+    <div class="span9">
       <ul class="nav nav-pills pull-right">
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button">Sort By<b class="caret"></b></a>
@@ -74,6 +85,8 @@
         <thead>
         <tr>
           <th>Item</th>
+          <th>Min Price</th>
+          <th>Max Price</th>
           <th>Rating</th>
         </tr>
         </thead>
@@ -81,6 +94,8 @@
         <% @search_results["results"].each do |result| %>
             <tr>
               <td><%= result["name"] %></td>
+              <td>$<%= @search_results["price_ranges"][result["name"]]["min"] %></td>
+              <td>$<%= @search_results["price_ranges"][result["name"]]["max"] %></td>
               <% rating = result["rating"] %>
               <td>
                 <% if rating.to_s == "" %>

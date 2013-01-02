@@ -28,6 +28,15 @@ $("div.sidebar-nav.well input:checkbox").click(function(e) {
   load_query_page();
 });
 
+$("#price_filter").click(function(e) {
+  e.preventDefault();
+  var min_price = $("#min_price").val();
+  var max_price = $("#max_price").val();
+  append_query_string("min_price",min_price);
+  append_query_string("max_price",max_price);
+  load_query_page();
+});
+
 function load_query_page() {
   var new_query = $("#query_string").val();
   if(new_query != window.location.href) {

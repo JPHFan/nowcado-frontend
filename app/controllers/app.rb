@@ -27,6 +27,17 @@ get "/search/?" do
   if(!get_or_set_session_var(params, ("search").to_sym))
     params[:search] = ""
   end
+  # Format the price string so it looks pretty for the user.
+  if(params[:min_price] && params[:min_price] != "")
+    params[:min_price] = "%.2f" % params[:min_price].to_f
+  else
+    params.delete("min_price")
+  end
+  if(params[:max_price] && params[:max_price] != "")
+    params[:max_price] = "%.2f" % params[:max_price].to_f
+  else
+    params.delete("max_price")
+  end
   # Update params for in_stock and open_now if set to false
   if params[:in_stock] == "false"
     params.delete("in_stock")
