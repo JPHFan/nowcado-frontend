@@ -30,7 +30,8 @@ $(".navbar .navbar-form").submit(function(e) {
   $.getJSON(domain + "/users/sign_in?callback=?", { user: {email: $(".navbar .navbar-form input:first").val(), password: $(".navbar .navbar-form input:last").val()} }, function(json) {
     if(json.success) {
       $(".navbar .navbar-form").tooltip("destroy");
-      $("#user_bar").load("/user_bar/" + JSON.stringify(json.result));
+      // Strip the auth token before sending to the server
+      $("#user_bar").load("/user_bar/" + json.result.username);
     }
     else {
       $(".navbar .navbar-form")

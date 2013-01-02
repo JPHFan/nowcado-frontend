@@ -1,11 +1,6 @@
-$("div.sidebar-nav.well a").click(function(e) {
+$("div.pagination a, div.sidebar-nav.well a, div.sidebar-nav.well input:radio, li.dropdown ul a").click(function(e) {
   e.preventDefault();
-  append_query_string("max_distance",$(this).attr("value"));
-  load_query_page();
-});
-
-$("div.sidebar-nav.well input:radio").click(function(e) {
-  append_query_string("min_rating", $(this).attr("value"));
+  append_query_string($(this).attr("value"),$(this).attr("id"));
   load_query_page();
 });
 

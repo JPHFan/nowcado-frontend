@@ -20,7 +20,7 @@
                         <% if !(to_string.include? "1") %>
                             <% context_string += "s" %>
                         <% end %>
-                        <a href="" value="<%= to_string %>" facet="<%= facet[0].capitalize %>"><%= to_string + context_string + " (" + range["total_count"].to_s + ")"  %></a>
+                        <a href="" id="<%= to_string %>" value="max_distance" facet="<%= facet[0].capitalize %>"><%= to_string + context_string + " (" + range["total_count"].to_s + ")"  %></a>
                       </li>
                   <% end %>
               <% else %>
@@ -29,7 +29,7 @@
                   <% facet[1]["ranges"].each do |range| %>
                       <li>
                         <% rating = (range["from"].to_s == "" ? 1 : range["from"].to_i) %>
-                        <input type="radio" name="rating" value="<%= rating %>" <%= (params[:min_rating].to_i == rating) ? "checked" : "" %>>
+                        <input type="radio" name="rating" id="<%= rating %>" value="min_rating" <%= (params[:min_rating].to_i == rating) ? "checked" : "" %>>
                         <%= erb :rating, :locals => {:rating => rating}, :layout => false %>
                         (<%= range["total_count"].to_s %>)
                       </li>
@@ -51,6 +51,25 @@
       </div>
     </div>
     <div class="span8">
+      <ul class="nav nav-pills pull-right">
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button">Sort By<b class="caret"></b></a>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel" id="sort_by">
+            <% ["Relevancy","Distance","Rating","Price"].each do |type| %>
+            <li><a href="#" id="<%= type %>" value="sort"><%= type %></a></li>
+            <% end %>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button">Results Per Page<b class="caret"></b></a>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel" id="per_page">
+            <% [10,20,30,40,50].each do |pages| %>
+            <li><a href="#" id="<%= pages %>" value="per_page"><%= pages %></a></li>
+            <% end %>
+          </ul>
+        </li>
+      </ul>
+
       <table class="table table-hover">
         <thead>
         <tr>
@@ -85,7 +104,7 @@
                   </li>
               <% else %>
                   <li>
-                    <a href="" id="<%= page %>"><%= page %></a>
+                    <a href="" id="<%= page %>" value="page"><%= page %></a>
                   </li>
               <% end %>
           <% end %>

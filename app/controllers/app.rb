@@ -38,6 +38,9 @@ get "/search/?" do
   if !departments.empty?
     params["departments"] = departments
   end
+  if session["user"]
+    params.merge!({"username" => session["user"]})
+  end
 
   @search_results = JSON.parse RestClient.get (settings.domain + "/search"), params: params
   if @search_results["success"]
@@ -66,7 +69,7 @@ end
 
 # Partials
 get "/user_bar/:user_data/?" do
-  session["user"] = JSON.parse params[:user_data]
+  session["user"] = params[:user_data].chomp('"').reverse.chomp('"').reverse
   if mobile_request?
     return
   end
