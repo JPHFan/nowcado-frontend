@@ -8,7 +8,7 @@
                   <li class="nav-header"><%= facet[0] %></li>
                   <% facet[1]["terms"].each do |term| %>
                       <li>
-                        <input type="checkbox" id="<%= term["term"].capitalize %>" facet="<%= facet[0].capitalize %>" <%= (params[facet[0].downcase + "_" + term["term"]] == "true") ? "checked" : "" %>/> <%= term["term"].capitalize %> (<%= term["count"].to_s %>)
+                        <input type="checkbox" id="<%= term["term"].capitalize %>" facet="<%= facet[0].capitalize %>" <%= (params[facet[0].downcase + "_" + term["term"]] == "true") ? "checked" : "" %>/> <%= term["term"].capitalize %>
                       </li>
                   <% end %>
               <% elsif facet[1]["_type"] == "geo_distance" %>
@@ -20,7 +20,7 @@
                         <% if !(to_string.include? "1") %>
                             <% context_string += "s" %>
                         <% end %>
-                        <a href="" id="<%= to_string %>" value="max_distance" facet="<%= facet[0].capitalize %>"><%= to_string + context_string + " (" + range["total_count"].to_s + ")"  %></a>
+                        <a href="" id="<%= to_string %>" value="max_distance" facet="<%= facet[0].capitalize %>"><%= to_string + context_string %></a>
                       </li>
                   <% end %>
               <% else %>
@@ -31,7 +31,6 @@
                         <% rating = (range["from"].to_s == "" ? 1 : range["from"].to_i) %>
                         <input type="radio" name="rating" id="<%= rating %>" value="min_rating" <%= (params[:min_rating].to_i == rating) ? "checked" : "" %>>
                         <%= erb :rating, :locals => {:rating => rating}, :layout => false %>
-                        (<%= range["total_count"].to_s %>)
                       </li>
                   <% end %>
 
@@ -49,7 +48,7 @@
                 <td>$<input type="text" id="max_price" class="input-mini" value="<%= params[:max_price] %>"/></td>
               </tr>
               <tr>
-                <td><button class="btn btn-mini btn-success btn-link" id="price_filter">Update</button></td>
+                <td colspan="2"><button class="btn btn-success btn-link" id="price_filter">Update</button></td>
               </tr>
             </table>
           </li>
@@ -92,19 +91,13 @@
         </thead>
         <tbody>
         <% @search_results["results"].each do |result| %>
-            <tr>
+            <tr onclick="window.location='/item/<%= @search_results["matched_items"].assoc(result["id"].to_i).join("/") %>'">
               <td><%= result["name"] %></td>
               <td>$<%= @search_results["price_ranges"][result["name"]]["min"] %></td>
               <td>$<%= @search_results["price_ranges"][result["name"]]["max"] %></td>
               <% rating = result["rating"] %>
               <td>
-                <% if rating.to_s == "" %>
-                    <% 5.times do %>
-                        <i class="icon-star icon-white"></i>
-                    <% end %>
-                <% else %>
-                    <%= erb :rating, :locals => {:rating => rating}, :layout => false %>
-                <% end %>
+                <%= erb :rating, :locals => {:rating => rating}, :layout => false %>
               </td>
             </tr>
         <% end %>

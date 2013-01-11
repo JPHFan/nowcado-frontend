@@ -1,6 +1,14 @@
-<% rating.to_i.times do %>
-  <i class="icon-star"></i>
+<label class="label">
+<% if rating.to_s == "" %>
+  <% 5.times do %>
+    <i class="icon-star-empty"></i>
+  <% end %>
+<% else %>
+  <% rating.to_i.times do %>
+    <i class="icon-star"></i>
+  <% end %>
+  <% (5-rating.to_i).times do %>
+    <i class="icon-star icon-white"></i>
+  <% end %>
 <% end %>
-<% (5-rating.to_i).times do %>
-  <i class="icon-star-empty"></i>
-<% end %>
+</label>

@@ -15,7 +15,7 @@
     <div class="container-fluid" style="width: auto;">
       <div class="nav-collapse in collapse" style="height: auto;">
         <a class="brand" href="/" data-placement="bottom" data-original-title="Set your location"><%= render_partial :title %></a>
-        <form class="navbar-search" data-placement="bottom" action="search" method="get">
+        <form class="navbar-search" data-placement="bottom" action="/search" method="get">
           <div class="input-append">
             <input class="search-query span4" type="text" name="search" placeholder="Search for local items" />
             <input id="latitude" name="latitude" type="hidden" value=<%= session["latitude"] %> />

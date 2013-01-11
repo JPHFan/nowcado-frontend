@@ -2,6 +2,10 @@ get "/?" do
   erb (settings.mobile+"index").to_sym
 end
 
+get "/api/?" do
+  redirect settings.domain
+end
+
 get "/sign_out/?" do
 	session["user"] = nil
   erb (settings.mobile+"index").to_sym
@@ -57,6 +61,28 @@ get "/search/?" do
   if @search_results["success"]
     @search_results = @search_results["result"]
     erb (settings.mobile+"search").to_sym
+  end
+end
+
+get "/item/*" do
+  if(!get_or_set_session_var(params, ("latitude").to_sym) || !get_or_set_session_var(params, ("longitude").to_sym))
+    redirect '/?fail=true'
+    return
+  end
+  @item_results = []
+  item_params = {"latitude" => session["latitude"], "longitude" => session["longitude"], "username" => session["user"]}
+  item_ids = params[:splat][0].split("/")
+  item_ids.each {|id|
+    result = JSON.parse RestClient.get (settings.domain + "/items/" + id), params: item_params
+    if result["success"]
+      @item_results.push result
+    end
+  }
+  @similar_items = JSON.parse RestClient.get (settings.domain + "/items/similar"),
+                                             params: item_params.merge({"items" => item_ids[0]})
+
+  if !@item_results.empty? && !@item_results[0].empty?
+    erb (settings.mobile+"item").to_sym
   end
 end
 

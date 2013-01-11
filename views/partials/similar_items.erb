@@ -1,0 +1,23 @@
+<% if @similar_items && @similar_items["result"] && !@similar_items["result"].empty? %>
+<h3>Similar Items</h3>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th>Min Price</th>
+      <th>Max Price</th>
+      <th>Rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @similar_items["result"].each do |item| %>
+    <tr onclick="window.location='/item/<%= item["ids"].join("/") %>'">
+      <td><%= item["item"]["name"] %></td>
+      <td><%= item["min_price"] %></td>
+      <td><%= item["max_price"] %></td>
+      <td><%= erb :rating, :locals => {:rating => item["rating"]}, :layout => false %></td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+<% end %>
