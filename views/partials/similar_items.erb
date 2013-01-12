@@ -11,7 +11,7 @@
   </thead>
   <tbody>
     <% @similar_items["result"].each do |item| %>
-    <tr onclick="window.location='/item/<%= item["ids"].join("/") %>'">
+    <tr onclick="$.post('/set_item/<%= item["ids"].join("/") %>', function(){ window.location='/item/<%= item["ids"].join("/") %>' });">
       <td><%= item["item"]["name"] %></td>
       <td><%= item["min_price"] %></td>
       <td><%= item["max_price"] %></td>
