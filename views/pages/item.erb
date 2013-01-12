@@ -1,60 +1,83 @@
-<ul class="inline">
-  <li class="pull-left">
-    <legend><h2><%= cap_words(@item_results[0]["result"]["name"]) %></h2></legend>
-  </li>
-  <li class="pull-right">
-    <form action="/cart" class="form-inline">
-      Qty: <input type="text" class="input-small">
-      <button class="btn" type="submit">Add to cart</button>
-    </form>
-  </li>
-</ul>
+<legend><h2><%= cap_words(@item_results[0]["result"]["name"]) %></h2></legend>
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span3 pull-left">
+      <% if session[:error] %>
+      <label class="label label-warning"><%= show_flash(:error) %></label>
+      <% end %>
+      <%= erb :search_filter, :layout => false %>
+    </div>
+    <div class="span9 pull-right">
+      <div class="pull-left">
+        <form action="/cart" class="form-inline">
+          Qty: <input type="text" class="input-small">
+          <button class="btn" type="submit">Add to cart</button>
+        </form>
+      </div>
+      <div>
+        <ul class="nav nav-pills pull-right">
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button">Sort By<b class="caret"></b></a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel" id="sort_by">
+              <% ["Price","Rating","Distance"].each do |type| %>
+              <li><a href="#" id="<%= type %>" value="sort"><%= type %></a></li>
+              <% end %>
+            </ul>
+          </li>
+        </ul>
+      </div>
 
-<table class="table" id="item_results">
-  <thead>
-    <tr>
-      <th>Store</th>
-      <th>Price</th>
-      <th>Rating</th>
-      <th>Distance</th>
-      <th>In Stock?</th>
-      <th>Open Now?</th>
-      <% if @item_results.length > 1 %>
-      <th>Remove Item</th>
-      <% end %>
-    </tr>
-  </thead>
-  <tbody>
-    <% @item_results.each do |item| %>
-    <% sales = sale(item["result"]["prices"]) %>
-    <tr <%= sales.empty? ? "" : "class='success'"%>>
-      <td><strong><%= item["result"]["store_name"] %></strong></td>
-      <td>$<%= item["result"]["prices"]["1"] %></td>
-      <td><%= erb :rating, :locals => {:rating => item["result"]["rating"]}, :layout => false %></td>
-      <td><%= "%.2f" % item["result"]["distance"] %> miles</td>
-      <% if item["result"]["quantity"] > 0 %>
-      <td><span class="badge badge-success">Yes</span></td>
-      <% else %>
-      <td><span class="badge badge-important">No</span></td>
-      <% end %>
-      <% if item["result"]["open_now"] %>
-      <td><span class="badge badge-success">Yes</span></td>
-      <% else %>
-      <td><span class="badge badge-important">No</span></td>
-      <% end %>
-      <% if @item_results.length > 1 %>
-      <td><button class="btn btn-mini btn-danger" btnid="<%= item["result"]["id"] %>">Remove</button></td>
-      <% end %>
-    </tr>
-    <% sales.each do |i| %>
-    <tr class="success">
-      <td colspan="7"><span class="badge badge-success">Sale! <%= i %></span></td>
-    </tr>
-    <% end %>
-    <% end %>
-  </tbody>
-</table>
+      <table class="table" id="item_results">
+        <thead>
+        <tr>
+          <th>Store</th>
+          <th>Price</th>
+          <th>Rating</th>
+          <th>Distance</th>
+          <th>In Stock?</th>
+          <th>Open Now?</th>
+          <% if @item_results.length > 1 %>
+              <th>Remove Item</th>
+          <% end %>
+        </tr>
+        </thead>
+        <tbody>
+        <% @item_results.each do |item| %>
+            <% sales = sale(item["result"]["prices"]) %>
+            <tr <%= sales.empty? ? "" : "class='success'"%>>
+              <td><strong><%= item["result"]["store_name"] %></strong></td>
+              <td>$<%= item["result"]["prices"]["1"] %></td>
+              <td><%= erb :rating, :locals => {:rating => item["result"]["rating"]}, :layout => false %></td>
+              <td><%= "%.2f" % item["result"]["distance"] %> miles</td>
+              <% if item["result"]["in_stock"] %>
+                  <td><span class="badge badge-success">Yes</span></td>
+              <% else %>
+                  <td><span class="badge badge-important">No</span></td>
+              <% end %>
+              <% if item["result"]["open_now"] %>
+                  <td><span class="badge badge-success">Yes</span></td>
+              <% else %>
+                  <td><span class="badge badge-important">No</span></td>
+              <% end %>
+              <% if @item_results.length > 1 %>
+                  <td><button class="btn btn-mini btn-danger" btnid="<%= item["result"]["id"] %>">Remove</button></td>
+              <% end %>
+            </tr>
+            <% sales.each do |i| %>
+                <tr class="success">
+                  <td colspan="7"><span class="badge badge-success">Sale! <%= i %></span></td>
+                </tr>
+            <% end %>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
 <%= erb :similar_items, :layout => false %>
 
+<input id="item_ids" type="hidden" value ="<%= session["item_ids"].join("/") %>" />
+
 <script src="/js/item.js"></script>
+<script src="/js/search.js"></script>

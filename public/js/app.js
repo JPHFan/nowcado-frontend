@@ -76,3 +76,35 @@ function getParameterByName(name) {
   else
     return decodeURIComponent(results[1].replace(/\+/g," "));
 }
+
+function load_query_page() {
+  var new_query = $("#query_string").val();
+  if(new_query != window.location.href) {
+    window.location = new_query;
+  }
+}
+
+function append_query_string(key, value) {
+  var query_string = $("#query_string");
+  var uri = query_string.val();
+  var re = new RegExp("([?|&])" + key + "=.*?(&|$)", "i");
+  var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+  if (uri.match(re)) {
+    query_string.val(uri.replace(re, '$1' + key + "=" + value + '$2'));
+  } else {
+    query_string.val(uri + separator + key + "=" + value);
+  }
+}
+
+function remove_query_string(key) {
+  var query_string = $("#query_string");
+  var uri = query_string.val();
+  var re = new RegExp("([?|&])" + key + "=.*?(&|$)", "i");
+  if (uri.match(re)) {
+    uri = uri.replace(re, '$1');
+    if(uri.substring(uri.length-1).match('([?|&])')) {
+      uri = uri.substring(0,uri.length-1);
+    }
+    query_string.val(uri);
+  }
+}
