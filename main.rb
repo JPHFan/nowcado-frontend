@@ -2,6 +2,8 @@ require 'sinatra'
 require 'sinatra/static_assets'
 require 'json'
 require 'rest_client'
+require 'fast-aes'
+require 'base64'
 
 configure do
   set :views, ['views/layouts', 'views/pages', 'views/partials']
@@ -11,6 +13,7 @@ configure do
   else
     set :domain, "https://127.0.0.1:3000"
   end
+  set :secret_key, File.read('secret-key').strip
 end
 
 Dir["./app/models/*.rb"].each { |file| require file }

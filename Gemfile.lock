@@ -1,6 +1,7 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    fast-aes (0.1.1)
     json (1.7.5)
     mime-types (1.19)
     rack (1.4.1)
@@ -22,6 +23,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  fast-aes
   json
   rest-client
   rubyzip

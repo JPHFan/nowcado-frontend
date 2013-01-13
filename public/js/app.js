@@ -30,8 +30,8 @@ $(".navbar .navbar-form").submit(function(e) {
   $.getJSON(domain + "/users/sign_in?callback=?", { user: {email: $(".navbar .navbar-form input:first").val(), password: $(".navbar .navbar-form input:last").val()} }, function(json) {
     if(json.success) {
       $(".navbar .navbar-form").tooltip("destroy");
-      // Strip the auth token before sending to the server
-      $("#user_bar").load("/user_bar/" + json.result.username);
+      // Use the encrypted auth token for further requests
+      $("#user_bar").load("/user_bar/" + json.result.username + "?encrypted_auth_token=" + json.result.encrypted_auth_token);
     }
     else {
       $(".navbar .navbar-form")

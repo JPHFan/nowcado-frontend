@@ -7,8 +7,25 @@ get "/api/?" do
 end
 
 get "/sign_out/?" do
-	session["user"] = nil
+  session["encrypted_auth_token"] = session["user"] = nil
   erb (settings.mobile+"index").to_sym
+end
+
+def encrypt_token_with_session(token)
+  key1 = session["session_id"][0..31]
+  key2 = session["session_id"][32..63]
+  aes1 = FastAES.new(key1)
+  aes2 = FastAES.new(key2)
+  return aes2.encrypt(aes1.encrypt(token))
+end
+
+def get_auth_token
+  if(session["encrypted_auth_token"] && encrypt_token_with_session(session["encrypted_auth_token"]) == session["session_encrypted_auth_token"])
+    aes = FastAES.new(settings.secret_key)
+    return aes.decrypt(session["encrypted_auth_token"])
+  else
+    return ""
+  end
 end
 
 get "/settings/?" do
@@ -54,7 +71,7 @@ get "/search/?" do
     params["departments"] = departments
   end
   if session["user"]
-    params.merge!({"username" => session["user"]})
+    params.merge!({"auth_token" => get_auth_token})
   end
 
   @search_results = JSON.parse RestClient.get (settings.domain + "/search"), params: params
@@ -84,7 +101,7 @@ get "/item/*" do
 
   @item_results = []
   @filtered_results = []
-  item_params = {"latitude" => session["latitude"], "longitude" => session["longitude"], "username" => session["user"]}
+  item_params = {"latitude" => session["latitude"], "longitude" => session["longitude"], "auth_token" => get_auth_token}
   if session["item_ids"]
     item_ids = session["item_ids"]
     # Throw back items here.  Substring the request.url from the 4th slash to either the ? or the end of the string and replace it
@@ -159,6 +176,8 @@ end
 # Partials
 get "/user_bar/:user_data/?" do
   session["user"] = params[:user_data].chomp('"').reverse.chomp('"').reverse
+  session["encrypted_auth_token"] = Base64.decode64(params[:encrypted_auth_token])
+  session["session_encrypted_auth_token"] = encrypt_token_with_session(session["encrypted_auth_token"])
   if mobile_request?
     return
   end
