@@ -1,30 +1,32 @@
-<div class="jumbotron">
-  <h1>Get ready to shop locally in real-time!</h1>
-  <p class="lead">
-    To start, either type in the address where you want to shop and hit enter, or automatically detect your location by clicking the button "Use my current location!"
-  </p>
-</div>
 <div class="container">
-  <div class="row">
-    <div class="span5">
-      <p class="option-text">Option 1: </p>
-      <button id="manual_loc_button" class="btn btn-primary" style="height: 30px;">Manually enter location</button>
-      <form id="location_search_form" class="form=search input-append" action="" style="display: none;">
-        <input type="text" class="input-medium span5" id="location_search" placeholder="Where do you want to shop?" />
-        <button class="add-on" type="submit" style="height: 30px;">Set Location</button>
-      </form>
-      <p class="option-text">Option 2: </p>
-      <button class="btn btn-primary" id="use_current_loc" data-loading-text="Finding your location...">Use my current location!</button>
-      <p></p>
-      <div id="location_status" class="alert" style="display: none;"></div>
-      <div id="location_found_div" style="display: none;">
-        <p id="search_explanation_text">If the location has been set correctly, you can now shop by searching for items using the search bar at the top of the screen.</p>
+  <div class="jumbotron">
+    <h1>Get ready to shop locally in real-time!</h1>
+    <p class="lead">
+      To start, either type in the address where you want to shop and hit enter, or automatically detect your location by clicking the button "Use my current location!"
+    </p>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="span5">
+        <p class="option-text">Option 1: </p>
+        <button id="manual_loc_button" class="btn btn-primary" style="height: 30px;">Manually enter location</button>
+        <form id="location_search_form" class="form=search input-append" action="" style="display: none;">
+          <input type="text" class="input-medium span5" id="location_search" placeholder="Where do you want to shop?" />
+          <button class="add-on" type="submit" style="height: 30px;">Set Location</button>
+        </form>
+        <p class="option-text">Option 2: </p>
+        <button class="btn btn-primary" id="use_current_loc" data-loading-text="Finding your location...">Use my current location!</button>
+        <p></p>
+        <div id="location_status" class="alert" style="display: none;"></div>
+        <div id="location_found_div" style="display: none;">
+          <p id="search_explanation_text">If the location has been set correctly, you can now shop by searching for items using the search bar at the top of the screen.</p>
+        </div>
+      </div>
+      <div class="span4 offset2">
+        <div id="location_search_map" style="height: 300px;"></div>
       </div>
     </div>
-    <div class="span4 offset2">
-      <div id="location_search_map" style="height: 300px;"></div>
-    </div>
   </div>
-</div>
 
-<script src="/js/index.js"></script>
+  <script src="/js/index.js"></script>
+</div>

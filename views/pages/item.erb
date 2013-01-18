@@ -1,13 +1,22 @@
 <legend><h2><%= cap_words(@item_results[0]["result"]["name"]) %></h2></legend>
+<div class="row" style="margin-bottom: 20px;">
+</div>
+
 <div class="container-fluid">
   <div class="row-fluid">
-    <div class="span3 pull-left">
+    <div class="pull-left">
+      <div class="thumbnail" style="margin-bottom: 20px;">
+        <% image=!@item_results[0]["result"]["img_url"].nil? ? @item_results[0]["result"]["img_url"] : "holder.js/200x200" %>
+        <img src="<%= image %>" style="height:200px;">
+        <a style="margin-left:65px;" href="<%= image %>">Source</a>
+      </div>
       <% if session[:error] %>
       <label class="label label-warning"><%= show_flash(:error) %></label>
       <% end %>
       <%= erb :search_filter, :layout => false %>
     </div>
-    <div class="span9 pull-right">
+
+    <div class="span9">
       <div class="pull-left">
         <form action="/cart" class="form-inline">
           Qty: <input type="text" class="input-small">
@@ -77,7 +86,11 @@
 
 <%= erb :similar_items, :layout => false %>
 
+<div class="container">
+  <%= erb :reviews, :locals => {:type => "item"}, :layout => false %>
+</div>
 <input id="item_ids" type="hidden" value ="<%= session["item_ids"].join("/") %>" />
 
 <script src="/js/item.js"></script>
 <script src="/js/search.js"></script>
+<script src="/js/review.js"></script>

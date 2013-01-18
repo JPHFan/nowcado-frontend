@@ -1,0 +1,37 @@
+<h2>Reviews</h2>
+<% if @reviews && @reviews["result"] && !@reviews["result"].empty? %>
+<% @reviews["result"].each do |review| %>
+<pre style="line-height: 1;white-space: normal;">
+  <label><b>Posted By: </b><%= review["username"] %></label>
+  <label><b>Rating: </b><%= erb :rating, :locals => {:rating => review["rating"]}, :layout => false %></label>
+  <% if review["store_name"] %>
+  <label><b>Store: </b><%= review["store_name"] %></label>
+  <% end %>
+  <div class="well"><%= Sanitize.clean(review["review_text"], Sanitize::Config::BASIC).gsub(/\n/,"<br />") %></div>
+  <% if session["user"] %>
+  <div class="btn-group inline" style="line-height: 10px;">
+    <% if session["user"] == review["username"] %>
+    <div class="btn" group="user" type="edit" data-original-title="Edit this review" href="/edit/<%= type %>_review/<%= review["id"] %>">
+      <i class="icon-pencil"></i>
+    </div>
+    <div class="btn" group="user" type="remove" data-original-title="Remove this review" href="/remove/<%= type %>_review/<%= review["id"] %>">
+      <i class="icon-remove"></i>
+    </div>
+    <% else %>
+    <div  data-original-title="Mark this review helpful" type="helpful" class="btn <%= "active" if review["feedback"]["helpful"] %>" href="/toggle_helpful/<%= type %>_review/<%= review["id"] %>">
+      <i class="icon-thumbs-up"></i>
+    </div>
+    <div  data-original-title="Mark this review unhelpful" type="unhelpful" class="btn <%= "active" if review["feedback"]["unhelpful"] %>" href="/toggle_unhelpful/<%= type %>_review/<%= review["id"] %>">
+      <i class="icon-thumbs-down"></i>
+    </div>
+    <div  data-original-title="Flag review as inappropriate" type="inappropriate" class="btn <%= "active" if review["feedback"]["inappropriate"] %>" href="/toggle_inappropriate/<%= type %>_review/<%= review["id"] %>">
+      <i class="icon-flag"></i>
+    </div>
+    <% end %>
+  </div>
+  <% end %>
+</pre>
+<% end %>
+<% else %>
+No reviews currently written.
+<% end %>

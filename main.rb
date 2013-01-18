@@ -4,6 +4,7 @@ require 'json'
 require 'rest_client'
 require 'fast-aes'
 require 'base64'
+require 'sanitize'
 
 configure do
   set :views, ['views/layouts', 'views/pages', 'views/partials']

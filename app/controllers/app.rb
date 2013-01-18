@@ -28,6 +28,23 @@ def get_auth_token
   end
 end
 
+def rest_call(address, params = {}, verb="get")
+  if session["user"]
+    params.merge!({"auth_token" => get_auth_token})
+  end
+  json_types = {:content_type => :json, :accept => :json}
+  if verb == "put"
+    return JSON.parse RestClient.put (settings.domain + address.to_s), params, json_types
+  elsif verb == "post"
+    return JSON.parse RestClient.post (settings.domain + address.to_s), params, json_types
+  elsif verb == "delete"
+    return JSON.parse RestClient.delete (settings.domain + address.to_s), params: params
+  else
+    # Assume get
+    return JSON.parse RestClient.get (settings.domain + address.to_s), params: params
+  end
+end
+
 get "/settings/?" do
   erb (settings.mobile+"settings").to_sym
 end
@@ -70,11 +87,8 @@ get "/search/?" do
   if !departments.empty?
     params["departments"] = departments
   end
-  if session["user"]
-    params.merge!({"auth_token" => get_auth_token})
-  end
 
-  @search_results = JSON.parse RestClient.get (settings.domain + "/search"), params: params
+  @search_results = rest_call("/search", params)
   if @search_results["success"]
     @search_results = @search_results["result"]
     erb (settings.mobile+"search").to_sym
@@ -101,7 +115,7 @@ get "/item/*" do
 
   @item_results = []
   @filtered_results = []
-  item_params = {"latitude" => session["latitude"], "longitude" => session["longitude"], "auth_token" => get_auth_token}
+  item_params = {"latitude" => session["latitude"], "longitude" => session["longitude"]}
   if session["item_ids"]
     item_ids = session["item_ids"]
     # Throw back items here.  Substring the request.url from the 4th slash to either the ? or the end of the string and replace it
@@ -110,13 +124,14 @@ get "/item/*" do
       qm = request.url.length
     end
     slash = request.url.index("/",request.url.index("/",7)+1)
-    new_url = request.url.sub(request.url[slash+1..qm-1],item_ids.join("/"))
+
+    new_url = request.url.sub("/item/#{request.url[slash+1..qm-1]}","/item/#{item_ids.join("/")}")
   else
     item_ids = params[:splat][0].split("/")
     new_url = request.url
   end
   item_ids.each {|id|
-    result = JSON.parse RestClient.get (settings.domain + "/items/" + id), params: item_params
+    result = rest_call("/items/" + id, item_params)
     if result["success"]
       if (!params["min_rating"] || result["result"]["rating"].to_f >= params["min_rating"].to_f) &&
          (!params["max_distance"] || result["result"]["distance"].to_f <= params["max_distance"].to_f) &&
@@ -130,8 +145,7 @@ get "/item/*" do
       end
     end
   }
-  @similar_items = JSON.parse RestClient.get (settings.domain + "/items/similar"),
-                                             params: item_params.merge({"items" => item_ids[0]})
+  @similar_items = rest_call("/items/similar", item_params.merge({"items" => item_ids[0]}))
   prev_query = session["query_string"]
   session["query_string"] = new_url
   @filtered_results.each {|id|
@@ -148,11 +162,46 @@ get "/item/*" do
   end
 
   if !@item_results.empty? && !@item_results[0].empty?
+    # Get relevant reviews
+    @reviews = rest_call("/item_reviews", {"item_ids" =>
+                                           @item_results.map {|result| result["result"]["id"]}})
     erb (settings.mobile+"item").to_sym
   else
-    session[:error] = "Please ensure your filters will provide valid results."
+    session[:error] = "Ensure filters provide valid results."
     redirect prev_query
   end
+end
+
+post "/toggle_helpful/:type/:id/?" do
+  toggle_feedback_action(params,"toggle_helpful")
+end
+
+post "/toggle_unhelpful/:type/:id/?" do
+  toggle_feedback_action(params,"toggle_unhelpful")
+end
+
+post "/toggle_inappropriate/:type/:id/?" do
+  toggle_feedback_action(params,"flag_review")
+end
+
+post "/edit/:type/:id/?" do
+  erb (settings.mobile+"edit_review").to_sym, :locals => {:rating => params[:rating],:review => params[:review], :id => params[:id]},:layout => false
+end
+
+post "/remove/:type/:id/?" do
+  item_or_store_action(params,"","delete")
+end
+
+def toggle_feedback_action(params, toggle_action)
+  item_or_store_action(params,toggle_action,"put")
+end
+
+def item_or_store_action(params, action, verb)
+  type = "item"
+  if params[:type].to_s.match(/store/i)
+    type = "store"
+  end
+  rest_call("/#{type}_reviews/#{params[:id].to_s}/#{action}",{},verb)
 end
 
 def get_or_set_session_var(params, session_var_sym)

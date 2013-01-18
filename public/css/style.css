@@ -38,3 +38,15 @@ body {
 input[type=checkbox] {
   margin: 0;
 }
+
+.star {
+  display: inline;
+}
+
+div.well.sidebar-nav {
+  width: 147px;
+}
+
+ul.thumbnails > li > div.thumbnail {
+  width: 200px;
+}

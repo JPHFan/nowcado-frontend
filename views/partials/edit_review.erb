@@ -1,0 +1,3 @@
+<label><b>Rating: </b><%= erb :rating, :locals => {:rating => rating, :edit_hover => true}, :layout => false %></label>
+<textarea rows="6" style="width:98.5%" placeholder="Write your review here."><%= review %></textarea>
+<button class="btn" type="submit" review-id="<%= id %>">Update Review</button>

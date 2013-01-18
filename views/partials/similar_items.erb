@@ -1,23 +1,22 @@
 <% if @similar_items && @similar_items["result"] && !@similar_items["result"].empty? %>
-<h3>Similar Items</h3>
-<table class="table table-hover">
-  <thead>
-    <tr>
-      <th>Item</th>
-      <th>Min Price</th>
-      <th>Max Price</th>
-      <th>Rating</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @similar_items["result"].each do |item| %>
-    <tr onclick="$.post('/set_item/<%= item["ids"].join("/") %>', function(){ window.location='/item/<%= item["ids"].join("/") %>' });">
-      <td><%= item["item"]["name"] %></td>
-      <td><%= item["min_price"] %></td>
-      <td><%= item["max_price"] %></td>
-      <td><%= erb :rating, :locals => {:rating => item["rating"]}, :layout => false %></td>
-    </tr>
-    <% end %>
-  </tbody>
-</table>
+<div class="container">
+<div class="row">
+<h2 class="span6 offset4" style="margin-left: 30px;">Similar Items</h2>
+</div>
+<% @similar_items["result"].each_with_index do |item,i| %>
+  <% if i%4 == 0 %>
+  <div class="row-fluid">
+  <ul class="thumbnails">
+  <% end %>
+    <li class="span3">
+    <%= erb :show_item, :locals => {:matched_items => item["ids"].join("/"), :name => item["item"]["name"], :img_url => item["item"]["img_url"],
+                                    :rating => item["rating"], :min_price => item["min_price"], :max_price => item["max_price"]},
+                        :layout => false %>
+    </li>
+  <% if i%4 == 3 || i== @similar_items["result"].length-1 %>
+  </ul>
+  </div>
+  <% end %>
+<% end %>
+</div>
 <% end %>

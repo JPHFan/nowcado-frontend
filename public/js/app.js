@@ -108,3 +108,16 @@ function remove_query_string(key) {
     query_string.val(uri);
   }
 }
+
+function set_stars() {
+  $(".star.read-only").raty({
+    readOnly: true,
+    score: function() { return $(this).attr("data-rating"); }
+  });
+  $(".star.read-write").raty({
+    score: function() { return $(this).attr("data-rating"); }
+  });
+}
+
+$(document).ready(set_stars());
+

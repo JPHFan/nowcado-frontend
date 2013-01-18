@@ -1,14 +1,2 @@
-<label class="label">
-<% if rating.to_i == 0 %>
-  <% 5.times do %>
-    <i class="icon-star-empty"></i>
-  <% end %>
-<% else %>
-  <% rating.to_i.times do %>
-    <i class="icon-star icon-white"></i>
-  <% end %>
-  <% (5-rating.to_i).times do %>
-    <i class="icon-star"></i>
-  <% end %>
-<% end %>
-</label>
+<% edit_hover ||= nil %>
+<div class="star <%= edit_hover.nil? ? 'read-only' : 'read-write'%>" data-rating="<%= rating.to_i %>"></div>
