@@ -1,8 +1,7 @@
 // Index functions
 if(getParameterByName("fail") == "true") {
- $("#location_search_map")
-   .attr("data-original-title", error_string.location_not_set)
-   .tooltip("show");
+  $("#location_search_error").html(error_string.location_not_set);
+  $("#location_search_error").show();
 }
 function geo_process(position) {
   $.post("/set_location/", { latitude: position.coords.latitude, longitude: position.coords.longitude }, function() {
@@ -33,7 +32,7 @@ function map_location(latitude, longitude) {
   $("#location_found_div").show();
   $("#location_search_map").addClass("alert");
   $(".navbar-search input").effect("highlight", {color: '#96F52F'}, 3000);
-  $("#location_search_map").tooltip("destroy");
+  $("#location_search_error").hide();
   $("#use_current_loc").button('reset');
 }
 

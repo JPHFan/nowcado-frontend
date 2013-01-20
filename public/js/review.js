@@ -19,19 +19,8 @@ function review_submit_handler(action) {
     $.post("/" + action + "/" + $(this).attr("type") + "/" + $(this).attr("review-id") + "?rating=" + rating + "&review=" + review, function(data) {
       data = JSON.parse(data);
       if(data["success"] == false) {
-        var i = 0;
-        var err = "";
-        $.each(data["message"], function(index,val) {
-            if(i > 0) {
-              err += " and ";
-            }
-            err += index + " " + val;
-            i++;
-        });
-        form.attr("data-original-title",err);
-        form.tooltip("show");
+        form.children("div.alert").html(concat_err_string(data["message"],null)).show();
       } else {
-        form.tooltip("destroy");
         $("#no_reviews").hide();
         form.replaceWith(data["result"]);
         attach_form_handlers();

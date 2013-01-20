@@ -2,7 +2,7 @@
   <li class="divider-vertical"></li>
   <% if session["user"] %>
       <li>
-        <div class="navbar-text">Welcome back, <%= session["user"] %></div>
+        <%= link_to "Welcome back, #{session["user"]}", "/user" %>
       </li>
       <li class="divider-vertical"></li>
       <li>
@@ -10,7 +10,7 @@
       </li>
   <% else %>
       <li>
-        <a href="#">Sign Up</a>
+        <a href="#sign_up" role="button" data-toggle="modal">Sign Up</a>
       </li>
       <li class="divider-vertical"></li>
       <li>
