@@ -7,6 +7,6 @@
   <%= erb :show_review, :locals => {:review => review, :type => type}, :layout => false %>
 <% end %>
 <% else %>
-No reviews currently written.
+<div id="no_reviews">No reviews currently written.</div>
 <div id="add_review" href="/edit/<%= type %>_review/<%= id %>"><button>Add a review</button></div>
 <% end %>

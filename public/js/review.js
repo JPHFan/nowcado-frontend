@@ -31,6 +31,8 @@ function review_submit_handler(action) {
         form.attr("data-original-title",err);
         form.tooltip("show");
       } else {
+        form.tooltip("destroy");
+        $("#no_reviews").hide();
         form.replaceWith(data["result"]);
         attach_form_handlers();
       }

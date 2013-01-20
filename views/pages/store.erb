@@ -1,0 +1,40 @@
+<legend><h2><%= cap_words(@store["result"]["name"]) %></h2></legend>
+<div class="container">
+  <div class="row">
+    <div class="span4">
+      <label><b>Chain: </b><%= cap_words(@store["result"]["chain"]) %></label>
+      <label><b>Store Type: </b><%= cap_words(@store["result"]["type"]) %></label>
+      <label><b>Rating: </b><%= erb :rating, :locals => {:rating => @store["result"]["rating"]}, :layout => false %></label>
+      <label><b>Address: </b></label>
+      <address><%= @store["result"]["address"].gsub("/n","<br />") %></address>
+    </div>
+    <div class="span4">
+      <label><b>Store Hours: </b></label>
+      <% @store["result"]["hours"].each do |hours| %>
+      <div><%= "#{hours["day_of_week"]}: #{hours["start_time"]} to #{hours["end_time"]}" %></div>
+      <% end %>
+    </div>
+    <div class="span4">
+      <div id="store_location_map" style="height: 300px;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <%= erb :reviews, :locals => {:type => "store", :id => @store["result"]["id"]}, :layout => false %>
+</div>
+
+<script src="/js/review.js"></script>
+<script type="text/javascript">
+  var center = new google.maps.LatLng(<%= @store["result"]["latitude"] %>, <%= @store["result"]["longitude"] %>);
+  var map_options = {
+    center: center,
+    zoom: 17,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  }
+  var map = new google.maps.Map(document.getElementById("store_location_map"), map_options);
+  var marker = new google.maps.Marker({
+    position: center,
+    map: map
+  });
+</script>

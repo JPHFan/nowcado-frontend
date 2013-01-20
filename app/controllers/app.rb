@@ -95,6 +95,13 @@ get "/search/?" do
   end
 end
 
+get "/store/:id/:offset_mins/?" do
+  # Get relevant reviews
+  @reviews = rest_call("/store_reviews", {"store_id" => params[:id]})
+  @store = rest_call("/stores/#{params[:id]}",{"offset_mins" => params[:offset_mins]})
+  erb (settings.mobile+"store").to_sym
+end
+
 post "/set_item/*" do
   session["item_ids"] = params[:splat][0].split("/")
 end

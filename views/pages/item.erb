@@ -54,7 +54,7 @@
         <% @item_results.each do |item| %>
             <% sales = sale(item["result"]["prices"]) %>
             <tr <%= sales.empty? ? "" : "class='success'"%>>
-              <td><strong><%= item["result"]["store_name"] %></strong></td>
+              <td style="cursor:pointer;" onclick="window.location = '/store/<%= item["result"]["store_id"] %>/' + new Date().getTimezoneOffset();"><strong><%= item["result"]["store_name"] %></strong></td>
               <td>$<%= item["result"]["prices"]["1"] %></td>
               <td><%= erb :rating, :locals => {:rating => item["result"]["rating"]}, :layout => false %></td>
               <td><%= "%.2f" % item["result"]["distance"] %> miles</td>
