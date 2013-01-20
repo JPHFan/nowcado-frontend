@@ -185,11 +185,42 @@ post "/toggle_inappropriate/:type/:id/?" do
 end
 
 post "/edit/:type/:id/?" do
-  erb (settings.mobile+"edit_review").to_sym, :locals => {:rating => params[:rating],:review => params[:review], :id => params[:id]},:layout => false
+  erb (settings.mobile+"edit_review").to_sym, :locals => {:rating => params[:rating],:review => params[:review], :id => params[:id], :type => params[:type].gsub("_review","")},:layout => false
+end
+
+post "/update/:type/:id/?" do
+  modify_review("update")
+end
+
+post "/create/:type/:id/?" do
+  modify_review("create")
 end
 
 post "/remove/:type/:id/?" do
   item_or_store_action(params,"","delete")
+end
+
+def modify_review(type)
+  params["review"] = {"review_text" => params[:review], "rating" => params[:rating]}
+  # Type is either "create" or "update"
+  if type == "create"
+    verb = "post"
+    if params[:type].to_s.match(/store/i)
+      params["review"].merge!({"store_id" => params[:id]})
+    else
+      params["review"].merge!({"item_id" => params[:id]})
+    end
+    params[:id] = nil
+  else
+    verb = "put"
+  end
+
+  review = item_or_store_action(params,"",verb)
+  if review["success"]
+    return ({:success => true, :result => (erb :show_review, :locals => {:review => review["result"], :type => params[:type].gsub("_review","")}, :layout => false)}).to_json
+  else
+    return review.to_json
+  end
 end
 
 def toggle_feedback_action(params, toggle_action)
@@ -201,7 +232,11 @@ def item_or_store_action(params, action, verb)
   if params[:type].to_s.match(/store/i)
     type = "store"
   end
-  rest_call("/#{type}_reviews/#{params[:id].to_s}/#{action}",{},verb)
+  if params[:id].nil?
+    rest_call("/#{type}_reviews/",params,verb)
+  else
+    rest_call("/#{type}_reviews/#{params[:id].to_s}/#{action}",params,verb)
+  end
 end
 
 def get_or_set_session_var(params, session_var_sym)

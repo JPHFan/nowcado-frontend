@@ -1,7 +1,7 @@
 <% if @similar_items && @similar_items["result"] && !@similar_items["result"].empty? %>
 <div class="container">
 <div class="row">
-<h2 class="span6 offset4" style="margin-left: 30px;">Similar Items</h2>
+<h2 style="margin-left: 30px;">People who buy this item also tend to buy...</h2>
 </div>
 <% @similar_items["result"].each_with_index do |item,i| %>
   <% if i%4 == 0 %>

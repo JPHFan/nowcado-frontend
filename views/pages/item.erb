@@ -87,7 +87,7 @@
 <%= erb :similar_items, :layout => false %>
 
 <div class="container">
-  <%= erb :reviews, :locals => {:type => "item"}, :layout => false %>
+  <%= erb :reviews, :locals => {:type => "item", :id => @item_results[0]["result"]["id"]}, :layout => false %>
 </div>
 <input id="item_ids" type="hidden" value ="<%= session["item_ids"].join("/") %>" />
 
