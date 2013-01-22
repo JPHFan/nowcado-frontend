@@ -1,7 +1,7 @@
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="span3">
-      <%= erb :search_filter, :layout => false %>
+      <%= render_partial(:search_filter) %>
     </div>
     <div class="span9">
       <ul class="nav nav-pills pull-right">
@@ -30,9 +30,9 @@
         <ul class="thumbnails">
         <% end %>
           <li class="span4">
-            <%= erb :show_item, :locals => {:matched_items => matched_items, :name => result["name"], :img_url => result["img_url"],
+            <%= render_partial(:show_item, {:locals => {:matched_items => matched_items, :name => result["name"], :img_url => result["img_url"],
                                             :rating => result["rating"], :min_price => @search_results["price_ranges"][result["name"]]["min"],
-                                            :max_price => @search_results["price_ranges"][result["name"]]["max"]}, :layout => false %>
+                                            :max_price => @search_results["price_ranges"][result["name"]]["max"]}}) %>
           </li>
         <% if i%3 == 2 || i == @search_results["results"].length-1 %>
         </ul>

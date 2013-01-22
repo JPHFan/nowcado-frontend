@@ -1,6 +1,6 @@
 <div class="thumbnail" onclick="$.post('/set_item/<%= matched_items %>', function(){ window.location='/item/<%= matched_items %>' });" style="cursor:pointer;">
   <h6 style="height: 30px;"><%= cap_words(name) %></h6>
   <img src="<%= !img_url.nil? ? img_url : "holder.js/200x200"  %>" style="max-width:200px;height:200px;">
-  <label><b>Rating: </b><%= erb :rating, :locals => {:rating => rating}, :layout => false %></label>
+  <label><b>Rating: </b><%= render_partial(:rating, {:locals => {:rating => rating}}) %></label>
   <label><b>Price Range: </b><%= "$#{min_price} to $#{max_price}" %></label>
 </div>

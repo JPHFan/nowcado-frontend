@@ -4,7 +4,7 @@
 <div id="add_review" style="margin-bottom: 20px;" href="/edit/<%= type %>_review/<%= id %>"><button>Add a review</button></div>
 <% end %>
 <% @reviews["result"].each do |review| %>
-  <%= erb :show_review, :locals => {:review => review, :type => type}, :layout => false %>
+  <%= render_partial(:show_review, {:locals => {:review => review, :type => type}}) %>
 <% end %>
 <% else %>
 <div id="no_reviews">No reviews currently written.</div>

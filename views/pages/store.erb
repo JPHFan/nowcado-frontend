@@ -4,7 +4,7 @@
     <div class="span4">
       <label><b>Chain: </b><%= cap_words(@store["result"]["chain"]) %></label>
       <label><b>Store Type: </b><%= cap_words(@store["result"]["type"]) %></label>
-      <label><b>Rating: </b><%= erb :rating, :locals => {:rating => @store["result"]["rating"]}, :layout => false %></label>
+      <label><b>Rating: </b><%= render_partial(:rating, {:locals => {:rating => @store["result"]["rating"]}}) %></label>
       <label><b>Address: </b></label>
       <address><%= @store["result"]["address"].gsub("/n","<br />") %></address>
     </div>
@@ -21,7 +21,7 @@
 </div>
 
 <div class="container">
-  <%= erb :reviews, :locals => {:type => "store", :id => @store["result"]["id"]}, :layout => false %>
+  <%= render_partial(:reviews, {:locals => {:type => "store", :id => @store["result"]["id"]}}) %>
 </div>
 
 <script src="/js/review.js"></script>

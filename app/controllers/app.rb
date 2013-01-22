@@ -11,6 +11,12 @@ get "/sign_out/?" do
   erb (settings.mobile+"index").to_sym
 end
 
+get "/user/?" do
+  @memberships = rest_call("/memberships/all")
+  @user_memberships = rest_call("/memberships")
+  erb (settings.mobile+"user").to_sym
+end
+
 def encrypt_token_with_session(token)
   key1 = session["session_id"][0..31]
   key2 = session["session_id"][32..63]
@@ -272,7 +278,7 @@ get "/user_bar/:user_data/?" do
   if mobile_request?
     return
   end
-  erb :user, :layout => false
+  erb :user_bar, :layout => false
 end
 
 # Mobile-specific pages

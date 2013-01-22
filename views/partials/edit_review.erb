@@ -1,4 +1,4 @@
 <div class="alert alert-error" style="display: none;"></div>
-<label><b>Rating: </b><%= erb :rating, :locals => {:rating => rating.nil? ? 3 : rating, :edit_hover => true}, :layout => false %></label>
+<label><b>Rating: </b><%= render_partial(:rating, {:locals => {:rating => rating.nil? ? 3 : rating, :edit_hover => true}}) %></label>
 <textarea rows="6" style="width:98.5%" placeholder="Write your review here."><%= review %></textarea>
 <button class="btn" type="<%= type %>_review" review-id="<%= id %>">Save Review</button>

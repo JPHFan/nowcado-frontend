@@ -1,6 +1,6 @@
 <pre style="line-height: 1;white-space: normal;">
   <label><b>Posted By: </b><%= review["username"] %></label>
-  <label><b>Rating: </b><%= erb :rating, :locals => {:rating => review["rating"]}, :layout => false %></label>
+  <label><b>Rating: </b><%= render_partial(:rating, {:locals => {:rating => review["rating"]}}) %></label>
   <% if review["store_name"] %>
   <label><b>Store: </b><%= review["store_name"] %></label>
   <% end %>

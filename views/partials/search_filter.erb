@@ -26,7 +26,7 @@
                 <li>
                   <% rating = (range["from"].to_s == "" ? 1 : range["from"].to_i) %>
                   <input type="radio" name="rating" id="<%= rating %>" value="min_rating" <%= (params[:min_rating].to_i == rating) ? "checked" : "" %>>
-                  <%= erb :rating, :locals => {:rating => rating}, :layout => false %>
+                  <%= render_partial(:rating, {:locals => {:rating => rating}}) %>
                 </li>
             <% end %>
 
