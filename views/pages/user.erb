@@ -1,2 +1,21 @@
-<%= @memberships %>
-<%= @user_membership %>
+<div class="container-fluid">
+  <div class="row"><h6 class="alert alert-info span">Please set the stores you are a member of so that we can provide you with the most accurate price calculations.</h6></div>
+  <div class="row thumbnails">
+    <% @memberships["result"].each do |chain| %>
+    <div class="thumbnail span3" style="margin-bottom: 20px;">
+      <img <%= "src=\"#{chain["img_url"]}\"" if !chain["img_url"].nil? %> style="max-width: 200px;height: 50px;">
+      <div>
+        <input type="checkbox" <%= "checked=\"checked\"" if @user_memberships["result"].include?(chain["id"]) %>>
+        <input type="hidden" value="<%= chain["id"] %>">
+        <label class="label"><%= chain["name"] %></label>
+      </div>
+    </div>
+    <% end %>
+  </div>
+  <div class="row">
+    <button class="btn btn-primary span" id="update_memberships_button">Update my memberships</button>
+  </div>
+  <div id="update_memberships_status" class="alert alert-success span" style="display: none;margin-top: 20px;margin-left: 0px;">Successfully updated memberships!</div>
+</div>
+
+<script src="/js/user.js"></script>

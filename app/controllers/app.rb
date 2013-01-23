@@ -17,6 +17,10 @@ get "/user/?" do
   erb (settings.mobile+"user").to_sym
 end
 
+post "/set_memberships/?" do
+  rest_call("/memberships",{"memberships" => params[:memberships]},"post")
+end
+
 def encrypt_token_with_session(token)
   key1 = session["session_id"][0..31]
   key2 = session["session_id"][32..63]
