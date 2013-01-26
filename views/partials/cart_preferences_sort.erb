@@ -1,0 +1,11 @@
+<% if(attribute.downcase == "price") %>
+  <% attribute_string = "Cheapest Price" %>
+<% elsif(attribute.downcase == "distance") %>
+  <% attribute_string = "Shortest Distance" %>
+<% else %>
+  <% attribute_string = "Best Rating" %>
+<% end %>
+<li class="ui-state-default" value="<%= attribute.capitalize %>" id="cart_preferences_ranking_<%= attribute.downcase %>">
+  <select style="width: 50px; margin-bottom: 0;"><option>1</option><option>2</option><option>3</option></select>
+  <%= attribute_string %>
+</li>

@@ -21,16 +21,8 @@ post "/set_memberships/?" do
   rest_call("/memberships",{"memberships" => params[:memberships]},"post")
 end
 
-def encrypt_token_with_session(token)
-  key1 = session["session_id"][0..31]
-  key2 = session["session_id"][32..63]
-  aes1 = FastAES.new(key1)
-  aes2 = FastAES.new(key2)
-  return aes2.encrypt(aes1.encrypt(token))
-end
-
 def get_auth_token
-  if(session["encrypted_auth_token"] && encrypt_token_with_session(session["encrypted_auth_token"]) == session["session_encrypted_auth_token"])
+  if(session["encrypted_auth_token"])
     aes = FastAES.new(settings.secret_key)
     return aes.decrypt(session["encrypted_auth_token"])
   else
@@ -44,15 +36,17 @@ def rest_call(address, params = {}, verb="get")
   end
   json_types = {:content_type => :json, :accept => :json}
   if verb == "put"
-    return JSON.parse RestClient.put (settings.domain + address.to_s), params, json_types
+    result = JSON.parse RestClient.put (settings.domain + address.to_s), params, json_types
   elsif verb == "post"
-    return JSON.parse RestClient.post (settings.domain + address.to_s), params, json_types
+    result = JSON.parse RestClient.post (settings.domain + address.to_s), params, json_types
   elsif verb == "delete"
-    return JSON.parse RestClient.delete (settings.domain + address.to_s), params: params
+    result = JSON.parse RestClient.delete (settings.domain + address.to_s), params: params
   else
     # Assume get
-    return JSON.parse RestClient.get (settings.domain + address.to_s), params: params
+    result = JSON.parse RestClient.get (settings.domain + address.to_s), params: params
   end
+
+  return result
 end
 
 get "/settings/?" do
@@ -184,7 +178,7 @@ get "/item/*" do
                                            @item_results.map {|result| result["result"]["id"]}})
     erb (settings.mobile+"item").to_sym
   else
-    session[:error] = "Ensure filters provide valid results."
+    session[:error] = "Ensure filters provide valid results"
     redirect prev_query
   end
 end
@@ -215,6 +209,24 @@ end
 
 post "/remove/:type/:id/?" do
   item_or_store_action(params,"","delete")
+end
+
+post "/cart/?" do
+  rest_call("/cart",params,"post")
+  get_cart
+end
+
+get "/cart/?" do
+  get_cart
+end
+
+post "/set_cart_preferences/?" do
+  rest_call("/cart/set_preferences",params,"post")
+end
+
+def get_cart
+  @cart = rest_call("/cart",{"latitude"=>session["latitude"],"longitude"=>session["longitude"]})["result"]
+  erb (settings.mobile+"cart").to_sym
 end
 
 def modify_review(type)
@@ -278,7 +290,6 @@ end
 get "/user_bar/:user_data/?" do
   session["user"] = params[:user_data].chomp('"').reverse.chomp('"').reverse
   session["encrypted_auth_token"] = Base64.decode64(params[:encrypted_auth_token])
-  session["session_encrypted_auth_token"] = encrypt_token_with_session(session["encrypted_auth_token"])
   if mobile_request?
     return
   end

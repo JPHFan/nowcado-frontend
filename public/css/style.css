@@ -50,3 +50,8 @@ div.well.sidebar-nav {
 ul.thumbnails > li > div.thumbnail {
   width: 200px;
 }
+
+.ui-state-highlight {
+  height: 1.5em;
+  line-height: 1.2em;
+}

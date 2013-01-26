@@ -1,6 +1,6 @@
 <div class="container-fluid">
   <div class="row-fluid">
-    <div class="span3">
+    <div class="pull-left">
       <%= render_partial(:search_filter) %>
     </div>
     <div class="span9">
@@ -24,20 +24,16 @@
       </ul>
 
       <div class="span12">
-      <% @search_results["results"].to_enum.with_index(0).each do |result, i| %>
-        <% matched_items = @search_results["matched_items"].assoc(result["id"].to_i).join("/") %>
-        <% if i%3 == 0 %>
         <ul class="thumbnails">
-        <% end %>
-          <li class="span4">
+        <% @search_results["results"].to_enum.with_index(0).each do |result, i| %>
+          <% matched_items = @search_results["matched_items"].assoc(result["id"].to_i).join("/") %>
+          <li>
             <%= render_partial(:show_item, {:locals => {:matched_items => matched_items, :name => result["name"], :img_url => result["img_url"],
                                             :rating => result["rating"], :min_price => @search_results["price_ranges"][result["name"]]["min"],
                                             :max_price => @search_results["price_ranges"][result["name"]]["max"]}}) %>
           </li>
-        <% if i%3 == 2 || i == @search_results["results"].length-1 %>
-        </ul>
         <% end %>
-      <% end %>
+        </ul>
       </div>
 
       <div class="pagination pagination-centered">

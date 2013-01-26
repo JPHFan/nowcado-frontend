@@ -17,12 +17,15 @@
     </div>
 
     <div class="span9">
+      <% if session["user"] %>
       <div class="pull-left">
-        <form action="/cart" class="form-inline">
-          Qty: <input type="text" class="input-small">
+        <form action="/cart" class="form-inline" method="post">
+          Qty: <input type="text" class="input-small" name="quantity">
+          <input type="hidden" name="items" value="<%= @item_results.map{|result| result["result"]["id"]} %>">
           <button class="btn" type="submit">Add to cart</button>
         </form>
       </div>
+      <% end %>
       <div>
         <ul class="nav nav-pills pull-right">
           <li class="dropdown">
@@ -54,9 +57,9 @@
         <% @item_results.each do |item| %>
             <% sales = sale(item["result"]["prices"]) %>
             <tr <%= sales.empty? ? "" : "class='success'"%>>
-              <td style="cursor:pointer;" onclick="window.location = '/store/<%= item["result"]["store_id"] %>/' + new Date().getTimezoneOffset();"><strong><%= item["result"]["store_name"] %></strong></td>
+              <td style="cursor:pointer;" onclick="window.location = '/store/<%= item["result"]["store_id"] %>/' + (-new Date().getTimezoneOffset());"><strong><%= item["result"]["store_name"] %></strong></td>
               <td>$<%= item["result"]["prices"]["1"] %></td>
-              <td><%= render_partial(:rating, {:locals => {:rating => item["result"]["rating"]}}) %></td>
+              <td style="min-width: 100px;"><%= render_partial(:rating, {:locals => {:rating => item["result"]["rating"]}}) %></td>
               <td><%= "%.2f" % item["result"]["distance"] %> miles</td>
               <% if item["result"]["in_stock"] %>
                   <td><span class="badge badge-success">Yes</span></td>

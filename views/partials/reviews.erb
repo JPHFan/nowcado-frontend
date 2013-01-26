@@ -1,6 +1,6 @@
 <h2 style="margin-left: 6px;">Reviews</h2>
 <% if @reviews && @reviews["result"] && !@reviews["result"].empty? %>
-<% if @reviews["result"].select {|review| session["user"] == review["username"]}.empty? %>
+<% if session["user"] && @reviews["result"].select {|review| session["user"] == review["username"]}.empty? %>
 <div id="add_review" style="margin-bottom: 20px;" href="/edit/<%= type %>_review/<%= id %>"><button>Add a review</button></div>
 <% end %>
 <% @reviews["result"].each do |review| %>
