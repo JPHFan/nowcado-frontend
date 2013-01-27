@@ -1,0 +1,112 @@
+<h2>Shopping Cart</h2>
+<a data-toggle="modal" role="button" href="#cart_preferences" class="btn btn-primary">Set cart preferences</a>
+<div id="cart_preferences" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="cart_preferencesLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="cart_preferencesLabel">Set your cart preferences</h3>
+  </div>
+  <div class="modal-body">
+    <p>Please enter your preferences for each of the following so that we can determine which items are best for you. An empty section indicates that you have no preference.</p>
+    <p>If we cannot meet all of your criteria, we will provide the closest possible match.</p>
+    <table>
+      <tr>
+        <td><b>Maximum total distance (miles) you would like to travel: </b></td>
+        <td><input type="text" id="cart_preferences_max_distance" class="input-mini" value="<%= @cart[1]["max_distance"] %>"></td>
+      </tr>
+      <tr>
+        <td><b>Maximum number of stores you would like to visit: </b></td>
+        <td><input type="text" id="cart_preferences_max_stores" class="input-mini" value="<%= @cart[1]["max_stores"] %>"></td>
+      </tr>
+      <tr>
+        <td><b>Minimum rating you would like an item to have (0-5): </b></td>
+        <td><input type="text" id="cart_preferences_min_rating" class="input-mini" value="<%= @cart[1]["min_rating"] %>"></td>
+      </tr>
+      <tr>
+        <td><b>Rank the following from most to least important to you: </b></td>
+      </tr>
+    </table>
+    <ul id="cart_preferences_ranking" class="nav">
+      <% if !@cart[1]["sort"] %>
+        <%= render_partial(:cart_preferences_sort, {:locals => {:attribute => "price"}}) %>
+        <%= render_partial(:cart_preferences_sort, {:locals => {:attribute => "distance"}}) %>
+        <%= render_partial(:cart_preferences_sort, {:locals => {:attribute => "rating"}}) %>
+      <% else %>
+        <% @cart[1]["sort"].each do |sort| %>
+        <%= render_partial(:cart_preferences_sort, {:locals =>{:attribute => sort}}) %>
+      <% end %>
+      <% end %>
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="cart_preferences_submit">Save Preferences</button>
+  </div>
+</div>
+<div id="item_table_div">
+  <%= render_partial(:item_results_table) %>
+</div>
+<div><strong>Total Price: $<%= @cart[1]["overall_price"] %></strong></div>
+<div><strong>Total Distance: <%= @cart[1]["overall_distance"].round(2) %> miles</strong></div>
+
+<p>The best way to shop at these stores is by visiting them in this order: <%= @cart[1]["path"].map {|store| store["name"]}.to_s.gsub(/[\[\]\"\']/i,"")  %></p>
+<p>Directions for this path are provided below.</p>
+
+<div>
+  <strong>Mode of Travel:</strong>
+  <select id="mode" onchange="calc_route();">
+    <option value="DRIVING">Driving</option>
+    <option value="WALKING">Walking</option>
+    <option value="BICYCLING">Bicycling</option>
+    <option value="TRANSIT">Transit</option>
+  </select>
+</div>
+
+<div style="height: 600px;">
+  <div id="directions_map" style="float: left; width:70%;height: 100%;"></div>
+  <div id="directions_text" style="float: right; width:30%;height: 100%;"></div>
+</div>
+<script src="/js/cart.js"></script>
+<script>
+  // Directions functionality
+  var directions_display;
+  var directions_service = new google.maps.DirectionsService();
+  var directions_map;
+  var user_loc = new google.maps.LatLng(<%= session[:latitude] %>,<%= session[:longitude] %>);
+  var waypts = [];
+  <% @cart[1]["path"].each do |store| %>
+  waypts.push({
+    location:new google.maps.LatLng(<%= store["latitude"] %>,<%= store["longitude"] %>),
+    stopover:true
+  });
+  <% end %>
+
+  function initialize() {
+    directions_display = new google.maps.DirectionsRenderer();
+    var map_options = {
+      zoom: 14,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      center: user_loc
+    }
+    directions_map = new google.maps.Map(document.getElementById("directions_map"),map_options);
+    directions_display.setMap(directions_map);
+    directions_display.setPanel(document.getElementById("directions_text"));
+  }
+
+  function calc_route() {
+    var selected_mode = document.getElementById("mode").value;
+    var request = {
+      origin: user_loc,
+      destination: user_loc,
+      waypoints: waypts,
+      optimizeWaypoints: false,
+      travelMode: google.maps.TravelMode[selected_mode]
+    };
+    directions_service.route(request, function(response, status) {
+      if (status == google.maps.DirectionsStatus.OK) {
+        directions_display.setDirections(response);
+      }
+    });
+  }
+  initialize();
+  calc_route();
+</script>
