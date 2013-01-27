@@ -110,6 +110,11 @@ post "/set_item/*" do
   session["item_ids"] = params[:splat][0].split("/")
 end
 
+post "/set_qty/:item/:quantity/?" do
+  rest_call("/cart",params,"post")
+  get_cart
+end
+
 get "/item/*" do
   if(!get_or_set_session_var(params, ("latitude").to_sym) || !get_or_set_session_var(params, ("longitude").to_sym))
     redirect '/?fail=true'
@@ -141,21 +146,24 @@ get "/item/*" do
     item_ids = params[:splat][0].split("/")
     new_url = request.url
   end
-  item_ids.each {|id|
-    result = rest_call("/items/" + id, item_params)
-    if result["success"]
-      if (!params["min_rating"] || result["result"]["rating"].to_f >= params["min_rating"].to_f) &&
-         (!params["max_distance"] || result["result"]["distance"].to_f <= params["max_distance"].to_f) &&
-         (!params["min_price"] || result["result"]["prices"]["1"].to_f >= params["min_price"].to_f) &&
-         (!params["max_price"] || result["result"]["prices"]["1"].to_f <= params["max_price"].to_f) &&
-         (!(params["in_stock"].to_s == "true") || result["result"]["in_stock"]) &&
-         (!(params["open_now"].to_s == "true") || result["result"]["open_now"])
-        @item_results.push result
+
+  result = rest_call("/items",{:item_ids => item_ids})
+
+  if result["success"]
+    result["result"].each {|item|
+      if (!params["min_rating"] || item["rating"].to_f >= params["min_rating"].to_f) &&
+         (!params["max_distance"] || item["distance"].to_f <= params["max_distance"].to_f) &&
+         (!params["min_price"] || item["prices"]["1"].to_f >= params["min_price"].to_f) &&
+         (!params["max_price"] || item["prices"]["1"].to_f <= params["max_price"].to_f) &&
+         (!(params["in_stock"].to_s == "true") || item["in_stock"]) &&
+         (!(params["open_now"].to_s == "true") || item["open_now"])
+        @item_results.push item
       else
-        @filtered_results.push result["result"]["id"]
+        @filtered_results.push item["id"]
       end
-    end
-  }
+    }
+  end
+
   @similar_items = rest_call("/items/similar", item_params.merge({"items" => item_ids[0]}))
   prev_query = session["query_string"]
   session["query_string"] = new_url
@@ -165,17 +173,17 @@ get "/item/*" do
 
   # Apply sort
   if params["sort"] == "Price"
-    @item_results = @item_results.sort {|x,y| x["result"]["prices"]["1"] <=> y["result"]["prices"]["1"]}
+    @item_results = @item_results.sort {|x,y| x["prices"]["1"] <=> y["prices"]["1"]}
   elsif params["sort"] == "Rating"
-    @item_results = @item_results.sort {|x,y| y["result"]["rating"] <=> x["result"]["rating"]}
+    @item_results = @item_results.sort {|x,y| y["rating"] <=> x["rating"]}
   elsif params["sort"] == "Distance"
-    @item_results = @item_results.sort {|x,y| x["result"]["distance"] <=> y["result"]["distance"]}
+    @item_results = @item_results.sort {|x,y| x["distance"] <=> y["distance"]}
   end
 
   if !@item_results.empty? && !@item_results[0].empty?
     # Get relevant reviews
     @reviews = rest_call("/item_reviews", {"item_ids" =>
-                                           @item_results.map {|result| result["result"]["id"]}})
+                                           @item_results.map {|result| result["id"]}})
     erb (settings.mobile+"item").to_sym
   else
     session[:error] = "Ensure filters provide valid results"
@@ -220,12 +228,23 @@ get "/cart/?" do
   get_cart
 end
 
+post "/set_qty/:item/:quantity/?" do
+  rest_call("/cart",params,"post")
+  get_cart
+end
+
 post "/set_cart_preferences/?" do
   rest_call("/cart/set_preferences",params,"post")
 end
 
 def get_cart
-  @cart = rest_call("/cart",{"latitude"=>session["latitude"],"longitude"=>session["longitude"]})["result"]
+  if(!get_or_set_session_var(params, ("latitude").to_sym) || !get_or_set_session_var(params, ("longitude").to_sym))
+    redirect '/?fail=true'
+    return
+  end
+  @cart = rest_call("/stores/pick_stores",{"latitude"=>session["latitude"],"longitude"=>session["longitude"]})["result"]
+  @item_results = @cart[0]
+
   erb (settings.mobile+"cart").to_sym
 end
 
@@ -289,7 +308,7 @@ end
 # Partials
 get "/user_bar/:user_data/?" do
   session["user"] = params[:user_data].chomp('"').reverse.chomp('"').reverse
-  session["encrypted_auth_token"] = Base64.decode64(params[:encrypted_auth_token])
+  session["encrypted_auth_token"] = params[:encrypted_auth_token]
   if mobile_request?
     return
   end

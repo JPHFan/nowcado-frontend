@@ -1,4 +1,4 @@
-<legend><h2><%= cap_words(@item_results[0]["result"]["name"]) %></h2></legend>
+<legend><h2><%= cap_words(@item_results[0]["name"]) %></h2></legend>
 <div class="row" style="margin-bottom: 20px;">
 </div>
 
@@ -6,7 +6,7 @@
   <div class="row-fluid">
     <div class="pull-left">
       <div class="thumbnail" style="margin-bottom: 20px;width: 177px">
-        <% image=!@item_results[0]["result"]["img_url"].nil? ? @item_results[0]["result"]["img_url"] : "holder.js/200x200" %>
+        <% image=!@item_results[0]["img_url"].nil? ? @item_results[0]["img_url"] : "holder.js/200x200" %>
         <img src="<%= image %>" style="height:200px;">
         <a style="margin-left:65px;" href="<%= image %>">Source</a>
       </div>
@@ -21,7 +21,7 @@
       <div class="pull-left">
         <form action="/cart" class="form-inline" method="post">
           Qty: <input type="text" class="input-small" name="quantity">
-          <input type="hidden" name="items" value="<%= @item_results.map{|result| result["result"]["id"]} %>">
+          <input type="hidden" name="items" value="<%= @item_results.map{|result| result["id"]} %>">
           <button class="btn" type="submit">Add to cart</button>
         </form>
       </div>
@@ -39,54 +39,11 @@
         </ul>
       </div>
 
-      <table class="table" id="item_results">
-        <thead>
-        <tr>
-          <th>Store</th>
-          <th>Price</th>
-          <th>Rating</th>
-          <th>Distance</th>
-          <th>In Stock?</th>
-          <th>Open Now?</th>
-          <% if @item_results.length > 1 %>
-              <th>Remove Item</th>
-          <% end %>
-        </tr>
-        </thead>
-        <tbody>
-        <% @item_results.each do |item| %>
-            <% sales = sale(item["result"]["prices"]) %>
-            <tr <%= sales.empty? ? "" : "class='success'"%>>
-              <td style="cursor:pointer;" onclick="window.location = '/store/<%= item["result"]["store_id"] %>/' + (-new Date().getTimezoneOffset());"><strong><%= item["result"]["store_name"] %></strong></td>
-              <td>$<%= item["result"]["prices"]["1"] %></td>
-              <td style="min-width: 100px;"><%= render_partial(:rating, {:locals => {:rating => item["result"]["rating"]}}) %></td>
-              <td><%= "%.2f" % item["result"]["distance"] %> miles</td>
-              <% if item["result"]["in_stock"] %>
-                  <td><span class="badge badge-success">Yes</span></td>
-              <% else %>
-                  <td><span class="badge badge-important">No</span></td>
-              <% end %>
-              <% if item["result"]["open_now"] %>
-                  <td><span class="badge badge-success">Yes</span></td>
-              <% else %>
-                  <td><span class="badge badge-important">No</span></td>
-              <% end %>
-              <% if @item_results.length > 1 %>
-                  <td><button class="btn btn-mini btn-danger" btnid="<%= item["result"]["id"] %>">Remove</button></td>
-              <% end %>
-            </tr>
-            <% sales.each do |i| %>
-                <tr class="success">
-                  <td colspan="7"><span class="badge badge-success">Sale! <%= i %></span></td>
-                </tr>
-            <% end %>
-        <% end %>
-        </tbody>
-      </table>
+      <%= render_partial(:item_results_table) %>
       <%= render_partial(:similar_items) %>
 
       <div class="container-fluid">
-        <%= render_partial(:reviews, {:locals => {:type => "item", :id => @item_results[0]["result"]["id"]}}) %>
+        <%= render_partial(:reviews, {:locals => {:type => "item", :id => @item_results[0]["id"]}}) %>
       </div>
     </div>
   </div>

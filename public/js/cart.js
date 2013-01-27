@@ -53,3 +53,10 @@ function update_preferences_ranking_list_order(changed_elem) {
     update_preferences_ranking_dropdowns();
   });
 }
+
+$("#item_results button").click(function(e) {
+  $(this).button('loading');
+  $.post("/set_qty/" + $(this).attr("btnid") + "/" + $(this).parent().prev().children("input").val(), function(){
+    window.location.reload(true);
+  });
+});

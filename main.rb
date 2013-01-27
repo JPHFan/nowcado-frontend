@@ -3,7 +3,7 @@ require 'sinatra/static_assets'
 require 'json'
 require 'rest_client'
 require 'fast-aes'
-require 'base64'
+require 'profiler'
 require 'sanitize'
 
 configure do

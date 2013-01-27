@@ -10,7 +10,7 @@ body {
   body { padding-top: 60px; }
 }
 
-#location_search_map img {
+#location_search_map img, #directions_map img {
   max-width: none;
 }
 
@@ -55,3 +55,4 @@ ul.thumbnails > li > div.thumbnail {
   height: 1.5em;
   line-height: 1.2em;
 }
+
