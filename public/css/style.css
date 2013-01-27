@@ -35,6 +35,14 @@ body {
   margin-top: 20px;
 }
 
+#directions_div {
+  height: 500px;
+}
+
+#directions_text {
+  overflow-y: scroll;
+}
+
 input[type=checkbox] {
   margin: 0;
 }
