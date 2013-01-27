@@ -289,7 +289,7 @@ end
 # Partials
 get "/user_bar/:user_data/?" do
   session["user"] = params[:user_data].chomp('"').reverse.chomp('"').reverse
-  session["encrypted_auth_token"] = Base64.decode64(params[:encrypted_auth_token])
+  session["encrypted_auth_token"] = params[:encrypted_auth_token]
   if mobile_request?
     return
   end
