@@ -147,7 +147,7 @@ get "/item/*" do
     new_url = request.url
   end
 
-  result = rest_call("/items",{:item_ids => item_ids})
+  result = rest_call("/items",{:item_ids => item_ids}.merge(item_params))
 
   if result["success"]
     result["result"].each {|item|
