@@ -244,7 +244,8 @@ def get_cart
   end
   @cart = rest_call("/stores/pick_stores",{"latitude"=>session["latitude"],"longitude"=>session["longitude"]})
   if @cart["result"]
-    @item_results = @cart["result"][0]
+    @cart = @cart["result"]
+    @item_results = @cart[0]
   else
     @cart_error = @cart["message"]
   end
