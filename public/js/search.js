@@ -22,7 +22,7 @@ $("#filter_reset").click(function(e) {
 
 $("div.sidebar-nav.well input:checkbox").click(function(e) {
   var set_filter = false;
-  if($(this).attr("checked") == "checked") {
+  if($(this).prop("checked")) {
     set_filter = true;
   }
   switch($(this).attr("id")) {
