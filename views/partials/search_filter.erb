@@ -5,7 +5,8 @@
             <li class="nav-header"><%= facet[0] %></li>
             <% facet[1]["terms"].each do |term| %>
                 <li>
-                  <input type="checkbox" id="<%= term["term"].capitalize %>" facet="<%= facet[0].capitalize %>" <%= (params[facet[0].downcase + "_" + term["term"]] == "true") ? "checked" : "" %>/> <%= term["term"].capitalize %>
+                  <% elasticsearch_term = term["term"].split(/\s/)[0] %>
+                  <input type="checkbox" id="<%= elasticsearch_term %>" facet="<%= facet[0] %>" <%= (params[facet[0].downcase + "_" + elasticsearch_term] == "true") ? "checked" : "" %>/> <%= cap_words(term["term"]) %>
                 </li>
             <% end %>
         <% elsif facet[1]["_type"] == "geo_distance" %>
