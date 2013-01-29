@@ -1,3 +1,7 @@
+<% if @cart_error %>
+<div class="alert alert-error"><%= @cart_error %></div>
+<% else %>
+
 <h2>Shopping Cart</h2>
 <a data-toggle="modal" role="button" href="#cart_preferences" class="btn btn-primary">Set cart preferences</a>
 <div id="cart_preferences" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="cart_preferencesLabel" aria-hidden="true">
@@ -110,3 +114,5 @@
   initialize();
   calc_route();
 </script>
+
+<% end %>

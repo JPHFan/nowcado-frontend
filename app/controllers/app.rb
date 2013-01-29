@@ -242,8 +242,12 @@ def get_cart
     redirect '/?fail=true'
     return
   end
-  @cart = rest_call("/stores/pick_stores",{"latitude"=>session["latitude"],"longitude"=>session["longitude"]})["result"]
-  @item_results = @cart[0]
+  @cart = rest_call("/stores/pick_stores",{"latitude"=>session["latitude"],"longitude"=>session["longitude"]})
+  if @cart["result"]
+    @item_results = @cart[0]
+  else
+    @cart_error = @cart["message"]
+  end
 
   erb (settings.mobile+"cart").to_sym
 end
