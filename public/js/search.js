@@ -33,7 +33,7 @@ $("div.sidebar-nav.well input:checkbox").click(function(e) {
       append_query_string("in_stock",set_filter);
       break;
     default:
-      append_query_string("department_"+$(this).attr("id"),set_filter);
+      append_query_string("department_"+encodeURIComponent($(this).attr("id")),set_filter);
   }
   load_query_page();
 });

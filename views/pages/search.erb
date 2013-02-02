@@ -26,12 +26,14 @@
       <div class="span12">
         <ul class="thumbnails">
         <% @search_results["results"].to_enum.with_index(0).each do |result, i| %>
-          <% matched_items = @search_results["matched_items"].assoc(result["id"].to_i).join("/") %>
+          <% if !@search_results["children_results"][result["name"]].empty? %>
+          <% matched_items = @search_results["matched_items"][result["name"]].join("/") %>
           <li>
             <%= render_partial(:show_item, {:locals => {:matched_items => matched_items, :name => result["name"], :img_url => result["img_url"],
-                                            :rating => result["rating"], :min_price => @search_results["price_ranges"][result["name"]]["min"],
+                                            :rating => @search_results["children_results"][result["name"]][0]["rating"], :min_price => @search_results["price_ranges"][result["name"]]["min"],
                                             :max_price => @search_results["price_ranges"][result["name"]]["max"]}}) %>
           </li>
+          <% end %>
         <% end %>
         </ul>
       </div>

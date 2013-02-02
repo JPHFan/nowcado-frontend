@@ -92,7 +92,7 @@ get "/search/?" do
     params["departments"] = departments
   end
 
-  @search_results = rest_call("/search", params)
+  @search_results = rest_call("/search", params.reject {|k,v| k.match(/department_/i)})
   if @search_results["success"]
     @search_results = @search_results["result"]
     erb (settings.mobile+"search").to_sym
@@ -173,11 +173,11 @@ get "/item/*" do
 
   # Apply sort
   if params["sort"] == "Price"
-    @item_results = @item_results.sort {|x,y| x["prices"]["1"] <=> y["prices"]["1"]}
+    @item_results = @item_results.sort {|x,y| x["prices"]["1"].to_f <=> y["prices"]["1"].to_f}
   elsif params["sort"] == "Rating"
-    @item_results = @item_results.sort {|x,y| y["rating"] <=> x["rating"]}
+    @item_results = @item_results.sort {|x,y| y["rating"].to_f <=> x["rating"].to_f}
   elsif params["sort"] == "Distance"
-    @item_results = @item_results.sort {|x,y| x["distance"] <=> y["distance"]}
+    @item_results = @item_results.sort {|x,y| x["distance"].to_f <=> y["distance"].to_f}
   end
 
   if !@item_results.empty? && !@item_results[0].empty?

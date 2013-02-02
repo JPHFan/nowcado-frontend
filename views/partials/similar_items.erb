@@ -1,15 +1,15 @@
 <% if @similar_items && @similar_items["result"] && !@similar_items["result"].empty? %>
-<div class="row">
-<h2 style="margin-left: 30px;">People who buy this item also buy...</h2>
-</div>
-<div class="row">
-<ul class="thumbnails">
-<% @similar_items["result"].each_with_index do |item,i| %>
-    <li>
-    <%= render_partial(:show_item, {:locals => {:matched_items => item["ids"].join("/"), :name => item["item"]["name"], :img_url => item["item"]["img_url"],
-                                    :rating => item["rating"], :min_price => item["min_price"], :max_price => item["max_price"]}}) %>
-    </li>
-<% end %>
-   </ul>
-<div>
+    <div class="row">
+      <h2 style="margin-left: 30px;">People who buy this item also buy...</h2>
+    </div>
+    <div class="row">
+      <ul class="thumbnails">
+        <% @similar_items["result"].each_with_index do |item,i| %>
+            <li>
+              <%= render_partial(:show_item, {:locals => {:matched_items => item["ids"].join("/"), :name => item["item"]["name"], :img_url => item["item"]["img_url"],
+                                                          :rating => item["rating"], :min_price => item["min_price"], :max_price => item["max_price"]}}) %>
+            </li>
+        <% end %>
+      </ul>
+    </div>
 <% end %>

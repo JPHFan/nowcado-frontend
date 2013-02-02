@@ -10,7 +10,7 @@ body {
   body { padding-top: 60px; }
 }
 
-#location_search_map img, #directions_map img {
+#location_search_map img, #directions_map img, #store_location_map img {
   max-width: none;
 }
 

@@ -41,7 +41,7 @@
             <td><span class="badge badge-important">No</span></td>
         <% end %>
         <% if item["price"] %>
-        <td><%= item["price"] %></td>
+        <td>$<%= item["price"] %></td>
         <td><input class="input-mini" value="<%= item["quantity_requested"] %>"></td>
         <% else %>
         <td>$<%= item["prices"]["1"] %></td>

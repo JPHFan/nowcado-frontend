@@ -5,7 +5,7 @@
             <li class="nav-header"><%= facet[0] %></li>
             <% facet[1]["terms"].each do |term| %>
                 <li>
-                  <% elasticsearch_term = term["term"].split(/\s/)[0] %>
+                  <% elasticsearch_term = term["term"] %>
                   <input type="checkbox" id="<%= elasticsearch_term %>" facet="<%= facet[0] %>" <%= (params[facet[0].downcase + "_" + elasticsearch_term] == "true") ? "checked" : "" %>/> <%= cap_words(term["term"]) %>
                 </li>
             <% end %>
@@ -23,12 +23,14 @@
             <% end %>
         <% else %>
             <li class="nav-header"><%= "Min Rating" %></li>
-            <% facet[1]["ranges"].unshift({"from" => 0}).each do |range| %>
-                <li>
-                  <% rating = (range["from"].to_s == "" ? 1 : range["from"].to_i) %>
-                  <input type="radio" name="rating" id="<%= rating %>" value="min_rating" <%= (params[:min_rating].to_i == rating) ? "checked" : "" %>>
-                  <%= render_partial(:rating, {:locals => {:rating => rating}}) %>
-                </li>
+            <% if facet[1]["ranges"] %>
+                <% facet[1]["ranges"].unshift({"from" => 0}).each do |range| %>
+                    <li>
+                      <% rating = (range["from"].to_s == "" ? 1 : range["from"].to_i) %>
+                      <input type="radio" name="rating" id="<%= rating %>" value="min_rating" <%= (params[:min_rating].to_i == rating) ? "checked" : "" %>>
+                      <%= render_partial(:rating, {:locals => {:rating => rating}}) %>
+                    </li>
+                <% end %>
             <% end %>
 
         <% end %>
