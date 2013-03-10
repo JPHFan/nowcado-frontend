@@ -27,7 +27,7 @@ function sign_in(json) {
   if(json.success) {
     $(".navbar .navbar-form").tooltip("destroy");
     // Use the encrypted auth token for further requests
-    $("#user_bar").load("/user_bar/" + json.result.username + "?encrypted_auth_token=" + json.result.encrypted_auth_token);
+    $("#user_bar").load("/user_bar/" + json.result.username + "?encrypted_auth_token=" + json.result.encrypted_auth_token + "&store_owner=" + json.result.store_owner);
   } else {
     $(".navbar .navbar-form")
       .attr("data-original-title", json.message)
@@ -43,6 +43,26 @@ function latlon_defined() {
   } else {
     return true;
   }
+}
+
+function map_location(latitude, longitude, map_id) {
+  return map_location(latitude, longitude, map_id, 17);
+}
+
+function map_location(latitude, longitude, map_id, zoom) {
+  var center = new google.maps.LatLng(latitude, longitude);
+  var map_options = {
+    center: center,
+    zoom: zoom,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  }
+  var map = new google.maps.Map(document.getElementById(map_id), map_options);
+  var marker = new google.maps.Marker({
+    position: center,
+    map: map
+  });
+  $("#" + map_id).addClass("alert");
+  return map;
 }
 
 function search_action(e) {

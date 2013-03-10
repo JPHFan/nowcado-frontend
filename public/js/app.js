@@ -1,4 +1,4 @@
-$(".brand").tooltip("hide");
+$(".navbar a").tooltip("hide");
 
 $(".navbar .navbar-form").submit(function(e) {
   e.preventDefault();

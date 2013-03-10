@@ -1,0 +1,119 @@
+<!--[if lte IE8]><script language="javascript" type="text/javascript" src="excanvas.min.js"></script><![endif]-->
+<script src="/js/flotcharts/jquery.flot.js"></script>
+<script src="/js/flotcharts/jquery.flot.pie.js"></script>
+<script src="/js/markerclusterer/markerclusterer_packed.js"></script>
+
+<div class="pull-left span3">
+  <ul id="report_type" class="nav nav-tabs">
+    <li class="active">
+      <a data-toggle="tab" href="#global_reports">Global</a>
+    </li>
+    <li>
+      <a data-toggle="tab" href="#store_reports" id="store_reports_link">Store</a>
+    </li>
+  </ul>
+  <div id="reports_content" class="tab-content">
+    <div id="global_reports" class="tab-pane fade in active">
+      <ul class="nav nav-list">
+        <li class="nav-header">Reports</li>
+        <li><a href="#" report="global_dept_rev">Department Revenue</a></li>
+        <li>
+          <a href="#" report="global_purchase_times">Purchase Times</a>
+          <ul class="nav nav-list">
+            <li><a href="#" report="global_inv_mgmt">Inventory Management</a></li>
+            <li><a href="#" report="global_rev_stream">Revenue Stream</a></li>
+          </ul>
+        </li>
+        <li><a href="#" report="global_sales_trends">Sales Trends</a></li>
+        <li>
+          <a href="#" report="global_similar_items">Similar Items</a>
+          <ul class="nav nav-list">
+            <li><a href="#" report="global_item_placement">Item Placement</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div id="store_reports" class="tab-pane fade">
+      <div id="store_select" class="modal hide fade" style="width: 700px;margin-left: -350px;">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3>Set which stores to view reports for</h3>
+        </div>
+        <div class="modal-body">
+          <div class="pull-left">
+            <h4>Map</h4>
+            <div id="store_location_search_map" style="height: 300px;width: 300px;"></div>
+            <div id="stores_selection_status" class="alert" style="display: none;width: 300px;"></div>
+          </div>
+          <div class="pull-right">
+            <h4>Addresses</h4>
+            <div class="btn-group btn-group-vertical" data-toggle="buttons-checkbox" id="store_addresses_list" style="height: 300px;">
+              <% @stores.each do |store| %>
+              <button type="button" class="btn btn-mini" style="width: 300px;" store_id="<%= store["id"] %>"><%= store["address"].gsub("/n",", ") %></button>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          <button class="btn btn-primary" id="store_preferences_submit">Set Stores</button>
+        </div>
+      </div>
+      <ul class="nav nav-list">
+        <li class="nav-header">Reports</li>
+        <li><a href="#" report="store_dept_rev">Department Revenue</a></li>
+        <li>
+          <a href="#" report="store_percent_wins">Percent Wins</a>
+          <ul class="nav nav-list">
+            <li><a href="#" report="store_loyalty">Loyalty View</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" report="store_purchase_times">Purchase Times</a>
+          <ul class="nav nav-list">
+            <li><a href="#" report="store_inv_mgmt">Inventory Management</a></li>
+            <li><a href="#" report="store_res_mgmt">Resource Management</a></li>
+            <li><a href="#" report="store_rev_stream">Revenue Stream</a></li>
+          </ul>
+        </li>
+        <li><a href="#" report="store_rt_inv">Realtime Inventory</a></li>
+        <li><a href="#" report="store_sales_trends">Sales Trends</a></li>
+        <li>
+          <a href="#" report="store_similar_items">Similar Items</a>
+          <ul class="nav nav-list">
+            <li><a href="#" report="store_item_placement">Item Placement</a></li>
+          </ul>
+        </li>
+        <li class="divider"></li>
+        <li><a href="#" onclick="$('#store_select').modal('show');">Reset store selections</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="span9" id="report"></div>
+
+<script src="/js/reports.js"></script>
+<script type="text/javascript">
+$("#store_reports_link").click(function(e) {
+  if(stores.length == 0) {
+    // list the relevant potential stores and update the map and list and store_lat and store_lng
+    var marker;
+    <% @stores.each do |store| %>
+    marker = new google.maps.Marker({
+      position: new google.maps.LatLng(<%= store["latitude"] %>,<%= store["longitude"] %>)
+    });
+    store_markers.push(marker);
+    store_markers_ids.push(<%= store["id"] %>);
+    // add an event listener for when the marker is clicked
+    google.maps.event.addListener(marker, 'click', function() {
+      $("#store_addresses_list button[store_id=<%= store["id"] %>]").button("toggle");
+    });
+    <% end %>
+    var markerCluster = new MarkerClusterer(stores_map, store_markers);
+    $('#store_select').modal('show').on('shown', function () {
+      google.maps.event.trigger(stores_map,"resize");
+      stores_map.setCenter(store_markers[0].position);
+    });
+  }
+});
+</script>

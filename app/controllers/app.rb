@@ -12,6 +12,7 @@ get "/sign_out/?" do
 end
 
 get "/user/?" do
+  error 401 unless session["user"]
   @memberships = rest_call("/memberships/all")
   @user_memberships = rest_call("/memberships")
   erb (settings.mobile+"user").to_sym
@@ -310,10 +311,20 @@ def set_location(params)
   session["longitude"] = params[:longitude].to_f
 end
 
+# Store report calls
+get "/reports/?" do
+  # Do a second authentication to confirm the user is a store owner to see the reports
+  auth_test = rest_call("/users/sign_in")
+  error 401 unless auth_test["success"] && auth_test["result"]["store_owner"]
+  @stores = rest_call("/stores")["result"]
+  erb (settings.mobile+"reports").to_sym
+end
+
 # Partials
 get "/user_bar/:user_data/?" do
   session["user"] = params[:user_data].chomp('"').reverse.chomp('"').reverse
   session["encrypted_auth_token"] = params[:encrypted_auth_token]
+  session["store_owner"] = (params[:store_owner] == "true")
   if mobile_request?
     return
   end

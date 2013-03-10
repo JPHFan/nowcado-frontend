@@ -6,34 +6,19 @@ if(getParameterByName("fail") == "true") {
 function geo_process(position) {
   $.post("/set_location/", { latitude: position.coords.latitude, longitude: position.coords.longitude }, function() {
     alert_success("#location_status",success_string.location_set);
-    map_location(position.coords.latitude, position.coords.longitude);
+    map_location(position.coords.latitude, position.coords.longitude, "location_search_map");
+    $("#latitude").val(latitude);
+    $("#longitude").val(longitude);
+    $("#location_found_div").show();
+    $(".navbar-search input").effect("highlight", {color: '#96F52F'}, 3000);
+    $("#location_search_error").hide();
+    $("#use_current_loc").button('reset');
   });
 }
 
 function geo_declined(error) {
   $("#use_current_loc").button('reset');
   alert_error("#location_status",error_string.auto_location_denied);
-}
-
-function map_location(latitude, longitude) {
-  var center = new google.maps.LatLng(latitude, longitude);
-  var map_options = {
-    center: center,
-    zoom: 17,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
-  }
-  var map = new google.maps.Map(document.getElementById("location_search_map"), map_options);
-  var marker = new google.maps.Marker({
-    position: center,
-    map: map
-  });
-  $("#latitude").val(latitude);
-  $("#longitude").val(longitude);
-  $("#location_found_div").show();
-  $("#location_search_map").addClass("alert");
-  $(".navbar-search input").effect("highlight", {color: '#96F52F'}, 3000);
-  $("#location_search_error").hide();
-  $("#use_current_loc").button('reset');
 }
 
 $("#use_current_loc").click(function(e) {
