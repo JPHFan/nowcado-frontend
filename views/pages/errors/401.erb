@@ -1,0 +1,27 @@
+<div class="hero-unit">
+  <h1>401 Unauthorized</h1>
+  <p>Looks like you don't currently have permission to access the page you were trying to visit. Make sure you are signed in with the correct account first.</p>
+  <p>You will be automatically redirected in
+    <span id="redirect_counter"></span> seconds.
+  </p>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    var redirect_timer_seconds = 10;
+    window.setInterval(function() {
+      $("#redirect_counter").html(redirect_timer_seconds--);
+      if(redirect_timer_seconds == 0) {
+        // reset the variable for browsers that maintain the bfcache
+        redirect_timer_seconds = 10;
+        // check if the previous page was from a link on our page - if not, simply redirect home
+        if(window.location.host == document.referrer.split('/')[2]) {
+          window.history.back();
+        }
+        else {
+          window.location = "/";
+        }
+      }
+    }, 1000);
+  });
+</script>

@@ -1,3 +1,8 @@
+# Error codes
+error 401 do
+  erb (settings.mobile+"errors/401").to_sym
+end
+
 get "/?" do
   erb (settings.mobile+"index").to_sym
 end
@@ -12,7 +17,7 @@ get "/sign_out/?" do
 end
 
 get "/user/?" do
-  error 401 unless session["user"]
+  401 unless session["user"]
   @memberships = rest_call("/memberships/all")
   @user_memberships = rest_call("/memberships")
   erb (settings.mobile+"user").to_sym
