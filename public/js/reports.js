@@ -4,6 +4,7 @@ var store_markers = new Array();
 var stores_map = map_location(0,0, "store_location_search_map", 4);
 var store_markers_ids = new Array();
 var rt_update;
+var cur_report = null;
 
 $("#report_type a").click(function(e) {
   e.preventDefault();
@@ -15,6 +16,10 @@ $("#reports_content ul.nav a").click(function(e) {
   // load the report in the pane by parsing the function call based on the report attribute
   // first clear the rt_update to prevent constant loading
   clearInterval(rt_update);
+  // set the cur_report, then make the function call
+  if(!($(this).attr("report") === undefined)) {
+    cur_report = $(this);
+  }
   eval($(this).attr("report") + "()");
 });
 
@@ -54,8 +59,12 @@ $("#store_select").on('hide', function(e) {
     alert_error("#stores_selection_status", "Please select and save the stores you would like to view")
     return e.preventDefault();
   }
-  // fake a click to the first report here
-  $("#store_reports ul.nav a:first").click();
+  // fake a click to the current report, or first report if we have not yet set the current report
+  if(cur_report == null) {
+    $("#store_reports ul.nav a:first").click();
+  } else {
+    cur_report.click();
+  }
 }).on('show', function(e) {
   // reset which items are selected in case of changes that were not saved
   for(var i=0; i < store_markers_ids.length; i++) {
@@ -747,12 +756,9 @@ function store_rt_inv() {
     var selection = $("#store_item_search").val();
     var selected_store = $("#rt_item_store_select option:selected").html();
     // loop through all stores for the selected item
-    for(var i=0; i<items_hash[selection].length; i++) {
+    for(var store_id in items_hash[selection]) {
       // get  the store_id and item_id
-      var store_id, item_id;
-      for(store_id in items_hash[selection][i]) {
-        item_id = items_hash[selection][i][store_id];
-      }
+      var item_id = items_hash[selection][store_id]
       // inject the series' by building up the html
       h = '<tr><td>';
       // get the store name from the store_id
@@ -788,15 +794,13 @@ function store_rt_inv() {
   var update_interval = 500;
   rt_update = setInterval(function() {
     // get the latest data and pass it in to the graph
-    // loop through each series
-    for(var k in data) {
-      // delete the first point if we have too many points
-      if(data[k].length >= max_points)
-        data[k] = data[k].slice(1);
-    }
-
-    // get all series data and push it to the data hash
     $.getJSON(domain + "/items?callback=?", { item_ids: Object.keys(series_names), qty_only: true }, function(json) {
+      // loop through each series
+      for(var k in data) {
+        // delete the first point if we have too many points
+        if(data[k].length >= max_points)
+          data[k] = data[k].slice(1);
+      }
       var current_time = new Date().getTime() - new Date().getTimezoneOffset()*60000;
       for(var i=0; i<json.result.length; i++) {
         // push the [current_time, value] on data array
