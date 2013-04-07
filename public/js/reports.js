@@ -60,7 +60,8 @@ $("#store_select").on('hide', function(e) {
     return e.preventDefault();
   }
   // fake a click to the current report, or first report if we have not yet set the current report
-  if(cur_report == null) {
+  //   or if the report is not a store report
+  if(cur_report == null || cur_report.parents('#store_reports').length < 1) {
     $("#store_reports ul.nav a:first").click();
   } else {
     cur_report.click();
@@ -833,7 +834,73 @@ function store_dept_rev() {
 
 }
 
+function store_similar_items() {
+  // establish the url format for the store-specific form
+  similar_items({ store_ids: stores });
+}
+
+function global_similar_items() {
+  // establish the url format for the global form
+  similar_items({});
+}
+
 // report helper functions
+function similar_items(store_data) {
+  var items_hash = {};
+  $("#report").html('<div class="row-fluid input-append"><input type="text" id="item_search" placeholder="Search for first item" class="span8"><button type="button" class="btn btn-primary" id="set_first_item">Set Item</button></div><div class="row-fluid"><table class="table table-bordered table-hover table-condensed" style="max-height: 300px;" id="similar_items_table"><thead><tr><th>Other Item</th><th>Location</th><th>Confidence</th></tr></thead><tbody></tbody></table></div><div class="row-fluid"><span id="recommendation_text"></span></div>');
+  $("#item_search").typeahead({
+    source: function(query, process) {
+      $.getJSON(domain + "/items?callback=?", $.extend({},store_data,{name: query}), function(json) {
+        // we get results in the form {item_name => {store_id => item_id}}
+        items_hash = json.result;
+        return process(Object.keys(items_hash));
+      });
+    }
+  });
+  $("#set_first_item").click(function(e) {
+    var first_item = $("#item_search").val();
+    var item_ids = [];
+    for(var k in items_hash[first_item]) {
+      item_ids.push(items_hash[first_item][k]);
+    }
+    if(item_ids.length == 0) { return; }
+    // set up the table with the appropriate data
+//TODO    $.getJSON(domain + "/items/similar?callback=?", $.extend({},store_data,{ item_ids: item_ids}), function(json) {
+      // set up table rows from json.result
+      var data = [
+          {item: "Apple", location: "Near", correlation: 0.92},
+          {item: "Milk", location: "Far", correlation: 0.89},
+          {item: "Tomato", location: "Near", correlation: 0.85},
+          {item: "Rice", location: "Far", correlation: 0.82},
+          {item: "Flour", location: "Far", correlation: 0.80}
+      ];
+      var h = '';
+      for(var i=0; i<data.length; i++) {
+        h += '<tr><td>' + data[i].item + '</td><td>' + data[i].location + '</td><td>' + data[i].correlation*100 + '%</td></tr>';
+      }
+      $("#similar_items_table tbody").html(h);
+      $("#similar_items_table").tablesorter();
+      // add listener for table click event to display the explanation
+      $("#similar_items_table tr:gt(0)").click(function(e) {
+        var text = 'Based upon the data from ';
+        if(store_data.hasOwnProperty("store_ids")) {
+          text += 'the stores you have selected, ';
+        } else {
+          text += 'all stores using Nowcado, ';
+        }
+        text += 'we are <b style="color: green">' + $(this).children("td:last").html() + '</b> confident that you should place ' +
+            first_item + ' and ' + $(this).children("td:first").html();
+        if($(this).children("td:nth-child(2)").html() == "Near") {
+          text += ' <b style="color: green;">close together.</b>'
+        } else {
+          text += ' <b style="color: red;">far apart.</b>'
+        }
+        $("#recommendation_text").html(text);
+      });
+//TODO    });
+  });
+}
+
 // data is an array of identifiers and string values
 // id will take the form of the identifier + the integer offset in the list
 function fill_list(div_id, label, data, clear_id) {
