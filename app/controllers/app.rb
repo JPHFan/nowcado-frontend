@@ -325,6 +325,15 @@ get "/reports/?" do
   erb (settings.mobile+"reports").to_sym
 end
 
+get "/reports/loyalty/?" do
+  json = rest_call("/store_reviews/rating_history", {:store_ids => params[:store_ids]}, "get")
+  if json["success"]
+    return JSON.generate(json)
+  else
+    return JSON.generate(json)
+  end
+end
+
 # Partials
 get "/user_bar/:user_data/?" do
   session["user"] = params[:user_data].chomp('"').reverse.chomp('"').reverse
