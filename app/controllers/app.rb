@@ -248,7 +248,9 @@ def get_cart
     redirect '/?fail=true'
     return
   end
-  @cart = rest_call("/stores/pick_stores",{"latitude"=>session["latitude"],"longitude"=>session["longitude"]})
+  p "Session ID: #{session[:session_id]}"
+  @cart = rest_call("/stores/pick_stores",{"latitude"=>session["latitude"],"longitude"=>session["longitude"],
+                                           "session_id"=>session[:session_id]})
   if @cart["result"]
     @cart = @cart["result"]
     @item_results = @cart[0]
@@ -327,6 +329,15 @@ end
 
 get "/reports/loyalty/?" do
   json = rest_call("/store_reviews/rating_history", {:store_ids => params[:store_ids]}, "get")
+  if json["success"]
+    return JSON.generate(json)
+  else
+    return JSON.generate(json)
+  end
+end
+
+get "/reports/wins/?" do
+  json = rest_call("/stores/wins_report", {:store_ids => params[:store_ids]}, "get")
   if json["success"]
     return JSON.generate(json)
   else

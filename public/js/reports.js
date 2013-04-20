@@ -81,12 +81,6 @@ $("#store_select").on('hide', function(e) {
 function store_percent_wins() {
   // request the data
   var data = {
-    percent_location: 0.20,
-    percent_location_percent_loyal: 0.75,
-    percent_price: 0.38,
-    percent_price_percent_loyal: 0.67,
-    percent_quality: 0.42,
-    percent_quality_percent_loyal: 0.82,
     top_wins_location: {
       1: {
         name: "bread",
@@ -487,32 +481,66 @@ function store_percent_wins() {
   // display the chart - first inject the relevant divs
   $("#report").html('<div class="row-fluid" style="margin-bottom: 80px;margin-top: 20px;"><div id="pie_chart" class="span6" style="height: 200px;"></div><div id="correlation_chart" class="span6" style="height: 200px;"></div></div><div class="row-fluid"><div id="top_items_list" class="span4"></div><div id="top_similar_items_list" class="span4"></div><div id="top_correlation_list" class="span4"></div></div>');
 
-  // create the pie chart
-  $.plot('#pie_chart', [{label: "Location", data: data.percent_location}, {label: "Price", data: data.percent_price}, {label: "Quality",data: data.percent_quality}], {
-    series: {
-      pie: {
-        show: true,
-        radius: 1,
-        label: {
-          show: true,
-          radius: 2/3,
-          formatter: function(label, series) {
-            return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
-          },
-          background: {
-            opacity: 0.8
+  $.getJSON("/reports/wins", { store_ids: stores }, function(json) {
+    console.log("In /reports/wins wins success callback!");
+    var results = json.result;
+    if (results.win_count != 0)
+    {
+      data.percent_location = results.dist_win_cnt / results.win_count;
+      data.percent_location_percent_loyal = results.dist_win_loyal_cnt / results.dist_win_cnt;
+      data.percent_price = results.price_win_cnt / results.win_count;
+      data.percent_price_percent_loyal = results.price_win_loyal_cnt / results.price_win_cnt;
+      data.percent_quality = results.qual_win_cnt / results.win_count;
+      data.percent_quality_percent_loyal = results.qual_win_loyal_cnt / results.qual_win_cnt;
+      // create the pie chart
+      $.plot('#pie_chart', [{label: "Location", data: data.percent_location}, {label: "Price", data: data.percent_price}, {label: "Quality",data: data.percent_quality}], {
+        series: {
+          pie: {
+            show: true,
+            radius: 1,
+            label: {
+              show: true,
+              radius: 2/3,
+              formatter: function(label, series) {
+                return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
+              },
+              background: {
+                opacity: 0.8
+              }
+            }
+          }
+        },
+        legend: {
+          show: false
+        },
+        grid: {
+          hoverable: true,
+          clickable: true
+        }
+      });
+
+      graph_tooltip("#pie_chart", function(item) {
+        if(item) {
+          if(item.series.label == "Quality") {
+            return (data.percent_quality_percent_loyal*100).toFixed(2) + "% of these are loyal customers";
+          } else if (item.series.label == "Price") {
+            return (data.percent_price_percent_loyal*100).toFixed(2) + "% of these are loyal customers";
+          } else {
+            return (data.percent_location_percent_loyal*100).toFixed(2) + "% of these are loyal customers";
           }
         }
-      }
-    },
-    legend: {
-      show: false
-    },
-    grid: {
-      hoverable: true,
-      clickable: true
+      }, true);
+      // fake a click to fill the page
+      $("#pie_chart").trigger("plotclick",[0, {series: {label: "Price"}}]);
     }
-  });
+    else
+    {
+      $("#report").html('<div class="row-fluid" style="margin-bottom: 80px;margin-top: 20px;"><span>These stores have no wins.</span></div>');
+    }
+  })
+  //.done(function() { console.log( "wins success" ); })
+  //.fail(function() { console.log( "wins error" ); });
+
   $("#pie_chart").on("plotclick",function(event, pos, obj){
     event.preventDefault();
     if(!obj || !obj.series) {
@@ -597,144 +625,166 @@ function store_percent_wins() {
     });
     $('#top_items_list button[list_item="1"]').click();
   });
-  graph_tooltip("#pie_chart", function(item) {
-    if(item) {
-      if(item.series.label == "Quality") {
-        return (data.percent_quality_percent_loyal*100).toFixed(2) + "% of these are loyal customers";
-      } else if (item.series.label == "Price") {
-        return (data.percent_price_percent_loyal*100).toFixed(2) + "% of these are loyal customers";
-      } else {
-        return (data.percent_location_percent_loyal*100).toFixed(2) + "% of these are loyal customers";
-      }
-    }
-  }, true);
-  // fake a click to fill the page
-  $("#pie_chart").trigger("plotclick",[0, {series: {label: "Price"}}]);
 }
 
 function store_loyalty() {
-  var data = {
-    percent_loyal_wins: 0.72,
-    percent_loyal_wins_percent_price: 0.24,
-    percent_loyal_wins_percent_location: 0.31,
-    percent_loyal_wins_percent_quality: 0.45,
-  };
+  var data = {};
   var c_d = [];
-  $("#report").html('<div class="row-fluid"><div class="span6" style="margin-bottom: 10px;"><span><h3 style="color: green;display: inline;">' + (data.percent_loyal_wins*100).toFixed(2) + '%</h3> of your wins are to loyal members. Of these, wins are broken down as follows: </span></div><div class="span6" style="margin-bottom: 10px; margin-top: 10px;"><span>This is how customers perceive your store over time. 100% represents an ideal rating.</span></div></div><div class="row-fluid"><div id="pie_chart" class="span6" style="height: 200px;"></div><div id="line_chart" class="span6" style="height: 200px;"></div></div><div class="row-fluid"><div id="overview" class="span6 offset6" style="height: 100px;"></div></div>');
 
-  // plot the pie chart
-  $.plot('#pie_chart', [{label: "Location", data: data.percent_loyal_wins_percent_location}, {label: "Price", data: data.percent_loyal_wins_percent_price}, {label: "Quality",data: data.percent_loyal_wins_percent_quality}], {
-    series: {
-      pie: {
-        show: true,
-        radius: 1,
-        label: {
-          show: true,
-          radius: 2/3,
-          formatter: function(label, series) {
-            return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
+  $.getJSON("/reports/wins", { store_ids: stores }, function(json) {
+    console.log("In /reports/wins loyalty success callback!");
+    var results = json.result;
+    if (results.win_count != 0)
+    {
+      var total_loyal_wins = (results.dist_win_loyal_cnt + results.price_win_loyal_cnt + results.qual_win_loyal_cnt);
+      data.percent_loyal_wins = total_loyal_wins / results.win_count;
+      $("#report").html('<div class="row-fluid"><div class="span6" style="margin-bottom: 10px;"><span><h3 style="color: green;display: inline;">' + (data.percent_loyal_wins*100).toFixed(2) + '%</h3> of your wins are to loyal members. Of these, wins are broken down as follows: </span></div><div class="span6" style="margin-bottom: 10px; margin-top: 10px;"><span>This is how customers perceive your store over time. 100% represents an ideal rating.</span></div></div><div class="row-fluid"><div id="pie_chart" class="span6" style="height: 200px;"></div><div id="line_chart" class="span6" style="height: 200px;"></div></div><div class="row-fluid"><div id="overview" class="span6 offset6" style="height: 100px;"></div></div>');
+
+      if (total_loyal_wins != 0)
+      {
+        data.percent_loyal_wins_percent_location = results.dist_win_loyal_cnt / total_loyal_wins;
+        data.percent_loyal_wins_percent_price = results.price_win_loyal_cnt / total_loyal_wins;
+        data.percent_loyal_wins_percent_quality = results.qual_win_loyal_cnt / total_loyal_wins;
+        // plot the pie chart
+        $.plot('#pie_chart', [{label: "Location", data: data.percent_loyal_wins_percent_location}, {label: "Price", data: data.percent_loyal_wins_percent_price}, {label: "Quality",data: data.percent_loyal_wins_percent_quality}], {
+          series: {
+            pie: {
+              show: true,
+              radius: 1,
+              label: {
+                show: true,
+                radius: 2/3,
+                formatter: function(label, series) {
+                  return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
+                },
+                background: {
+                  opacity: 0.8
+                }
+              }
+            }
           },
-          background: {
-            opacity: 0.8
+          legend: {
+            show: false
           }
-        }
+        });
       }
-    },
-    legend: {
-      show: false
     }
-  });
-
-  var options = {
-    xaxis: {
-      mode: "time",
-      tickLength: 5
-    },
-    yaxis: {
-      min: 0.0,
-      max: 100.0
-    },
-    selection: {
-      mode: "x"
-    },
-    grid: {
-      markings: weekend_areas,
-      hoverable: true
-    },
-    series: {
-      lines: {
-        show: true
-      },
-      points: {
-        show: true
-      },
-      color: "#0ACF00"
+    else
+    {
+      $("#report").html('' +
+          '<div class="row-fluid">' +
+            '<div class="span6" style="margin-bottom: 10px;">' +
+            '<span>These stores have no wins.</span>' +
+            '</div>' +
+            '<div class="span6" style="margin-bottom: 10px; margin-top: 10px;">' +
+            '<span>This is how customers perceive your store over time. 100% represents an ideal rating.</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="row-fluid">' +
+            '<div id="pie_chart" class="span6" style="height: 200px;">' +
+            '</div>' +
+            '<div id="line_chart" class="span6" style="height: 200px;">' +
+            '</div>' +
+          '</div>' +
+          '<div class="row-fluid">' +
+            '<div id="overview" class="span6 offset6" style="height: 100px;">' +
+            '</div>' +
+          '</div>');
     }
-  };
+    // Can handle plotting multiple stores at once, with their data aggregated into one line chart.
+    $.getJSON("/reports/loyalty", { store_ids: stores }, function(json) {
+      console.log("In /reports/loyalty success callback!");
+      // Receive data as array of [unix_time, (average rating / max_rating)]
+      c_d = json.result;
 
-  // For now just try with the first store, maybe handle plotting multiple stores at once eventually.
-  $.getJSON("/reports/loyalty", { store_ids: stores }, function(json) {
-    // Receive data as array of [unix_time, (average rating / max_rating)]
-    c_d = json.result;
-
-    // convert percentages
-    for(var i=0; i < c_d.length; i++) {
-      c_d[i][1] *= 100;
-    }
-
-    // plot the line chart
-    var plot = $.plot('#line_chart',[c_d],options);
-
-    // add tooltip functionality to the line chart
-    graph_tooltip("#line_chart", function(item) {
-      return (item.datapoint[1].toFixed(2) + "%");
-    }, false);
-
-    // plot the overview
-    var overview = $.plot("#overview",[c_d], {
-      series: {
-        lines: {
-          show: true,
-          lineWidth: 1
-        },
-        shadowSize: 0,
-        label: "Overall customer perception over time (%)",
-        color: "#0ACF00"
-      },
-      xaxis: {
-        ticks: [],
-        mode: "time"
-      },
-      yaxis: {
-        ticks: [],
-        min: 0,
-        autoscaleMargin: 0.1
-      },
-      selection: {
-        mode: "x"
-      },
-      legend: {
-        labelBoxBorderColor: "none",
-          position: "right"
+      // convert percentages
+      for(var i=0; i < c_d.length; i++) {
+        c_d[i][1] *= 100;
       }
-    });
 
-    // connect the two graphs
-    $("#line_chart").on("plotselected", function(event, ranges) {
-      plot = $.plot("#line_chart", [c_d], $.extend(true, {}, options, {
+      var options = {
         xaxis: {
-          min: ranges.xaxis.from,
-          max: ranges.xaxis.to
+          mode: "time",
+          tickLength: 5
+        },
+        yaxis: {
+          min: 0.0,
+          max: 100.0
+        },
+        selection: {
+          mode: "x"
+        },
+        grid: {
+          markings: weekend_areas,
+          hoverable: true
+        },
+        series: {
+          lines: {
+            show: true
+          },
+          points: {
+            show: true
+          },
+          color: "#0ACF00"
         }
-      }));
-      overview.setSelection(ranges, true);
-    });
-    $("#overview").on("plotselected", function(event, ranges) {
-      plot.setSelection(ranges);
+      };
+
+      // plot the line chart
+      var plot = $.plot('#line_chart',[c_d],options);
+
+      // add tooltip functionality to the line chart
+      graph_tooltip("#line_chart", function(item) {
+        return (item.datapoint[1].toFixed(2) + "%");
+      }, false);
+
+      // plot the overview
+      var overview = $.plot("#overview",[c_d], {
+        series: {
+          lines: {
+            show: true,
+            lineWidth: 1
+          },
+          shadowSize: 0,
+          label: "Overall customer perception over time (%)",
+          color: "#0ACF00"
+        },
+        xaxis: {
+          ticks: [],
+          mode: "time"
+        },
+        yaxis: {
+          ticks: [],
+          min: 0,
+          autoscaleMargin: 0.1
+        },
+        selection: {
+          mode: "x"
+        },
+        legend: {
+          labelBoxBorderColor: "none",
+            position: "right"
+        }
+      });
+
+      // connect the two graphs
+      $("#line_chart").on("plotselected", function(event, ranges) {
+        plot = $.plot("#line_chart", [c_d], $.extend(true, {}, options, {
+          xaxis: {
+            min: ranges.xaxis.from,
+            max: ranges.xaxis.to
+          }
+        }));
+        overview.setSelection(ranges, true);
+      });
+      $("#overview").on("plotselected", function(event, ranges) {
+        plot.setSelection(ranges);
+      })
     })
+    //.done(function() { console.log( "ratings success" ); })
+    //.fail(function() { console.log( "ratings error" ); });
   })
-  //.done(function() { console.log( "success" ); })
-  //.fail(function() { console.log( "error" ); })
+  //.done(function() { console.log( "wins success" ); })
+  //.fail(function() { console.log( "wins error" ); });
 }
 
 function store_rt_inv() {
