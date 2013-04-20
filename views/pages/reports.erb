@@ -19,13 +19,6 @@
       <ul class="nav nav-list">
         <li class="nav-header">Reports</li>
         <li><a href="#" report="global_dept_rev">Department Revenue</a></li>
-        <li>
-          <a href="#" report="global_purchase_times">Purchase Times</a>
-          <ul class="nav nav-list">
-            <li><a href="#" report="global_inv_mgmt">Inventory Management</a></li>
-            <li><a href="#" report="global_rev_stream">Revenue Stream</a></li>
-          </ul>
-        </li>
         <li><a href="#" report="global_sales_trends">Sales Trends</a></li>
         <li>
           <a href="#" report="global_similar_items">Similar Items</a>
@@ -70,9 +63,7 @@
         <li>
           <a href="#" report="store_purchase_times">Purchase Times</a>
           <ul class="nav nav-list">
-            <li><a href="#" report="store_inv_mgmt">Inventory Management</a></li>
             <li><a href="#" report="store_res_mgmt">Resource Management</a></li>
-            <li><a href="#" report="store_rev_stream">Revenue Stream</a></li>
           </ul>
         </li>
         <li><a href="#" report="store_rt_inv">Realtime Inventory</a></li>
@@ -87,6 +78,7 @@
   </div>
 </div>
 <div class="span9" id="report"></div>
+<div id="loading_div" style="display: none" class="span9 offset3"><img src="/img/ajax-loader.gif" alt="Loading..."></div>
 
 <script src="/js/reports.js"></script>
 <script type="text/javascript">

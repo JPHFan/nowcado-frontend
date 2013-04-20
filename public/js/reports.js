@@ -479,10 +479,18 @@ function store_percent_wins() {
     }
   };
   // display the chart - first inject the relevant divs
-  $("#report").html('<div class="row-fluid" style="margin-bottom: 80px;margin-top: 20px;"><div id="pie_chart" class="span6" style="height: 200px;"></div><div id="correlation_chart" class="span6" style="height: 200px;"></div></div><div class="row-fluid"><div id="top_items_list" class="span4"></div><div id="top_similar_items_list" class="span4"></div><div id="top_correlation_list" class="span4"></div></div>');
+  $("#report").html(
+    '<div class="row-fluid" style="margin-bottom: 80px;margin-top: 20px;">' +
+      '<div id="pie_chart" class="span6" style="height: 200px;"></div>' +
+      '<div id="correlation_chart" class="span6" style="height: 200px;"></div>' +
+    '</div>' +
+    '<div class="row-fluid">' +
+      '<div id="top_items_list" class="span4"></div>' +
+      '<div id="top_similar_items_list" class="span4"></div>' +
+      '<div id="top_correlation_list" class="span4"></div>' +
+    '</div>');
 
-  $.getJSON("/reports/wins", { store_ids: stores }, function(json) {
-    console.log("In /reports/wins wins success callback!");
+  load_report_data("/reports/wins", { store_ids: stores }, function(json) {
     var results = json.result;
     if (results.win_count != 0)
     {
@@ -493,30 +501,93 @@ function store_percent_wins() {
       data.percent_quality = results.qual_win_cnt / results.win_count;
       data.percent_quality_percent_loyal = results.qual_win_loyal_cnt / results.qual_win_cnt;
       // create the pie chart
-      $.plot('#pie_chart', [{label: "Location", data: data.percent_location}, {label: "Price", data: data.percent_price}, {label: "Quality",data: data.percent_quality}], {
-        series: {
-          pie: {
-            show: true,
-            radius: 1,
-            label: {
-              show: true,
-              radius: 2/3,
-              formatter: function(label, series) {
-                return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
-              },
-              background: {
-                opacity: 0.8
-              }
-            }
-          }
-        },
-        legend: {
-          show: false
-        },
-        grid: {
-          hoverable: true,
-          clickable: true
+      plot_pie_chart('#pie_chart',
+        [{label: "Location", data: data.percent_location}, {label: "Price", data: data.percent_price}, {label: "Quality",data: data.percent_quality}],
+        {hoverable: true, clickable: true});
+
+      $("#pie_chart").on("plotclick",function(event, pos, obj){
+        event.preventDefault();
+        if(!obj || !obj.series) {
+          return;
         }
+        var list_data = [];
+        var str = "top_wins_quality";
+        if(obj.series.label == "Location") {
+          str = "top_wins_location";
+        } else if(obj.series.label == "Price") {
+          str = "top_wins_price";
+        }
+
+        $.each(data[str], function(i, v) {
+          list_data.push({id: i, val: v.name});
+        });
+        fill_list("#top_items_list","Top Item Wins (" + obj.series.label + ")",list_data,"#correlation_chart, #top_similar_items_list, #top_correlation_list");
+
+        $("#top_items_list button").click(function(e1) {
+          list_data = [];
+          var index = window.parseInt($(this).attr("list_item"));
+          $.each(data[str][index].similar, function(i, v) {
+            list_data.push({id: i, val: v.name});
+          });
+          fill_list("#top_similar_items_list","Correlated Items",list_data,"#correlation_chart, #top_correlation_list");
+
+          $("#top_similar_items_list button").click(function(e2) {
+            var index2 = window.parseInt($(this).attr("list_item"));
+            var report_data;
+            fill_list("#top_correlation_list","Correlation Reports", [{id: 1, val: "% Correlation"},{id: 2, val: "Estimated Revenue"}],"#correlation_chart");
+
+            $("#top_correlation_list button").click(function(e3) {
+              var list_item = window.parseInt($(this).attr("list_item"));
+              var correlation_data_src = data[str][index].similar[index2];
+              var correlation_data;
+              if(list_item == "1") {
+                // display % correlation graph
+                correlation_data = [{
+                  label: "Correlation (%)",
+                  data: [[0.4,correlation_data_src.correlation*100.0]],
+                  color: "#0ACF00",
+                  bars: {
+                    show: true,
+                    barWidth: 0.2
+                  }
+                }];
+                plot_category_bar_chart("#correlation_chart",correlation_data,"percent", 1);
+              } else {
+                // display est revenue graph
+                correlation_data = [{
+                  label: "Current Correlated Item Monthly Revenue ($)",
+                  data: [[0.1,correlation_data_src.cur_monthly_rev]],
+                  color: "#FF5C00",
+                  bars: {
+                    show: true,
+                    barWidth: 0.2
+                  }
+                }, {
+                  label: "Potential Correlated Item Monthly Revenue ($)",
+                  data: [[0.4,correlation_data_src.est_monthly_rev]],
+                  color: "#0A67A3",
+                  bars: {
+                    show: true,
+                    barWidth: 0.2
+                  }
+                }, {
+                 label: "Potential Correlated Item Monthly Revenue Increase ($)",
+                  data: [[0.7,correlation_data_src.est_monthly_savings]],
+                  color: "#0ACF00",
+                  bars: {
+                    show: true,
+                    barWidth: 0.2
+                  }
+                }];
+                plot_category_bar_chart("#correlation_chart",correlation_data,"currency", 1);
+              }
+
+            });
+            $('#top_correlation_list button[list_item="1"]').click();
+          });
+          $('#top_similar_items_list button[list_item="1"]').click();
+        });
+        $('#top_items_list button[list_item="1"]').click();
       });
 
       graph_tooltip("#pie_chart", function(item) {
@@ -537,93 +608,6 @@ function store_percent_wins() {
     {
       $("#report").html('<div class="row-fluid" style="margin-bottom: 80px;margin-top: 20px;"><span>These stores have no wins.</span></div>');
     }
-  })
-  //.done(function() { console.log( "wins success" ); })
-  //.fail(function() { console.log( "wins error" ); });
-
-  $("#pie_chart").on("plotclick",function(event, pos, obj){
-    event.preventDefault();
-    if(!obj || !obj.series) {
-      return;
-    }
-    var list_data = [];
-    var str = "top_wins_quality";
-    if(obj.series.label == "Location") {
-      str = "top_wins_location";
-    } else if(obj.series.label == "Price") {
-      str = "top_wins_price";
-    }
-
-    $.each(data[str], function(i, v) {
-      list_data.push({id: i, val: v.name});
-    });
-    fill_list("#top_items_list","Top Item Wins (" + obj.series.label + ")",list_data,"#correlation_chart, #top_similar_items_list, #top_correlation_list");
-
-    $("#top_items_list button").click(function(e1) {
-      list_data = [];
-      var index = window.parseInt($(this).attr("list_item"));
-      $.each(data[str][index].similar, function(i, v) {
-        list_data.push({id: i, val: v.name});
-      });
-      fill_list("#top_similar_items_list","Correlated Items",list_data,"#correlation_chart, #top_correlation_list");
-
-      $("#top_similar_items_list button").click(function(e2) {
-        var index2 = window.parseInt($(this).attr("list_item"));
-        var report_data;
-        fill_list("#top_correlation_list","Correlation Reports", [{id: 1, val: "% Correlation"},{id: 2, val: "Estimated Revenue"}],"#correlation_chart");
-
-        $("#top_correlation_list button").click(function(e3) {
-          var list_item = window.parseInt($(this).attr("list_item"));
-          var correlation_data_src = data[str][index].similar[index2];
-          var correlation_data;
-          if(list_item == "1") {
-            // display % correlation graph
-            correlation_data = [{
-              label: "Correlation (%)",
-              data: [[0.4,correlation_data_src.correlation*100.0]],
-              color: "#0ACF00",
-              bars: {
-                show: true,
-                barWidth: 0.2
-              }
-            }];
-            plot_category_bar_chart("#correlation_chart",correlation_data,"percent");
-          } else {
-            // display est revenue graph
-            correlation_data = [{
-              label: "Current Correlated Item Monthly Revenue ($)",
-              data: [[0.1,correlation_data_src.cur_monthly_rev]],
-              color: "#FF5C00",
-              bars: {
-                show: true,
-                barWidth: 0.2
-              }
-            }, {
-              label: "Potential Correlated Item Monthly Revenue ($)",
-              data: [[0.4,correlation_data_src.est_monthly_rev]],
-              color: "#0A67A3",
-              bars: {
-                show: true,
-                barWidth: 0.2
-              }
-            }, {
-             label: "Potential Correlated Item Monthly Revenue Increase ($)",
-              data: [[0.7,correlation_data_src.est_monthly_savings]],
-              color: "#0ACF00",
-              bars: {
-                show: true,
-                barWidth: 0.2
-              }
-            }];
-            plot_category_bar_chart("#correlation_chart",correlation_data,"currency");
-          }
-
-        });
-        $('#top_correlation_list button[list_item="1"]').click();
-      });
-      $('#top_similar_items_list button[list_item="1"]').click();
-    });
-    $('#top_items_list button[list_item="1"]').click();
   });
 }
 
@@ -631,14 +615,33 @@ function store_loyalty() {
   var data = {};
   var c_d = [];
 
-  $.getJSON("/reports/wins", { store_ids: stores }, function(json) {
-    console.log("In /reports/wins loyalty success callback!");
+  load_report_data("/reports/wins", { store_ids: stores }, function(json) {
     var results = json.result;
+    $("#report").html(
+        '<div class="row-fluid">' +
+          '<div class="span6" style="margin-bottom: 10px;">' +
+            '<span id="explanation_span"></span>' +
+          '</div>' +
+          '<div class="span6" style="margin-bottom: 10px; margin-top: 10px;">' +
+            '<span>This is how customers perceive your store over time. 100% represents an ideal rating.</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="row-fluid">' +
+          '<div id="pie_chart" class="span6" style="height: 200px;"></div>' +
+          '<div id="line_chart" class="span6" style="height: 200px;"></div>' +
+        '</div>' +
+        '<div class="row-fluid">' +
+          '<div id="overview" class="span6 offset6" style="height: 100px;"></div>' +
+        '</div>');
+
     if (results.win_count != 0)
     {
       var total_loyal_wins = (results.dist_win_loyal_cnt + results.price_win_loyal_cnt + results.qual_win_loyal_cnt);
       data.percent_loyal_wins = total_loyal_wins / results.win_count;
-      $("#report").html('<div class="row-fluid"><div class="span6" style="margin-bottom: 10px;"><span><h3 style="color: green;display: inline;">' + (data.percent_loyal_wins*100).toFixed(2) + '%</h3> of your wins are to loyal members. Of these, wins are broken down as follows: </span></div><div class="span6" style="margin-bottom: 10px; margin-top: 10px;"><span>This is how customers perceive your store over time. 100% represents an ideal rating.</span></div></div><div class="row-fluid"><div id="pie_chart" class="span6" style="height: 200px;"></div><div id="line_chart" class="span6" style="height: 200px;"></div></div><div class="row-fluid"><div id="overview" class="span6 offset6" style="height: 100px;"></div></div>');
+
+      $("#explanation_span").html(
+        '<h3 style="color: green;display: inline;">' + (data.percent_loyal_wins*100).toFixed(2) + '%</h3>' +
+        ' of your wins are to loyal members. Of these, wins are broken down as follows: ');
 
       if (total_loyal_wins != 0)
       {
@@ -646,54 +649,17 @@ function store_loyalty() {
         data.percent_loyal_wins_percent_price = results.price_win_loyal_cnt / total_loyal_wins;
         data.percent_loyal_wins_percent_quality = results.qual_win_loyal_cnt / total_loyal_wins;
         // plot the pie chart
-        $.plot('#pie_chart', [{label: "Location", data: data.percent_loyal_wins_percent_location}, {label: "Price", data: data.percent_loyal_wins_percent_price}, {label: "Quality",data: data.percent_loyal_wins_percent_quality}], {
-          series: {
-            pie: {
-              show: true,
-              radius: 1,
-              label: {
-                show: true,
-                radius: 2/3,
-                formatter: function(label, series) {
-                  return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
-                },
-                background: {
-                  opacity: 0.8
-                }
-              }
-            }
-          },
-          legend: {
-            show: false
-          }
-        });
+        plot_pie_chart('#pie_chart',
+          [{label: "Location", data: data.percent_loyal_wins_percent_location}, {label: "Price", data: data.percent_loyal_wins_percent_price}, {label: "Quality",data: data.percent_loyal_wins_percent_quality}],
+          {hoverable: false, clickable: false});
       }
     }
     else
     {
-      $("#report").html('' +
-          '<div class="row-fluid">' +
-            '<div class="span6" style="margin-bottom: 10px;">' +
-            '<span>These stores have no wins.</span>' +
-            '</div>' +
-            '<div class="span6" style="margin-bottom: 10px; margin-top: 10px;">' +
-            '<span>This is how customers perceive your store over time. 100% represents an ideal rating.</span>' +
-            '</div>' +
-          '</div>' +
-          '<div class="row-fluid">' +
-            '<div id="pie_chart" class="span6" style="height: 200px;">' +
-            '</div>' +
-            '<div id="line_chart" class="span6" style="height: 200px;">' +
-            '</div>' +
-          '</div>' +
-          '<div class="row-fluid">' +
-            '<div id="overview" class="span6 offset6" style="height: 100px;">' +
-            '</div>' +
-          '</div>');
+      $("#explanation_span").html('These stores have no wins.');
     }
     // Can handle plotting multiple stores at once, with their data aggregated into one line chart.
-    $.getJSON("/reports/loyalty", { store_ids: stores }, function(json) {
-      console.log("In /reports/loyalty success callback!");
+    load_report_data("/reports/loyalty", { store_ids: stores }, function(json) {
       // Receive data as array of [unix_time, (average rating / max_rating)]
       c_d = json.result;
 
@@ -779,22 +745,33 @@ function store_loyalty() {
       $("#overview").on("plotselected", function(event, ranges) {
         plot.setSelection(ranges);
       })
-    })
-    //.done(function() { console.log( "ratings success" ); })
-    //.fail(function() { console.log( "ratings error" ); });
-  })
-  //.done(function() { console.log( "wins success" ); })
-  //.fail(function() { console.log( "wins error" ); });
+    });
+  });
 }
 
 function store_rt_inv() {
   var items_hash = {},
       series_names = {},
       data = {};
-  $("#report").html('<div class="row-fluid input-append"><select id="rt_item_store_select" class="span3"></select><input type="text" id="store_item_search" placeholder="Search for items in your store(s)" class="span7"><button type="button" class="btn btn-primary" id="add_to_report">Add To Report</button></div><div class="row-fluid"><div id="line_chart" style="height: 300px;margin-top: 10px; margin-bottom: 20px;"></div></div><div class="row-fluid" id="line_chart_legend"></div><div class="row-fluid"><table class="table table-bordered"><thead><tr><th>Store</th><th>Item</th><th>Remove</th></tr></thead><tbody id="table_series"></tbody></table></div>');
+  $("#report").html(
+    '<div class="row-fluid input-append">' +
+      '<select id="rt_item_store_select" class="span3"></select>' +
+      '<input type="text" id="store_item_search" placeholder="Search for items in your store(s)" class="span7">' +
+      '<button type="button" class="btn btn-primary" id="add_to_report">Add To Report</button>' +
+    '</div>' +
+    '<div class="row-fluid">' +
+      '<div id="line_chart" style="height: 300px;margin-top: 10px; margin-bottom: 20px;"></div>' +
+    '</div>' +
+    '<div class="row-fluid" id="line_chart_legend"></div>' +
+    '<div class="row-fluid">' +
+      '<table class="table table-bordered">' +
+        '<thead><tr><th>Store</th><th>Item</th><th>Remove</th></tr></thead>' +
+        '<tbody id="table_series"></tbody>' +
+      '</table>' +
+    '</div>');
   $("#store_item_search").typeahead({
     source: function(query, process) {
-      $.getJSON(domain + "/items?callback=?", { store_ids: stores, name: query }, function(json) {
+      load_report_data(domain + "/items?callback=?", { store_ids: stores, name: query }, function(json) {
         // we get results in the form {item_name => {store_id => item_id}}
         items_hash = json.result;
         return process(Object.keys(items_hash));
@@ -902,13 +879,137 @@ function global_similar_items() {
   similar_items({});
 }
 
+function store_purchase_times() {
+  $("#report").html(
+    '<div class="row-fluid">' +
+      '<div class="btn-group" data-toggle="buttons-radio">' +
+        '<button type="button" class="btn active" time="hour">By Hour</button>' +
+        '<button type="button" class="btn" time="day">By Day</button>' +
+        '<button type="button" class="btn" time="week">By Week</button>' +
+        '<button type="button" class="btn" time="month">By Month</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="row-fluid" id="charts" style="display: none">' +
+      '<div class="span6">' +
+        '<h5>% Sales Per Time Period</h5>' +
+        '<div id="percent_sales_chart" style="height: 300px"></div>' +
+      '</div>' +
+      '<div class="span6">' +
+        '<h5>Average Revenue Per Time Period</h5>' +
+        '<div id="revenue_chart" style="height: 300px"></div>' +
+      '</div>' +
+    '</div>');
+
+  $("div.row-fluid div.btn-group button").click(function(e) {
+    // TODO replace data with load_report_data
+    //   The code below currently detects which time option was selected (e.g. hour of the day, day of week, week in month, or month of year)
+    //   This should be part of the parameters passed in to the backend query.
+
+    // detect which time period was selected
+    var time = $(this).attr("time"),
+        data;
+    if(time == "hour") {
+      // Note here that not all hours are included. If there is no data for an hour, it is simply unlisted here.
+      // Also note that the request to the backend must take in to account the current user's UTC offset so that the results are localized properly.
+      // This data represents the average revenue earned for each hour of the day for the stores selected
+      data = {
+        "6 AM": 400,
+        "7 AM": 800,
+        "8 AM": 2000,
+        "9 AM": 5200,
+        "10 AM": 2000,
+        "11 AM": 1600,
+        "12 PM": 5200,
+        "1 PM": 3200,
+        "2 PM": 400,
+        "3 PM": 400,
+        "4 PM": 400,
+        "5 PM": 1600,
+        "6 PM": 4000,
+        "7 PM": 6000,
+        "8 PM": 4800,
+        "9 PM": 2000
+      };
+    } else if(time == "day") {
+      data = {
+        "Sunday": 41000,
+        "Monday": 23000,
+        "Tuesday": 19000,
+        "Wednesday": 22000,
+        "Thursday": 24000,
+        "Friday": 27000,
+        "Saturday": 38000
+      };
+    } else if(time == "week") {
+      data = {
+        "1st week": 140000,
+        "2nd week": 220000,
+        "3rd week": 210000,
+        "4th week": 200000,
+        "5th week": 100000,
+        "6th week": 30000
+      };
+    } else {
+      data = {
+        "January": 700000,
+        "February": 750000,
+        "March": 800000,
+        "April": 850000,
+        "May": 900000,
+        "June": 1000000,
+        "July": 850000,
+        "August": 800000,
+        "September": 700000,
+        "October": 800000,
+        "November": 900000,
+        "December": 950000
+      };
+    }
+
+    $("#charts").show();
+
+    // calculate percentages and convert in to plot-compliant format
+    var pie_data = [],
+        bar_data = [],
+        pie_sum = 0,
+        i = 0,
+        length = 0;
+    for(var k in data) {
+      pie_sum += data[k];
+      length++;
+    }
+    for(var k in data) {
+      pie_data.push({label: k, data: data[k] / pie_sum});
+      bar_data.push({label: k, data: [[(i++)/length,data[k]]], bars: {show: true, barWidth: 1 / (length * 2)} });
+    }
+    // plot the pie and bar charts
+    plot_pie_chart('#percent_sales_chart', pie_data, {hoverable: false, clickable: false});
+    plot_category_bar_chart("#revenue_chart",bar_data,"currency", Math.floor(length / 3));
+  });
+  // fake the first click
+  $("div.row-fluid div.btn-group button:first").click();
+}
+
 // report helper functions
 function similar_items(store_data) {
   var items_hash = {};
-  $("#report").html('<div class="row-fluid input-append"><input type="text" id="item_search" placeholder="Search for first item" class="span8"><button type="button" class="btn btn-primary" id="set_first_item">Set Item</button></div><div class="row-fluid"><table class="table table-bordered table-hover table-condensed" style="max-height: 300px;" id="similar_items_table"><thead><tr><th>Other Item</th><th>Location</th><th>Confidence</th></tr></thead><tbody></tbody></table></div><div class="row-fluid"><span id="recommendation_text"></span></div>');
+  $("#report").html(
+    '<div class="row-fluid input-append">' +
+      '<input type="text" id="item_search" placeholder="Search for first item" class="span8">' +
+      '<button type="button" class="btn btn-primary" id="set_first_item">Set Item</button>' +
+    '</div>' +
+    '<div class="row-fluid">' +
+      '<table class="table table-bordered table-hover table-condensed" style="max-height: 300px;" id="similar_items_table">' +
+        '<thead><tr><th>Other Item</th><th>Location</th><th>Confidence</th></tr></thead>' +
+        '<tbody></tbody>' +
+      '</table>' +
+    '</div>' +
+    '<div class="row-fluid">' +
+      '<span id="recommendation_text"></span>' +
+    '</div>');
   $("#item_search").typeahead({
     source: function(query, process) {
-      $.getJSON(domain + "/items?callback=?", $.extend({},store_data,{name: query}), function(json) {
+      load_report_data(domain + "/items?callback=?", $.extend({},store_data,{name: query}), function(json) {
         // we get results in the form {item_name => {store_id => item_id}}
         items_hash = json.result;
         return process(Object.keys(items_hash));
@@ -923,7 +1024,7 @@ function similar_items(store_data) {
     }
     if(item_ids.length == 0) { return; }
     // set up the table with the appropriate data
-//TODO    $.getJSON(domain + "/items/similar?callback=?", $.extend({},store_data,{ item_ids: item_ids}), function(json) {
+//TODO    load_report_data(domain + "/items/similar?callback=?", $.extend({},store_data,{ item_ids: item_ids}), function(json) {
       // set up table rows from json.result
       var data = [
           {item: "Apple", location: "Near", correlation: 0.92},
@@ -959,6 +1060,15 @@ function similar_items(store_data) {
   });
 }
 
+function load_report_data(url, data, callback) {
+  $("#loading_div").show();
+  $.getJSON(url, data, function(result) {
+    $("#loading_div").hide();
+    callback(result);
+  })
+    .fail(function() { console.log( "error accessing " + url + " with params " + data ); });
+}
+
 // data is an array of identifiers and string values
 // id will take the form of the identifier + the integer offset in the list
 function fill_list(div_id, label, data, clear_id) {
@@ -971,12 +1081,42 @@ function fill_list(div_id, label, data, clear_id) {
   $(clear_id + ",#tooltip").html("");
 }
 
+function plot_pie_chart(div_id, data, options) {
+  $.plot(div_id, data, {
+    series: {
+      pie: {
+        show: true,
+        radius: 1,
+        label: {
+          show: true,
+          threshold: 0.03,
+          radius: 2/3,
+          formatter: function(label, series) {
+            return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
+          },
+          background: {
+            opacity: 0.5,
+            color: "#000"
+          }
+        }
+      }
+    },
+    legend: {
+      show: false
+    },
+    grid: {
+      hoverable: options.hoverable,
+      clickable: options.clickable
+    }
+  });
+}
+
 // type corresponds to what should be displayed for the hovered item. options include percent and currency.
-function plot_category_bar_chart(div_id, data, type) {
+function plot_category_bar_chart(div_id, data, type, cols) {
   $.plot(div_id, data, {
     legend: {
-      labelBoxBorderColor: "none",
-        position: "right"
+      position: "right",
+      noColumns: cols
     },
     series: {
       shadowSize: 1

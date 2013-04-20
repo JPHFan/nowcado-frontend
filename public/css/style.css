@@ -64,3 +64,19 @@ ul.thumbnails > li > div.thumbnail {
   line-height: 1.2em;
 }
 
+#loading_div {
+  display:block;
+  position:fixed;
+  top:200px;
+  left:0;
+  width:70%;
+  text-align:center;
+  background:#fff;
+  filter: alpha(opacity=75);
+  -khtml-opacity: 0.75;
+  -moz-opacity: 0.75;
+  opacity: 0.75;
+  border-top:1px solid #ddd;
+  border-bottom:1px solid #ddd;
+  z-index: 1;
+}
