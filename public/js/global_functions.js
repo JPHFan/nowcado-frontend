@@ -45,17 +45,17 @@ function latlon_defined() {
   }
 }
 
-function map_location(latitude, longitude, map_id) {
-  return map_location(latitude, longitude, map_id, 17);
-}
-
 function map_location(latitude, longitude, map_id, zoom) {
+  if(zoom === undefined) {
+    zoom = 17;
+  }
   var center = new google.maps.LatLng(latitude, longitude);
   var map_options = {
     center: center,
     zoom: zoom,
     mapTypeId: google.maps.MapTypeId.ROADMAP
   }
+  $("#" + map_id).html("");
   var map = new google.maps.Map(document.getElementById(map_id), map_options);
   var marker = new google.maps.Marker({
     position: center,

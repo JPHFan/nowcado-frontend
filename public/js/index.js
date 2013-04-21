@@ -7,8 +7,8 @@ function geo_process(position) {
   $.post("/set_location/", { latitude: position.coords.latitude, longitude: position.coords.longitude }, function() {
     alert_success("#location_status",success_string.location_set);
     map_location(position.coords.latitude, position.coords.longitude, "location_search_map");
-    $("#latitude").val(latitude);
-    $("#longitude").val(longitude);
+    $("#latitude").val($(latitude).val());
+    $("#longitude").val($(longitude).val());
     $("#location_found_div").show();
     $(".navbar-search input").effect("highlight", {color: '#96F52F'}, 3000);
     $("#location_search_error").hide();
