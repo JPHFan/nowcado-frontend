@@ -11,7 +11,7 @@ $("#report_type a").click(function(e) {
   $(this).tab('show');
 });
 
-$("#reports_content ul.nav a").click(function(e) {
+$("#store_reports ul.nav a").click(function(e) {
   e.preventDefault();
   // load the report in the pane by parsing the function call based on the report attribute
   // first clear the rt_update to prevent constant loading
@@ -866,17 +866,525 @@ function store_rt_inv() {
 }
 
 function store_dept_rev() {
+  //TODO create data with a load_report_data call - this will only be daily data
+  var data = [],
+      // Note that depts is a temporary variable used for fake data creation - this variable will not be needed
+      depts = ["Alcohol", "Baby", "Bakery", "Baking", "Beverages", "Breakfast", "Canned goods", "Condiments", "Dairy",
+               "Deli", "Ethnic", "Floral", "Frozen", "Grains & pasta", "Health & beauty", "Household & cleaning",
+               "Meat & seafood", "Pet care", "Produce", "Sauces & spices", "Snacks"];
+  for(var i in stores) {
+    for(var j in depts) {
+      var temp = [];
+      for(var index = 0; index < 395; index++) {
+        temp.push([Date.UTC(2012,2,26,0,0,0)+86400000*index,parseFloat((Math.random()*300).toFixed(2))])
+      }
+      data.push({
+        label: $("#store_addresses_list button[store_id=" + stores[i] + "]").html() + ":" + depts[j],
+        data: temp
+      })
+    }
+  }
 
+  // detect departments
+  //  labels will be in the form "store_name:department_name"
+  //  departments hash will store which departments are currently selected as a boolean
+  var departments = {},
+      department_dropdown_string = '';
+  for(var x in data) {
+    departments[data[x].label.substring(data[x].label.indexOf(":")+1)] = false;
+  }
+  for(var k in departments) {
+    department_dropdown_string += '<div class="btn-group" data-toggle="buttons-checkbox" style="margin-bottom: 3px; margin-left: 0px; margin-right: 5px">' +
+        '<button type="button" class="btn btn-mini" style="padding: 0;">' + k + '</button>' +
+        '</div>';
+  }
+
+  $("#report").html(
+    '<div class="row-fluid">' +
+          department_dropdown_string +
+    '</div>' +
+    '<div class="row-fluid" style="margin-bottom: 20px;">' +
+      '<button type="button" class="btn btn-primary" id="agg_stores">Aggregate all stores</button>' +
+      '<span id="granularity_span" style="margin-left: 20px;"></span>' +
+    '</div>' +
+    '<div class="row-fluid">' +
+      '<div id="line_chart" style="height: 300px;" class="span12"></div>' +
+    '</div>' +
+    '<div class="row-fluid">' +
+      '<div id="overview" class="span12" style="height: 100px;"></div>' +
+    '</div>'
+  );
+
+  // convert all time values from UTC to local time and find the range
+  var max_x_val = 0,
+      min_x_val = data[0].data[0][0];
+  for(var x in data) {
+    for(var y in data[x].data) {
+      data[x].data[y][0] -= new Date().getTimezoneOffset()*60000;
+      if(data[x].data[y][0] > max_x_val) {
+        max_x_val = data[x].data[y][0];
+      } else if(data[x].data[y][0] < min_x_val) {
+        min_x_val = data[x].data[y][0];
+      }
+    }
+  }
+  var range = max_x_val - min_x_val,
+      temp_data = zoom_calc_datapoints(range, data,true,departments),
+      s_ranges;
+
+  var options = {
+    xaxis: {
+      mode: "time",
+      tickLength: 5
+    },
+    selection: {
+      mode: "x"
+    },
+    grid: {
+      markings: weekend_areas,
+      hoverable: true
+    },
+    series: {
+      lines: {
+        show: true
+      },
+      points: {
+        show: true
+      }
+    },
+    legend: {
+      show: false
+    }
+  }, options_overview = {
+    series: {
+      lines: {
+        show: true,
+        lineWidth: 1
+      },
+      shadowSize: 0
+    },
+    xaxis: {
+      ticks: [],
+      mode: "time"
+    },
+    yaxis: {
+      ticks: [],
+      autoscaleMargin: 0.1
+    },
+    selection: {
+      mode: "x"
+    },
+    legend: {
+      position: "right"
+    }
+  };
+
+  // plot the line chart
+  var plot = $.plot('#line_chart',temp_data,options);
+
+  // add tooltip functionality to the line chart
+  graph_tooltip("#line_chart", function(item) {
+    return ("$" + item.datapoint[1].toFixed(2));
+  }, false);
+   // plot the overview
+  var overview = $.plot("#overview",zoom_calc_datapoints(31536000001,data,false,departments), options_overview);
+
+  // connect the two graphs
+  $("#line_chart").on("plotselected", function(event, ranges) {
+    min_x_val = ranges.xaxis.from;
+    max_x_val = ranges.xaxis.to;
+    range = ranges.xaxis.to - ranges.xaxis.from;
+    s_ranges = ranges;
+    plot = $.plot("#line_chart", zoom_calc_datapoints(range, data,true,departments), $.extend(true, {}, options, {
+      xaxis: {
+        min: ranges.xaxis.from,
+        max: ranges.xaxis.to
+      }
+    }));
+    overview.setSelection(ranges, true);
+  });
+  $("#overview").on("plotselected", function(event, ranges) {
+    range = ranges.xaxis.to - ranges.xaxis.from;
+    min_x_val = ranges.xaxis.from;
+    max_x_val = ranges.xaxis.to;
+    s_ranges = ranges;
+    plot.setSelection(ranges);
+  });
+
+  $("#agg_stores").click(function(e) {
+    e.preventDefault();
+    $(this).toggleClass("active");
+    temp_data = zoom_calc_datapoints(range, data,true,departments);
+    plot = $.plot('#line_chart',temp_data,$.extend(true, {}, options, {
+      xaxis: {
+        min: min_x_val,
+        max: max_x_val
+      }
+    }));
+    overview = $.plot("#overview",zoom_calc_datapoints(31536000001,data,false,departments), options_overview);
+    if(!(s_ranges === undefined)) {
+      overview.setSelection(s_ranges, true);
+    }
+  });
+
+  $("div.row-fluid div.btn-group button").click(function(e) {
+    if($(this).hasClass("active")) {
+      departments[$(this).text()] = false;
+    } else {
+      departments[$(this).text()] = true;
+    }
+    temp_data = zoom_calc_datapoints(range, data,true,departments);
+    plot = $.plot('#line_chart',temp_data,$.extend(true, {}, options, {
+      xaxis: {
+        min: min_x_val,
+        max: max_x_val
+      }
+    }));
+    overview = $.plot("#overview",zoom_calc_datapoints(31536000001,data,false,departments), options_overview);
+    if(!(s_ranges === undefined)) {
+      overview.setSelection(s_ranges, true);
+    }
+  });
+
+  // fake click to the first department listed
+  $("div.row-fluid div.btn-group button:first").click();
 }
 
 function store_similar_items() {
   // establish the url format for the store-specific form
-  similar_items({ store_ids: stores });
+  var items_hash = {};
+  $("#report").html(
+    '<div class="row-fluid input-append">' +
+      '<input type="text" id="item_search" placeholder="Search for first item" class="span8">' +
+      '<button type="button" class="btn btn-primary" id="set_first_item">Set Item</button>' +
+    '</div>' +
+    '<div class="row-fluid">' +
+      '<table class="table table-bordered table-hover table-condensed" style="max-height: 300px;" id="similar_items_table">' +
+        '<thead><tr><th>Other Item</th><th>Location</th><th>Confidence</th></tr></thead>' +
+        '<tbody></tbody>' +
+      '</table>' +
+    '</div>' +
+    '<div class="row-fluid">' +
+      '<span id="recommendation_text"></span>' +
+    '</div>');
+  $("#item_search").typeahead({
+    source: function(query, process) {
+      load_report_data(domain + "/items?callback=?", {name: query, store_ids: stores}, function(json) {
+        // we get results in the form {item_name => {store_id => item_id}}
+        items_hash = json.result;
+        return process(Object.keys(items_hash));
+      });
+    }
+  });
+  $("#set_first_item").click(function(e) {
+    var first_item = $("#item_search").val();
+    var item_ids = [];
+    for(var k in items_hash[first_item]) {
+      item_ids.push(items_hash[first_item][k]);
+    }
+    if(item_ids.length == 0) { return; }
+    // set up the table with the appropriate data
+//TODO    load_report_data(domain + "/items/similar?callback=?", { store_ids: stores, item_ids: item_ids }, function(json) {
+      // set up table rows from json.result
+      var data = [
+          {item: "Apple", location: "Near", correlation: 0.92},
+          {item: "Milk", location: "Far", correlation: 0.89},
+          {item: "Tomato", location: "Near", correlation: 0.85},
+          {item: "Rice", location: "Far", correlation: 0.82},
+          {item: "Flour", location: "Far", correlation: 0.80}
+      ];
+      var h = '';
+      for(var i=0; i<data.length; i++) {
+        h += '<tr><td>' + data[i].item + '</td><td>' + data[i].location + '</td><td>' + data[i].correlation*100 + '%</td></tr>';
+      }
+      $("#similar_items_table tbody").html(h);
+      $("#similar_items_table").tablesorter();
+      // add listener for table click event to display the explanation
+      $("#similar_items_table tr:gt(0)").click(function(e) {
+        var text = 'We are <b style="color: green">' + $(this).children("td:last").html() + '</b> confident that you should place ' +
+            first_item + ' and ' + $(this).children("td:first").html();
+        if($(this).children("td:nth-child(2)").html() == "Near") {
+          text += ' <b style="color: green;">close together.</b>'
+        } else {
+          text += ' <b style="color: red;">far apart.</b>'
+        }
+        $("#recommendation_text").html(text);
+      });
+//TODO    });
+  });
 }
 
-function global_similar_items() {
-  // establish the url format for the global form
-  similar_items({});
+function store_sales_history() {
+  //TODO create data with a load_report_data call
+  var data = [];
+  for(var i in stores) {
+    var temp = [];
+    for(var index = 0; index < 9500; index++) {
+      temp.push([Date.UTC(2012,2,26,8,0,0)+3600000*index,parseFloat((Math.random()*5000).toFixed(2))])
+    }
+    data.push({
+      label: $("#store_addresses_list button[store_id=" + stores[i] + "]").html(),
+      data: temp
+    })
+  }
+
+  $("#report").html(
+    '<div class="row-fluid" style="margin-bottom: 20px;">' +
+      '<button type="button" class="btn btn-primary" id="agg_stores">Aggregate all stores</button>' +
+      '<span id="granularity_span" style="margin-left: 20px;"></span>' +
+    '</div>' +
+    '<div class="row-fluid">' +
+      '<div id="line_chart" style="height: 300px;" class="span12"></div>' +
+    '</div>' +
+    '<div class="row-fluid">' +
+      '<div id="overview" class="span12" style="height: 100px;"></div>' +
+    '</div>'
+  );
+
+  // convert all time values from UTC to local time and find the range
+  var max_x_val = 0,
+      min_x_val = data[0].data[0][0];
+  for(var x in data) {
+    for(var y in data[x].data) {
+      data[x].data[y][0] -= new Date().getTimezoneOffset()*60000;
+      if(data[x].data[y][0] > max_x_val) {
+        max_x_val = data[x].data[y][0];
+      } else if(data[x].data[y][0] < min_x_val) {
+        min_x_val = data[x].data[y][0];
+      }
+    }
+  }
+  var range = max_x_val - min_x_val,
+      temp_data = zoom_calc_datapoints(range, data,true),
+      s_ranges;
+
+  var options = {
+    xaxis: {
+      mode: "time",
+      tickLength: 5
+    },
+    selection: {
+      mode: "x"
+    },
+    grid: {
+      markings: weekend_areas,
+      hoverable: true
+    },
+    series: {
+      lines: {
+        show: true
+      },
+      points: {
+        show: true
+      }
+    },
+    legend: {
+      show: false
+    }
+  }, options_overview = {
+    series: {
+      lines: {
+        show: true,
+        lineWidth: 1
+      },
+      shadowSize: 0
+    },
+    xaxis: {
+      ticks: [],
+      mode: "time"
+    },
+    yaxis: {
+      ticks: [],
+      autoscaleMargin: 0.1
+    },
+    selection: {
+      mode: "x"
+    },
+    legend: {
+      position: "right"
+    }
+  };
+
+  // plot the line chart
+  var plot = $.plot('#line_chart',temp_data,options);
+
+  // add tooltip functionality to the line chart
+  graph_tooltip("#line_chart", function(item) {
+    return ("$" + item.datapoint[1].toFixed(2));
+  }, false);
+   // plot the overview
+  var overview = $.plot("#overview",zoom_calc_datapoints(31536000001,data,false), options_overview);
+
+  // connect the two graphs
+  $("#line_chart").on("plotselected", function(event, ranges) {
+    min_x_val = ranges.xaxis.from;
+    max_x_val = ranges.xaxis.to;
+    range = ranges.xaxis.to - ranges.xaxis.from;
+    s_ranges = ranges;
+    plot = $.plot("#line_chart", zoom_calc_datapoints(range, data,true), $.extend(true, {}, options, {
+      xaxis: {
+        min: ranges.xaxis.from,
+        max: ranges.xaxis.to
+      }
+    }));
+    overview.setSelection(ranges, true);
+  });
+  $("#overview").on("plotselected", function(event, ranges) {
+    range = ranges.xaxis.to - ranges.xaxis.from;
+    min_x_val = ranges.xaxis.from;
+    max_x_val = ranges.xaxis.to;
+    s_ranges = ranges;
+    plot.setSelection(ranges);
+  });
+
+  $("#agg_stores").click(function(e) {
+    e.preventDefault();
+    $(this).toggleClass("active");
+    temp_data = zoom_calc_datapoints(range, data,true);
+    plot = $.plot('#line_chart',temp_data,$.extend(true, {}, options, {
+      xaxis: {
+        min: min_x_val,
+        max: max_x_val
+      }
+    }));
+    overview = $.plot("#overview",zoom_calc_datapoints(31536000001,data,false), options_overview);
+    if(!(s_ranges === undefined)) {
+      overview.setSelection(s_ranges, true);
+    }
+  });
+
+}
+
+function zoom_calc_datapoints(range, data, update_text, departments) {
+  var temp_data = [],
+      d_c = $.extend(true, {}, data);
+  // remove any unselected departments
+  if(!(departments === undefined)) {
+    for(var x in d_c) {
+      if(departments[d_c[x].label.substring(d_c[x].label.indexOf(":")+1)] == false) {
+        delete d_c[x];
+      }
+    }
+  }
+
+  if(range > 31536000000) {
+    // when the range is greater than 1 year, use monthly aggregates
+    if(update_text) {
+      $("#granularity_span").html('Currently viewing <i><b>monthly</b></i> aggregates');
+    }
+    for(var x in d_c) {
+      var temp_hash = {},
+          temp_arr = [];
+      for(var y in d_c[x].data) {
+        var time = new Date(d_c[x].data[y][0]),
+            date = Date.UTC(time.getFullYear(),time.getMonth(),1,0,0,0);
+        if(temp_hash[date] === undefined) {
+          temp_hash[date] = d_c[x].data[y][1];
+        } else {
+          temp_hash[date] += d_c[x].data[y][1];
+        }
+      }
+      for(var k in temp_hash) {
+        temp_arr.push([k,temp_hash[k]]);
+      }
+      temp_data.push({
+        label: d_c[x].label,
+        data: temp_arr
+      });
+    }
+  } else if(range > 604800000 || !(departments === undefined)) {
+    // when the range is greater than 1 week, use daily aggregates
+    if(update_text) {
+      $("#granularity_span").html('Currently viewing <i><b>daily</b></i> aggregates');
+    }
+    for(var x in d_c) {
+      var temp_hash = {},
+          temp_arr = [];
+      for(var y in d_c[x].data) {
+        var time = new Date(d_c[x].data[y][0]),
+            date = Date.UTC(time.getFullYear(),time.getMonth(),time.getDate(),0,0,0);
+        if(temp_hash[date] === undefined) {
+          temp_hash[date] = d_c[x].data[y][1];
+        } else {
+          temp_hash[date] += d_c[x].data[y][1];
+        }
+      }
+      for(var k in temp_hash) {
+        temp_arr.push([k,temp_hash[k]]);
+      }
+      temp_data.push({
+        label: data[x].label,
+        data: temp_arr
+      });
+    }
+  } else {
+    if(update_text) {
+      $("#granularity_span").html('Currently viewing <i><b>hourly</b></i> aggregates');
+    }
+    for(var x in d_c) {
+      temp_data.push(d_c[x]);
+    }
+  }
+  // check if aggregating all stores together
+  if($("#agg_stores").hasClass("active")) {
+    if(update_text) {
+      $("#granularity_span").append(' across all stores.');
+    }
+    var temp_hash = {},
+        temp_arr = [];
+    if(departments === undefined) {
+      for(var x in temp_data) {
+        for(var y in temp_data[x].data) {
+          var date = temp_data[x].data[y][0];
+          if(temp_hash[date] === undefined) {
+            temp_hash[date] = temp_data[x].data[y][1];
+          } else {
+            temp_hash[date] += temp_data[x].data[y][1];
+          }
+        }
+      }
+      for(var k in temp_hash) {
+        temp_arr.push([k,temp_hash[k]]);
+      }
+      temp_data = [{
+        label: "All Selected Stores",
+        data: temp_arr
+      }];
+    } else {
+      for(var x in temp_data) {
+        for(var y in temp_data[x].data) {
+          var department = temp_data[x].label.substring(temp_data[x].label.indexOf(":")+1),
+              date = temp_data[x].data[y][0];
+          if(temp_hash[department] === undefined) {
+            temp_hash[department] = {};
+            temp_hash[department][date] = temp_data[x].data[y][1];
+          } else {
+            if(temp_hash[department][date] === undefined) {
+              temp_hash[department][date] = temp_data[x].data[y][1];
+            } else {
+              temp_hash[department][date] += temp_data[x].data[y][1];
+            }
+          }
+        }
+      }
+      temp_data = [];
+      for(var i in temp_hash) {
+        temp_arr = [];
+        for(var j in temp_hash[i]) {
+          temp_arr.push([j,temp_hash[i][j]]);
+        }
+        temp_data.push({
+          label: "All Selected Stores:" + i,
+          data: temp_arr
+        });
+      }
+    }
+  } else {
+    if(update_text) {
+      $("#granularity_span").append(' per store.');
+    }
+  }
+  return temp_data;
 }
 
 function store_purchase_times() {
@@ -991,75 +1499,6 @@ function store_purchase_times() {
 }
 
 // report helper functions
-function similar_items(store_data) {
-  var items_hash = {};
-  $("#report").html(
-    '<div class="row-fluid input-append">' +
-      '<input type="text" id="item_search" placeholder="Search for first item" class="span8">' +
-      '<button type="button" class="btn btn-primary" id="set_first_item">Set Item</button>' +
-    '</div>' +
-    '<div class="row-fluid">' +
-      '<table class="table table-bordered table-hover table-condensed" style="max-height: 300px;" id="similar_items_table">' +
-        '<thead><tr><th>Other Item</th><th>Location</th><th>Confidence</th></tr></thead>' +
-        '<tbody></tbody>' +
-      '</table>' +
-    '</div>' +
-    '<div class="row-fluid">' +
-      '<span id="recommendation_text"></span>' +
-    '</div>');
-  $("#item_search").typeahead({
-    source: function(query, process) {
-      load_report_data(domain + "/items?callback=?", $.extend({},store_data,{name: query}), function(json) {
-        // we get results in the form {item_name => {store_id => item_id}}
-        items_hash = json.result;
-        return process(Object.keys(items_hash));
-      });
-    }
-  });
-  $("#set_first_item").click(function(e) {
-    var first_item = $("#item_search").val();
-    var item_ids = [];
-    for(var k in items_hash[first_item]) {
-      item_ids.push(items_hash[first_item][k]);
-    }
-    if(item_ids.length == 0) { return; }
-    // set up the table with the appropriate data
-//TODO    load_report_data(domain + "/items/similar?callback=?", $.extend({},store_data,{ item_ids: item_ids}), function(json) {
-      // set up table rows from json.result
-      var data = [
-          {item: "Apple", location: "Near", correlation: 0.92},
-          {item: "Milk", location: "Far", correlation: 0.89},
-          {item: "Tomato", location: "Near", correlation: 0.85},
-          {item: "Rice", location: "Far", correlation: 0.82},
-          {item: "Flour", location: "Far", correlation: 0.80}
-      ];
-      var h = '';
-      for(var i=0; i<data.length; i++) {
-        h += '<tr><td>' + data[i].item + '</td><td>' + data[i].location + '</td><td>' + data[i].correlation*100 + '%</td></tr>';
-      }
-      $("#similar_items_table tbody").html(h);
-      $("#similar_items_table").tablesorter();
-      // add listener for table click event to display the explanation
-      $("#similar_items_table tr:gt(0)").click(function(e) {
-        var text = 'Based upon the data from ';
-        if(store_data.hasOwnProperty("store_ids")) {
-          text += 'the stores you have selected, ';
-        } else {
-          text += 'all stores using Nowcado, ';
-        }
-        text += 'we are <b style="color: green">' + $(this).children("td:last").html() + '</b> confident that you should place ' +
-            first_item + ' and ' + $(this).children("td:first").html();
-        if($(this).children("td:nth-child(2)").html() == "Near") {
-          text += ' <b style="color: green;">close together.</b>'
-        } else {
-          text += ' <b style="color: red;">far apart.</b>'
-        }
-        $("#recommendation_text").html(text);
-      });
-//TODO    });
-  });
-}
-
 function load_report_data(url, data, callback) {
   $("#loading_div").show();
   $.getJSON(url, data, function(result) {
@@ -1166,10 +1605,11 @@ function show_tooltip(x, y, contents) {
     display: 'none',
     top: y-35,
     left: x+5,
-    border: '1px solid #fdd',
+    border: '1px solid #000',
     padding: '2px',
-    'background-color': '#fee',
-    opacity: 0.80,
+    'background-color': '#011',
+    color: '#fff',
+    opacity: 0.50,
     'font-size': '8pt'
   }).appendTo("body").fadeIn(0);
 }
