@@ -83,24 +83,24 @@ function store_percent_wins() {
   var data = {
     top_wins_location: {
       1: {
-        name: "bread",
+        name: "Bread",
         similar: {
           1: {
-            name: "cereal",
+            name: "Cereal",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           2: {
-            name: "eggs",
+            name: "Eggs",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           3: {
-            name: "tomatoes",
+            name: "Tomatoes",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
@@ -109,24 +109,24 @@ function store_percent_wins() {
         }
       },
       2: {
-        name: "cereal",
+        name: "Cereal",
         similar: {
           1: {
-            name: "milk",
+            name: "Milk",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           2: {
-            name: "eggs",
+            name: "Eggs",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           3: {
-            name: "tomatoes",
+            name: "Tomatoes",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
@@ -135,24 +135,24 @@ function store_percent_wins() {
         }
       },
       3: {
-        name: "milk",
+        name: "Milk",
         similar: {
           1: {
-            name: "cereal",
+            name: "Cereal",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           2: {
-            name: "eggs",
+            name: "Eggs",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           3: {
-            name: "tomatoes",
+            name: "Tomatoes",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
@@ -161,24 +161,24 @@ function store_percent_wins() {
         }
       },
       4: {
-        name: "tomatoes",
+        name: "Tomatoes",
         similar: {
           1: {
-            name: "cereal",
+            name: "Cereal",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           2: {
-            name: "eggs",
+            name: "Eggs",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           3: {
-            name: "onions",
+            name: "Onions",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
@@ -187,24 +187,24 @@ function store_percent_wins() {
         }
       },
       5: {
-        name: "eggs",
+        name: "Eggs",
         similar: {
           1: {
-            name: "cereal",
+            name: "Cereal",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           2: {
-            name: "eggs",
+            name: "Eggs",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           3: {
-            name: "tomatoes",
+            name: "Tomatoes",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
@@ -215,24 +215,24 @@ function store_percent_wins() {
     },
     top_wins_price: {
       1: {
-        name: "milk",
+        name: "Milk",
         similar: {
           1: {
-            name: "cereal",
+            name: "Cereal",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           2: {
-            name: "eggs",
+            name: "Eggs",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           3: {
-            name: "tomatoes",
+            name: "Tomatoes",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
@@ -241,24 +241,24 @@ function store_percent_wins() {
         }
       },
       2: {
-        name: "bread",
+        name: "Bread",
         similar: {
           1: {
-            name: "cereal",
+            name: "Cereal",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           2: {
-            name: "eggs",
+            name: "Eggs",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           3: {
-            name: "tomatoes",
+            name: "Tomatoes",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
@@ -267,24 +267,24 @@ function store_percent_wins() {
         }
       },
       3: {
-        name: "eggs",
+        name: "Eggs",
         similar: {
           1: {
-            name: "cereal",
+            name: "Cereal",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           2: {
-            name: "eggs",
+            name: "Eggs",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           3: {
-            name: "tomatoes",
+            name: "Tomatoes",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
@@ -293,24 +293,24 @@ function store_percent_wins() {
         }
       },
       4: {
-        name: "cereal",
+        name: "Cereal",
         similar: {
           1: {
-            name: "milk",
+            name: "Milk",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           2: {
-            name: "eggs",
+            name: "Eggs",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           3: {
-            name: "tomatoes",
+            name: "Tomatoes",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
@@ -319,24 +319,24 @@ function store_percent_wins() {
         }
       },
       5: {
-        name: "tomatoes",
+        name: "Tomatoes",
         similar: {
           1: {
-            name: "cereal",
+            name: "Cereal",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           2: {
-            name: "eggs",
+            name: "Eggs",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           3: {
-            name: "onions",
+            name: "Onions",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
@@ -347,24 +347,24 @@ function store_percent_wins() {
     },
     top_wins_quality: {
       1: {
-        name: "tomatoes",
+        name: "Tomatoes",
         similar: {
           1: {
-            name: "cereal",
+            name: "Cereal",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           2: {
-            name: "eggs",
+            name: "Eggs",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           3: {
-            name: "onions",
+            name: "Onions",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
@@ -373,24 +373,24 @@ function store_percent_wins() {
         }
       },
       2: {
-        name: "milk",
+        name: "Milk",
         similar: {
           1: {
-            name: "cereal",
+            name: "Cereal",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           2: {
-            name: "eggs",
+            name: "Eggs",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           3: {
-            name: "tomatoes",
+            name: "Tomatoes",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
@@ -399,24 +399,24 @@ function store_percent_wins() {
         }
       },
       3: {
-        name: "bread",
+        name: "Bread",
         similar: {
           1: {
-            name: "cereal",
+            name: "Cereal",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           2: {
-            name: "eggs",
+            name: "Eggs",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           3: {
-            name: "tomatoes",
+            name: "Tomatoes",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
@@ -425,24 +425,24 @@ function store_percent_wins() {
         }
       },
       4: {
-        name: "eggs",
+        name: "Eggs",
         similar: {
           1: {
-            name: "cereal",
+            name: "Cereal",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           2: {
-            name: "eggs",
+            name: "Eggs",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           3: {
-            name: "tomatoes",
+            name: "Tomatoes",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
@@ -451,24 +451,24 @@ function store_percent_wins() {
         }
       },
       5: {
-        name: "cereal",
+        name: "Cereal",
         similar: {
           1: {
-            name: "milk",
+            name: "Milk",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           2: {
-            name: "eggs",
+            name: "Eggs",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
             est_monthly_savings: 885.02
           },
           3: {
-            name: "tomatoes",
+            name: "Tomatoes",
             correlation: 0.73,
             cur_monthly_rev: 102.34,
             est_monthly_rev: 987.36,
@@ -984,7 +984,7 @@ function store_dept_rev() {
 
   // add tooltip functionality to the line chart
   graph_tooltip("#line_chart", function(item) {
-    return ("$" + item.datapoint[1].toFixed(2));
+    return ("$" + item.datapoint[1].toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
   }, false);
    // plot the overview
   var overview = $.plot("#overview",zoom_calc_datapoints(31536000001,data,false,departments), options_overview);
@@ -1210,7 +1210,7 @@ function store_sales_history() {
 
   // add tooltip functionality to the line chart
   graph_tooltip("#line_chart", function(item) {
-    return ("$" + item.datapoint[1].toFixed(2));
+    return ("$" + item.datapoint[1].toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
   }, false);
    // plot the overview
   var overview = $.plot("#overview",zoom_calc_datapoints(31536000001,data,false), options_overview);
@@ -1498,6 +1498,31 @@ function store_purchase_times() {
   $("div.row-fluid div.btn-group button:first").click();
 }
 
+function store_top_sellers() {
+  //TODO get the actual relevant item_ids and sold_items, based on last week's and month's values
+  var weekly_sold = { 161:10, 30:8, 481:7, 541:7, 921:6, 1141:6, 1181:5, 1541:5},
+      monthly_sold = { 1960:35, 2080:25, 2440:22, 2580:18, 2760:16, 2900:15, 3200:14, 3440:12},
+      html = "",
+      items_hash = {};
+
+  load_report_data(domain + "/items?callback=?", { item_ids: Object.keys($.extend({},weekly_sold,monthly_sold)) }, function(json) {
+    $.each(json.result, function(i, v) {
+      items_hash[v.id] = v;
+    });
+    $("#report").html(
+      '<div class="span12">' +
+        '<h3>Top Selling Items Last Week</h3>' +
+        '<ul class="thumbnails">' + item_img_html(weekly_sold, items_hash) + '</ul>' +
+      '</div>' +
+      '<div class="span12">' +
+        '<h3>Top Selling Items Last Month</h3>' +
+        '<ul class="thumbnails">' + item_img_html(monthly_sold, items_hash) + '</ul>' +
+      '</div>'
+    );
+    set_stars();
+  });
+}
+
 // report helper functions
 function load_report_data(url, data, callback) {
   $("#loading_div").show();
@@ -1506,6 +1531,25 @@ function load_report_data(url, data, callback) {
     callback(result);
   })
     .fail(function() { console.log( "error accessing " + url + " with params " + data ); });
+}
+
+function item_img_html(items_sold, items_hash) {
+  var html = "";
+  for(var k in items_sold) {
+    var item = items_hash[k],
+        img_url = item.img_url;
+    if(img_url === undefined || img_url == null) {
+      img_url = "holder.js/200x200";
+    }
+    html +=
+      '<li><div class="thumbnail">' +
+        '<h6 style="height: 30px;">' + cap_words((item.name).substring(0,55)) + '</h6>' +
+        '<img src="' + img_url + '" style="max-width:200px;height:200px;">' +
+        '<label><b>Rating: </b><div class="star read-only" data-rating="' + item.rating + '"></div></label>' +
+        '<label><b>Price: </b>$' + item.prices[1] + ' <b>Sold: </b>' + items_sold[k] + '</label>' +
+      '</div></li>';
+  }
+  return html;
 }
 
 // data is an array of identifiers and string values
@@ -1575,7 +1619,7 @@ function plot_category_bar_chart(div_id, data, type, cols) {
     if(type == "percent") {
       return y.toFixed(2) + "%";
     }
-    return "$" + y.toFixed(2);
+    return "$" + y.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
   }, false);
 }
 
