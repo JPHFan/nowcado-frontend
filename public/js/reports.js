@@ -1084,18 +1084,12 @@ function store_similar_items() {
     }
     if(item_ids.length == 0) { return; }
     // set up the table with the appropriate data
-//TODO    load_report_data(domain + "/items/similar?callback=?", { store_ids: stores, item_ids: item_ids }, function(json) {
+    load_report_data(domain + "/items/similar_correlations?callback=?", { store_ids: stores, item_ids: item_ids }, function(json) {
       // set up table rows from json.result
-      var data = [
-          {item: "Apple", location: "Near", correlation: 0.92},
-          {item: "Milk", location: "Far", correlation: 0.89},
-          {item: "Tomato", location: "Near", correlation: 0.85},
-          {item: "Rice", location: "Far", correlation: 0.82},
-          {item: "Flour", location: "Far", correlation: 0.80}
-      ];
+      var data = json.result;
       var h = '';
       for(var i=0; i<data.length; i++) {
-        h += '<tr><td>' + data[i].item + '</td><td>' + data[i].location + '</td><td>' + data[i].correlation*100 + '%</td></tr>';
+        h += '<tr><td>' + data[i].item + '</td><td>' + data[i].location + '</td><td>' + (data[i].correlation*100).toFixed(2) + '%</td></tr>';
       }
       $("#similar_items_table tbody").html(h);
       $("#similar_items_table").tablesorter();
@@ -1110,7 +1104,7 @@ function store_similar_items() {
         }
         $("#recommendation_text").html(text);
       });
-//TODO    });
+    });
   });
 }
 
@@ -1530,7 +1524,7 @@ function load_report_data(url, data, callback) {
     $("#loading_div").hide();
     callback(result);
   })
-    .fail(function() { console.log( "error accessing " + url + " with params " + data ); });
+  .fail(function() { console.log( "error accessing " + url + " with params " + data ); });
 }
 
 function item_img_html(items_sold, items_hash) {

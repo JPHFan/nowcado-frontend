@@ -248,7 +248,6 @@ def get_cart
     redirect '/?fail=true'
     return
   end
-  p "Session ID: #{session[:session_id]}"
   @cart = rest_call("/stores/pick_stores",{"latitude"=>session["latitude"],"longitude"=>session["longitude"],
                                            "session_id"=>session[:session_id]})
   if @cart["result"]
