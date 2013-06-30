@@ -344,6 +344,15 @@ get "/reports/wins/?" do
   end
 end
 
+get "/reports/top_sellers/?" do
+  json = rest_call("/stores/top_sellers", params, "get")
+  if json["success"]
+    return JSON.generate(json)
+  else
+    return JSON.generate(json)
+  end
+end
+
 # Partials
 get "/user_bar/:user_data/?" do
   session["user"] = params[:user_data].chomp('"').reverse.chomp('"').reverse
