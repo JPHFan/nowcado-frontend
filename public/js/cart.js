@@ -1,9 +1,26 @@
+var CART_RETRY_INTERVAL_MS = 1000;
+
 $(document).ready(function() {
   $("#cart_preferences_ranking").sortable({
     placeholder: "ui-state-highlight"
   });
   $("#cart_preferences_ranking").disableSelection();
   update_preferences_ranking_dropdowns();
+
+  $.getJSON("/cart/itinerary", {}, function(json){
+    if (json.success && !("result" in json)){
+
+      var cart_retry = window.setInterval(function() {
+        $.getJSON("/cart/itinerary", {}, cart_retry_func);
+      }, CART_RETRY_INTERVAL_MS);
+      function cart_retry_func(json){
+        if (!json.success || ("result" in json)){
+          window.clearInterval(cart_retry);
+          location.reload(true);
+        }
+      }
+    }
+  });
 });
 
 $("#cart_preferences_ranking").on("sortupdate", function(event, ui) {
@@ -23,6 +40,7 @@ $("#cart_preferences_submit").click(function(e) {
   $.post("/set_cart_preferences",
     {max_distance:max_distance, max_stores: max_stores, min_rating: min_rating, sort: sorted_values},
     function() {
+      // Reload the page, triggering the cart_retry loop.
       location.reload(true);
     }
   );
