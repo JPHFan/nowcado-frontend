@@ -18,11 +18,15 @@
 
     <div class="span9">
       <% if session["user"] %>
+      <div class="alert alert-success" id="add_item_alert" style="display: none;">
+        <span id="qty_confirm_text"></span> x <%= @item_results[0]["name"] %> in your cart!
+      </div>
+      <div class="alert alert-error" id="add_item_fail" style="display: none;"></div>
       <div class="pull-left">
-        <form action="/cart" class="form-inline" method="post">
-          Qty: <input type="text" class="input-small" name="quantity">
-          <input type="hidden" name="items" value="<%= @item_results.map{|result| result["id"]} %>">
-          <button class="btn" type="submit">Add to cart</button>
+        <form id="add_item_qty_to_cart" action="" class="form-inline" method="">
+          Qty: <input type="text" id="add_qty" class="input-small" name="quantity">
+          <input type="hidden" id="add_items" name="items" value="<%= @item_results.map{|result| result["id"]} %>">
+          <button class="btn" type="submit">Set quantity in cart</button>
         </form>
       </div>
       <% end %>

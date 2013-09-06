@@ -113,12 +113,8 @@ get "/store/:id/:offset_mins/?" do
 end
 
 post "/set_item/*" do
+  p "set_item params[:splat]: #{params[:splat]}"
   session["item_ids"] = params[:splat][0].split("/")
-end
-
-post "/set_qty/:item/:quantity/?" do
-  rest_call("/cart",params,"post")
-  get_cart
 end
 
 get "/item/*" do
@@ -227,35 +223,62 @@ end
 
 post "/cart/?" do
   rest_call("/cart",params,"post")
-  get_cart
+  calc_cart(params)
 end
 
 get "/cart/?" do
-  get_cart
+  get_cart(params, true)
 end
 
 post "/set_qty/:item/:quantity/?" do
   rest_call("/cart",params,"post")
-  get_cart
+  get_cart(params, false)
 end
 
 post "/set_cart_preferences/?" do
   rest_call("/cart/set_preferences",params,"post")
 end
 
-def get_cart
+get "/cart/itinerary/?" do
+  json = lookup_itinerary
+  return JSON.generate(json)
+end
+
+def calc_cart(params={})
   if(!get_or_set_session_var(params, ("latitude").to_sym) || !get_or_set_session_var(params, ("longitude").to_sym))
     redirect '/?fail=true'
     return
   end
-  @cart = rest_call("/stores/pick_stores",{"latitude"=>session["latitude"],"longitude"=>session["longitude"],
-                                           "session_id"=>session[:session_id]})
-  if @cart["result"]
-    @cart = @cart["result"]
-    @item_results = @cart[0]
-  else
-    @cart_error = @cart["message"]
-  end
+  rest_call("/stores/pick_stores",{"latitude"=>session["latitude"],"longitude"=>session["longitude"],
+                                   "session_id"=>session[:session_id]})
+end
+
+def lookup_itinerary
+  json = rest_call("/stores/lookup_itinerary")
+  #p "results from lookup_itinerary: #{json}"
+  return json
+end
+
+def get_cart(params, refresh_immediately=true)
+  calc_cart(params)
+
+  begin
+    # Keep looping and trying in a back-off manner until the results are ready.
+    @cart = lookup_itinerary
+
+    if @cart["result"]
+      @cart = @cart["result"]
+      @item_results = @cart[0]
+      @cart_error = nil
+    else
+      # This may be a failure message or a wait message.
+      @cart_error = @cart["message"]
+      if !refresh_immediately && @cart["success"]
+        # We have to wait and try again, don't refresh until the itinerary has been calculated.
+        sleep(1)
+      end
+    end
+  end while !refresh_immediately && @cart_error && @cart["success"]
 
   erb (settings.mobile+"cart").to_sym
 end
@@ -337,6 +360,15 @@ end
 
 get "/reports/wins/?" do
   json = rest_call("/stores/wins_report", {:store_ids => params[:store_ids]}, "get")
+  if json["success"]
+    return JSON.generate(json)
+  else
+    return JSON.generate(json)
+  end
+end
+
+get "/reports/top_sellers/?" do
+  json = rest_call("/stores/top_sellers", params, "get")
   if json["success"]
     return JSON.generate(json)
   else
