@@ -10,7 +10,7 @@ configure do
   set :views, ['views/layouts', 'views/pages', 'views/partials']
   enable :sessions
   set :production, true
-  if settings.production
+  if settings.production?
     set :domain, "https://be.nowcado.com"
   else
     set :domain, "https://127.0.0.1:3000"
