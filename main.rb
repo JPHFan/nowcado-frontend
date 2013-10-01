@@ -15,7 +15,7 @@ configure do
   else
     set :domain, "https://127.0.0.1:3000"
   end
-  set :secret_key, File.read('secret-key').strip
+  #set :secret_key, File.read('secret-key').strip
 end
 
 Dir["./app/models/*.rb"].each { |file| require file }
