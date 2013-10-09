@@ -21,16 +21,22 @@ function geo_declined(error) {
   alert_error("#location_status",error_string.auto_location_denied);
 }
 
-$("#use_current_loc").click(function(e) {
-  e.preventDefault();
-  $(this).button('loading');
+function autolocate() {
   if(navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(geo_process, geo_declined);
   } else {
     alert_error("#location_status",error_string.auto_location_support);
     $(this).button('reset');
   }
+}
+
+$("#use_current_loc").click(function(e) {
+  e.preventDefault();
+  $(this).button('loading');
+  autolocate();
 });
+
+$(document).ready(autolocate);
 
 $("#search_explanation_text").hover(
   function() {
