@@ -92,14 +92,13 @@ $("#sign_up_submit").click(function(e) {
 FB.init({
   appId      : '498305683523319',
   status     : true, // check login status
-  cookie     : true, // enable cookies to allow the server to access the session
+  cookie     : false, // enable cookies to allow the server to access the session
   xfbml      : true  // parse XFBML
 });
 
-$("#facebook_login_icon").click(function(e) {
+$("#facebook_login_icon").tooltip("hide").click(function(e) {
   FB.login(function(response) {
     // Handle the response
-    console.log(response);
     if (response.status === 'connected') {
       // The response object is returned with a status field that lets the app know the current
       // login status of the person. In this case, we're handling the situation where they
