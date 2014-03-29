@@ -104,8 +104,14 @@ $("#facebook_login_icon").click(function(e) {
       // The response object is returned with a status field that lets the app know the current
       // login status of the person. In this case, we're handling the situation where they
       // have logged in to the app.
-      // TODO
-
+      cors_call("/users/sign_in_facebook", {
+          access_token: response.authResponse.accessToken
+        },
+        function(json) {
+          sign_in(json);
+        },
+        "POST"
+      );
     }
  }, {scope: 'email'});
 });
