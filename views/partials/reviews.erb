@@ -1,12 +1,21 @@
 <h2 style="margin-left: 6px;">Reviews</h2>
-<% if @reviews && @reviews["result"] && !@reviews["result"].empty? %>
-<% if session["user"] && @reviews["result"].select {|review| session["user"] == review["username"]}.empty? %>
-<div id="add_review" style="margin-bottom: 20px;" href="/edit/<%= type %>_review/<%= id %>"><button>Add a review</button></div>
-<% end %>
-<% @reviews["result"].each do |review| %>
-  <%= render_partial(:show_review, {:locals => {:review => review, :type => type}}) %>
-<% end %>
-<% else %>
-<div id="no_reviews">No reviews currently written.</div>
-<div id="add_review" href="/edit/<%= type %>_review/<%= id %>"><button>Add a review</button></div>
-<% end %>
+<div id="reviews_div">
+  <% if session["user"] %>
+    <div id="add_review" style="margin-bottom:20px;
+      <%= if (!@reviews || !@reviews["result"] || @reviews["result"].select {|review| session["user"] == review["username"]}.empty?)
+        ""
+      else
+        "display:none;"
+      end %>"
+         href="/edit/<%= type %>_review/<%= id %>"><button>Add a review</button></div>
+  <% end %>
+  <% has_reviews =  @reviews && @reviews["result"] && !@reviews["result"].empty? %>
+  <div id="no_reviews" <%= has_reviews ? "style=\"display:none;\"" : "" %>>No reviews currently written.</div>
+  <!-- Create new review div goes here. -->
+  <% if has_reviews %>
+    <% @reviews["result"].each do |review| %>
+      <%= render_partial(:show_review, {:locals => {:review => review, :type => type, :parent_id => id}}) %>
+    <% end %>
+  <% end %>
+  <div id="reviews_parent_id" parent-id="<%= id %>" style="display:none;"></div>
+</div>

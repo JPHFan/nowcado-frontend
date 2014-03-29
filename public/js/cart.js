@@ -4,20 +4,25 @@ $(document).ready(function() {
   $("#cart_preferences_ranking").sortable({
     placeholder: "ui-state-highlight"
   });
-  $("#cart_preferences_ranking").disableSelection();
+//  $("#cart_preferences_ranking").disableSelection();
   update_preferences_ranking_dropdowns();
 
   $.getJSON("/cart/itinerary", {}, function(json){
-    if (json.success && !("result" in json)){
+    if (!json.success){
 
       var cart_retry = window.setInterval(function() {
         $.getJSON("/cart/itinerary", {}, cart_retry_func);
       }, CART_RETRY_INTERVAL_MS);
       function cart_retry_func(json){
-        if (!json.success || ("result" in json)){
+        if (json.success){
           window.clearInterval(cart_retry);
           location.reload(true);
         }
+      }
+    }
+    else{
+      if ($("#cart_alert").html() !== undefined){
+        location.reload(true);
       }
     }
   });
@@ -37,13 +42,15 @@ $("#cart_preferences_submit").click(function(e) {
   var max_stores = $("#cart_preferences_max_stores").val();
   var min_rating = $("#cart_preferences_min_rating").val();
   var sorted_values = $("#cart_preferences_ranking").sortable("toArray", {attribute: "value"});
-  $.post("/set_cart_preferences",
-    {max_distance:max_distance, max_stores: max_stores, min_rating: min_rating, sort: sorted_values},
-    function() {
+  $.ajax({
+    url: "/cart/preferences",
+    type: "PUT",
+    data: {max_distance:max_distance, max_stores: max_stores, min_rating: min_rating, sort: sorted_values},
+    success: function() {
       // Reload the page, triggering the cart_retry loop.
       location.reload(true);
     }
-  );
+  });
 });
 
 function update_preferences_ranking_dropdowns() {
@@ -62,7 +69,7 @@ function update_preferences_ranking_list_order(changed_elem) {
   if(li_val == 1) {
     ul.children("li").first().before(li_clone);
   } else if (li_val == 2) {
-    ul.children("li").last().before(li_clone);
+    ul.children("li").first().after(li_clone);
   } else {
     ul.children("li").last().after(li_clone);
   }
@@ -74,7 +81,12 @@ function update_preferences_ranking_list_order(changed_elem) {
 
 $("#item_results button").click(function(e) {
   $(this).button('loading');
-  $.post("/set_qty/" + $(this).attr("btnid") + "/" + $(this).parent().prev().children("input").val(), function(){
-    window.location.reload(true);
+  $.ajax({
+    url: "/cart/item/" + $(this).attr("btnid"),
+    type: "PUT",
+    data: {quantity: $(this).parent().prev().children("input").val()},
+    success: function(){
+      window.location.reload(true);
+    }
   });
 });

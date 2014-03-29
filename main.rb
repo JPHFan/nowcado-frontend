@@ -2,32 +2,35 @@ require 'sinatra'
 require 'sinatra/static_assets'
 require 'json'
 require 'rest_client'
-require 'fast-aes'
 require 'profiler'
 require 'sanitize'
+require 'cgi'
 
 configure do
   set :views, ['views/layouts', 'views/pages', 'views/partials']
   enable :sessions
   set :production, true
   if settings.production?
-    set :domain, "https://be.nowcado.com"
+    set :domain, "https://be2.nowcado.com"
   else
     set :domain, "https://127.0.0.1:3000"
   end
   #set :secret_key, File.read('secret-key').strip
+
+  set :mobile, ""
+  set :erb, :layout => :layout
 end
 
 Dir["./app/models/*.rb"].each { |file| require file }
 Dir["./app/helpers/*.rb"].each { |file| require file }
 Dir["./app/controllers/*.rb"].each { |file| require file }
 
-before "/*" do 
-  #if mobile_request?
-  #  set :mobile, "mobile/"
-  #  set :erb, :layout => :mobile
-  #else
-    set :mobile, ""
-    set :erb, :layout => :layout
-  #end
-end
+#before "/*" do
+#  #if mobile_request?
+#  #  set :mobile, "mobile/"
+#  #  set :erb, :layout => :mobile
+#  #else
+#  set :mobile, ""
+#  set :erb, :layout => :layout
+#  #end
+#end

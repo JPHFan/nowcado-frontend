@@ -2,7 +2,9 @@
 <div class="container">
   <div class="row">
     <div class="span4">
+      <% if @store["result"]["chain"] %>
       <label><b>Chain: </b><%= cap_words(@store["result"]["chain"]) %></label>
+      <% end %>
       <label><b>Store Type: </b><%= cap_words(@store["result"]["type"]) %></label>
       <label><b>Rating: </b><%= render_partial(:rating, {:locals => {:rating => @store["result"]["rating"]}}) %></label>
       <label><b>Address: </b></label>
@@ -31,7 +33,7 @@
     center: center,
     zoom: 17,
     mapTypeId: google.maps.MapTypeId.ROADMAP
-  }
+  };
   var map = new google.maps.Map(document.getElementById("store_location_map"), map_options);
   var marker = new google.maps.Marker({
     position: center,

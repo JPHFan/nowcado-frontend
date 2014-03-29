@@ -6,6 +6,10 @@
   <% attribute_string = "Best Rating" %>
 <% end %>
 <li class="ui-state-default" value="<%= attribute.capitalize %>" id="cart_preferences_ranking_<%= attribute.downcase %>">
-  <select style="width: 50px; margin-bottom: 0;"><option>1</option><option>2</option><option>3</option></select>
+  <select style="width: 50px; margin-bottom: 0;">
+    <% (1..num_options).each do |o| %>
+      <option><%= o %></option>
+    <% end %>
+  </select>
   <%= attribute_string %>
 </li>

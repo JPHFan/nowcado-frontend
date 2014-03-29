@@ -2,7 +2,7 @@
 var domain = $("#domain").val();
 var error_string = {
   auto_location_support: "Your browser does not support automatic location detection.",
-  auto_location_denied: "If you would like to automatically be located, you must accept location detection.",
+  auto_location_denied: "We were unable to get your location.",
   location_not_set: "You must set your location before performing a search."
 };
 var success_string = {
@@ -27,7 +27,8 @@ function sign_in(json) {
   if(json.success) {
     $(".navbar .navbar-form").tooltip("destroy");
     // Use the encrypted auth token for further requests
-    $("#user_bar").load("/user_bar/" + json.result.username + "?encrypted_auth_token=" + json.result.encrypted_auth_token + "&store_owner=" + json.result.store_owner);
+    $("#user_bar").load("/user_bar/" + json.result.username + "?email=" + json.result.email +
+        "&auth_token=" + json.result.auth_token + "&ssid=" + json.result.ssid + "&store_owner=" + json.result.store_owner);
   } else {
     $(".navbar .navbar-form")
       .attr("data-original-title", json.message)
@@ -54,7 +55,7 @@ function map_location(latitude, longitude, map_id, zoom) {
     center: center,
     zoom: zoom,
     mapTypeId: google.maps.MapTypeId.ROADMAP
-  }
+  };
   $("#" + map_id).html("");
   var map = new google.maps.Map(document.getElementById(map_id), map_options);
   var marker = new google.maps.Marker({
@@ -145,7 +146,20 @@ function concat_err_string(errs,str) {
 }
 
 function cap_words(str) {
-  return str.replace(/\w\S*/g, function(txt) {
-    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-  });
+  return str;
+}
+
+function modalAlert(header, body) {
+  $("#modalAlertHeader").html(header);
+  $("#modalAlertBody").html(body);
+  $("#modalAlertFooter").html('<button class="btn" data-dismiss="modal" aria-hidden="true">OK</button>')
+      .parent().modal("show");
+}
+
+// You can only pass a function as a string with only string arguments for modelConfirm.
+function modalConfirm(header, body, fn_string) {
+  $("#modalAlertHeader").html(header);
+  $("#modalAlertBody").html(body);
+  $("#modalAlertFooter").html('<button class="btn btn-primary" data-dismiss="modal" onclick="'+fn_string+'">OK</button><button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>')
+      .parent().modal("show");
 }

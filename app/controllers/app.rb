@@ -12,7 +12,7 @@ get "/api/?" do
 end
 
 get "/sign_out/?" do
-  session["encrypted_auth_token"] = session["user"] = nil
+  session["email"] = session["auth_token"] = session["ssid"] = session["user"] = nil
   erb (settings.mobile+"index").to_sym
 end
 
@@ -27,25 +27,16 @@ post "/set_memberships/?" do
   rest_call("/memberships",{"memberships" => params[:memberships]},"post")
 end
 
-def get_auth_token
-  if(session["encrypted_auth_token"])
-    aes = FastAES.new(settings.secret_key)
-    return aes.decrypt(session["encrypted_auth_token"])
-  else
-    return ""
-  end
-end
-
 def rest_call(address, params = {}, verb="get")
   if session["user"]
-    params.merge!({"auth_token" => get_auth_token})
+    params.merge!({"email" => session["email"], "auth_token" => session["auth_token"], "ssid" => session["ssid"]})
   end
   json_types = {:content_type => :json, :accept => :json}
-  if verb == "put"
+  if verb.match(/put/i)
     result = JSON.parse RestClient.put (settings.domain + address.to_s), params, json_types
-  elsif verb == "post"
+  elsif verb.match(/post/i)
     result = JSON.parse RestClient.post (settings.domain + address.to_s), params, json_types
-  elsif verb == "delete"
+  elsif verb.match(/delete/i)
     result = JSON.parse RestClient.delete (settings.domain + address.to_s), params: params
   else
     # Assume get
@@ -66,7 +57,7 @@ end
 get "/search/?" do
   # Refresh the query string based on the params that have been previously set, provided they include the required entries
   if(params[:latitude] && params[:longitude] && params[:search])
-    session[:query_string] = request.url
+    session["query_string"] = request.url
   end
   if(!get_or_set_session_var(params, ("latitude").to_sym) || !get_or_set_session_var(params, ("longitude").to_sym))
     redirect '/?fail=true'
@@ -101,23 +92,19 @@ get "/search/?" do
   @search_results = rest_call("/search", params.reject {|k,v| k.match(/department_/i)})
   if @search_results["success"]
     @search_results = @search_results["result"]
+    @search_results["facets"] = [] if @search_results["facets"].nil?
     erb (settings.mobile+"search").to_sym
   end
 end
 
 get "/store/:id/:offset_mins/?" do
   # Get relevant reviews
-  @reviews = rest_call("/store_reviews", {"store_id" => params[:id]})
+  @reviews = rest_call("/stores/reviews", {"store_id" => params[:id]})
   @store = rest_call("/stores/#{params[:id]}",{"offset_mins" => params[:offset_mins]})
   erb (settings.mobile+"store").to_sym
 end
 
-post "/set_item/*" do
-  p "set_item params[:splat]: #{params[:splat]}"
-  session["item_ids"] = params[:splat][0].split("/")
-end
-
-get "/item/*" do
+get "/item/:id/?" do
   if(!get_or_set_session_var(params, ("latitude").to_sym) || !get_or_set_session_var(params, ("longitude").to_sym))
     redirect '/?fail=true'
     return
@@ -132,46 +119,27 @@ get "/item/*" do
                     }
 
   @item_results = []
-  @filtered_results = []
   item_params = {"latitude" => session["latitude"], "longitude" => session["longitude"]}
-  if session["item_ids"]
-    item_ids = session["item_ids"]
-    # Throw back items here.  Substring the request.url from the 4th slash to either the ? or the end of the string and replace it
-    qm = request.url.index("?")
-    if qm == nil
-      qm = request.url.length
-    end
-    slash = request.url.index("/",request.url.index("/",7)+1)
+  @store_ids = params[:store_ids].to_s.gsub(/[\[\]\"\'\\\s]/,"").split(",").map {|val| val.to_i}
+  item_id = params[:id].to_i
 
-    new_url = request.url.sub("/item/#{request.url[slash+1..qm-1]}","/item/#{item_ids.join("/")}")
-  else
-    item_ids = params[:splat][0].split("/")
-    new_url = request.url
-  end
+  result = rest_call("/items/" + item_id.to_s, {:store_ids => CGI.unescape(params[:store_ids].to_s)}.merge(item_params))
 
-  result = rest_call("/items",{:item_ids => item_ids}.merge(item_params))
+  puts "result: #{result}"
 
   if result["success"]
     result["result"].each {|item|
-      if (!params["min_rating"] || item["rating"].to_f >= params["min_rating"].to_f) &&
-         (!params["max_distance"] || item["distance"].to_f <= params["max_distance"].to_f) &&
-         (!params["min_price"] || item["prices"]["1"].to_f >= params["min_price"].to_f) &&
-         (!params["max_price"] || item["prices"]["1"].to_f <= params["max_price"].to_f) &&
-         (!(params["in_stock"].to_s == "true") || item["in_stock"]) &&
-         (!(params["open_now"].to_s == "true") || item["open_now"])
-        @item_results.push item
-      else
-        @filtered_results.push item["id"]
-      end
+      @item_results.push item
     }
   end
 
-  @similar_items = rest_call("/items/similar", item_params.merge({"items" => item_ids[0]}))
-  prev_query = session["query_string"]
-  session["query_string"] = new_url
-  @filtered_results.each {|id|
-    session["query_string"].sub!("/" + id.to_s,"")
-  }
+  #@similar_items = rest_call("/items/similar", item_params.merge({"items" => item_ids[0]}))
+  session["query_string"] = request.url
+
+  add_to_stores_hash(@store_ids, session["latitude"], session["longitude"])
+
+  puts "@item_results: #{@item_results}"
+  puts "$stores_hash: #{$stores_hash}"
 
   # Apply sort
   if params["sort"] == "Price"
@@ -179,37 +147,34 @@ get "/item/*" do
   elsif params["sort"] == "Rating"
     @item_results = @item_results.sort {|x,y| y["rating"].to_f <=> x["rating"].to_f}
   elsif params["sort"] == "Distance"
-    @item_results = @item_results.sort {|x,y| x["distance"].to_f <=> y["distance"].to_f}
+    @item_results = @item_results.sort {|x,y| session["store_distances"][x["store_id"]] <=> session["store_distances"][y["store_id"]]}
   end
 
   if !@item_results.empty? && !@item_results[0].empty?
     # Get relevant reviews
-    @reviews = rest_call("/item_reviews", {"item_ids" =>
-                                           @item_results.map {|result| result["id"]}})
+    @reviews = rest_call("/items/"+item_id.to_s+"/reviews", { :store_ids => CGI.unescape(params[:store_ids].to_s) })
+    
     erb (settings.mobile+"item").to_sym
-  else
-    session[:error] = "Ensure filters provide valid results"
-    redirect prev_query
   end
 end
 
-post "/toggle_helpful/:type/:id/?" do
+post "/toggle_helpful/:type/:id/:review_id/?" do
   toggle_feedback_action(params,"toggle_helpful")
 end
 
-post "/toggle_unhelpful/:type/:id/?" do
+post "/toggle_unhelpful/:type/:id/:review_id/?" do
   toggle_feedback_action(params,"toggle_unhelpful")
 end
 
-post "/toggle_inappropriate/:type/:id/?" do
+post "/toggle_inappropriate/:type/:id/:review_id/?" do
   toggle_feedback_action(params,"flag_review")
 end
 
 post "/edit/:type/:id/?" do
-  erb (settings.mobile+"edit_review").to_sym, :locals => {:rating => params[:rating],:review => params[:review], :id => params[:id], :type => params[:type].gsub("_review","")},:layout => false
+  erb (settings.mobile+"edit_review").to_sym, :locals => {:rating => params[:rating], :review => params[:review], :id => params[:id], :review_id => params[:review_id], :type => params[:type].gsub("_review","")},:layout => false
 end
 
-post "/update/:type/:id/?" do
+post "/update/:type/:id/:review_id/?" do
   modify_review("update")
 end
 
@@ -217,26 +182,43 @@ post "/create/:type/:id/?" do
   modify_review("create")
 end
 
-post "/remove/:type/:id/?" do
+post "/remove/:type/:id/:review_id/?" do
   item_or_store_action(params,"","delete")
 end
 
-post "/cart/?" do
-  rest_call("/cart",params,"post")
+post "/cart/item/:id/?" do
+  json = rest_call("/cart/item/" + params[:id].to_s,params,"post")
   calc_cart(params)
+  return JSON.generate(json)
+end
+
+put "/cart/item/:id/?" do
+  json = rest_call("/cart/item/" + params[:id].to_s,params,"put")
+  get_cart(params)
+  return JSON.generate(json)
+end
+
+get "/cart/item/:name/?" do
+  params[:sort] = nil
+  params[:search] = CGI.unescape(params[:name])
+  @search_results = rest_call("/search", params)
+  if @search_results["success"]
+    @search_results = @search_results["result"]
+    # Assume the exact name search will return the correct item first, when sorted by relevancy (the default).
+    store_ids = @search_results["results"][0]["children_results"].map{|c| c["store_id"]}
+    item_id = @search_results["results"][0]["_id"]
+    redirect "/item/#{item_id}?store_ids=#{CGI.escape(store_ids.to_s.gsub(" ",""))}"
+  else
+    redirect '/?fail=true'
+  end
 end
 
 get "/cart/?" do
-  get_cart(params, true)
+  get_cart(params)
 end
 
-post "/set_qty/:item/:quantity/?" do
-  rest_call("/cart",params,"post")
-  get_cart(params, false)
-end
-
-post "/set_cart_preferences/?" do
-  rest_call("/cart/set_preferences",params,"post")
+put "/cart/preferences/?" do
+  rest_call("/cart/preferences",params,"put")
 end
 
 get "/cart/itinerary/?" do
@@ -244,93 +226,106 @@ get "/cart/itinerary/?" do
   return JSON.generate(json)
 end
 
+def add_to_stores_hash(store_ids, latitude=nil, longitude=nil)
+  if $stores_hash.nil?
+    $stores_hash = {}
+  end
+  store_ids.each{|store_id|
+    if !$stores_hash.has_key?(store_id)
+      result = rest_call("/stores/"+store_id.to_s)
+      if result["success"]
+        store_hash = result["result"]
+        $stores_hash[store_id] = {
+          "name" => store_hash["name"],
+          "address" => store_hash["address"],
+          "latitude" => store_hash["latitude"],
+          "longitude" => store_hash["longitude"]
+        }
+      end
+    end
+
+    session["store_distances"] = {} if session["store_distances"].nil?
+    session["store_distances"][store_id] = distance_between(
+        [$stores_hash[store_id]["latitude"], $stores_hash[store_id]["longitude"]], [latitude, longitude])
+  }
+end
+
 def calc_cart(params={})
   if(!get_or_set_session_var(params, ("latitude").to_sym) || !get_or_set_session_var(params, ("longitude").to_sym))
     redirect '/?fail=true'
     return
   end
-  rest_call("/stores/pick_stores",{"latitude"=>session["latitude"],"longitude"=>session["longitude"],
-                                   "session_id"=>session[:session_id]})
+  rest_call("/cart/itinerary",{"latitude"=>session["latitude"],"longitude"=>session["longitude"],
+                               "session_id"=>session["session_id"]},
+            "put")
 end
 
 def lookup_itinerary
-  json = rest_call("/stores/lookup_itinerary")
+  json = rest_call("/cart/itinerary")
   #p "results from lookup_itinerary: #{json}"
   return json
 end
 
-def get_cart(params, refresh_immediately=true)
+def get_cart(params)
   calc_cart(params)
 
-  begin
-    # Keep looping and trying in a back-off manner until the results are ready.
-    @cart = lookup_itinerary
+  @cart = lookup_itinerary
 
-    if @cart["result"]
-      @cart = @cart["result"]
-      @item_results = @cart[0]
-      @cart_error = nil
-    else
-      # This may be a failure message or a wait message.
-      @cart_error = @cart["message"]
-      if !refresh_immediately && @cart["success"]
-        # We have to wait and try again, don't refresh until the itinerary has been calculated.
-        sleep(1)
-      end
-    end
-  end while !refresh_immediately && @cart_error && @cart["success"]
+  if @cart["result"]
+    @cart = @cart["result"]
+    @cart_error = nil
+
+    add_to_stores_hash(@cart["path"].map{|s| s["id"]}, session["latitude"], session["longitude"])
+  else
+    # This may be a failure message or a wait message.
+    @cart_error = @cart["message"]
+  end
 
   erb (settings.mobile+"cart").to_sym
 end
 
 def modify_review(type)
-  params["review"] = {"review_text" => params[:review], "rating" => params[:rating]}
+  params["review"] = {"review_text" => CGI.unescape(params[:review]), "rating" => params[:rating]}
   # Type is either "create" or "update"
   if type == "create"
     verb = "post"
-    if params[:type].to_s.match(/store/i)
-      params["review"].merge!({"store_id" => params[:id]})
-    else
-      params["review"].merge!({"item_id" => params[:id]})
-    end
-    params[:id] = nil
   else
     verb = "put"
   end
 
   review = item_or_store_action(params,"",verb)
   if review["success"]
-    return ({:success => true, :result => (erb :show_review, :locals => {:review => review["result"], :type => params[:type].gsub("_review","")}, :layout => false)}).to_json
+    return ({:success => true, :result => (erb :show_review, :locals => {:review => review["result"], :type => params[:type].gsub("_review",""), :parent_id => params[:id]}, :layout => false)}).to_json
   else
     return review.to_json
   end
 end
 
 def toggle_feedback_action(params, toggle_action)
-  item_or_store_action(params,toggle_action,"put")
+  item_or_store_action(params,toggle_action,"post")
 end
 
 def item_or_store_action(params, action, verb)
-  type = "item"
+  type = "items"
   if params[:type].to_s.match(/store/i)
-    type = "store"
+    type = "stores"
   end
-  if params[:id].nil?
-    rest_call("/#{type}_reviews/",params,verb)
+  if params[:review_id].nil?
+    rest_call("/#{type}/#{params[:id]}/reviews",params,verb)
   else
-    rest_call("/#{type}_reviews/#{params[:id].to_s}/#{action}",params,verb)
+    rest_call("/#{type}/#{params[:id]}/reviews/#{params[:review_id].to_s}/#{action}",params,verb)
   end
 end
 
 def get_or_set_session_var(params, session_var_sym)
   if params[session_var_sym].to_s.empty?
-    if session[session_var_sym].to_s.empty?
+    if session[session_var_sym.to_s].to_s.empty?
       return false
     else
-      params[session_var_sym] = session[session_var_sym]
+      params[session_var_sym] = session[session_var_sym.to_s]
     end
   else
-    session[session_var_sym] = params[session_var_sym]
+    session[session_var_sym.to_s] = params[session_var_sym]
   end
   return true
 end
@@ -338,6 +333,30 @@ end
 def set_location(params)
   session["latitude"] = params[:latitude].to_f
   session["longitude"] = params[:longitude].to_f
+end
+
+# Takes two points in form [lat,lon]
+def distance_between(point1, point2)
+  point1 = to_radians(point1)
+  point2 = to_radians(point2)
+
+  dlat = point2[0] - point1[0]
+  dlon = point2[1] - point1[1]
+
+  a = (Math.sin(dlat / 2))**2 + Math.cos(point1[0]) *
+      (Math.sin(dlon / 2))**2 * Math.cos(point2[0])
+  c = 2 * Math.atan2( Math.sqrt(a), Math.sqrt(1-a))
+  # This is the radius of the earth converted to miles
+  return c * 6371.0 * 0.621371192
+end
+
+def to_radians(*args)
+  args = args.first if args.first.is_a?(Array)
+  if args.size == 1
+    args.first.to_f * (Math::PI / 180)
+  else
+    args.map{ |i| to_radians(i)}
+  end
 end
 
 # Store report calls
@@ -350,7 +369,7 @@ get "/reports/?" do
 end
 
 get "/reports/loyalty/?" do
-  json = rest_call("/store_reviews/rating_history", {:store_ids => params[:store_ids]}, "get")
+  json = rest_call("/reports/rating_history", {:store_ids => params[:store_ids]}, "get")
   if json["success"]
     return JSON.generate(json)
   else
@@ -359,7 +378,7 @@ get "/reports/loyalty/?" do
 end
 
 get "/reports/wins/?" do
-  json = rest_call("/stores/wins_report", {:store_ids => params[:store_ids]}, "get")
+  json = rest_call("/reports/wins", {:store_ids => params[:store_ids]}, "get")
   if json["success"]
     return JSON.generate(json)
   else
@@ -368,7 +387,7 @@ get "/reports/wins/?" do
 end
 
 get "/reports/top_sellers/?" do
-  json = rest_call("/stores/top_sellers", params, "get")
+  json = rest_call("/reports/top_sellers", params, "get")
   if json["success"]
     return JSON.generate(json)
   else
@@ -379,7 +398,9 @@ end
 # Partials
 get "/user_bar/:user_data/?" do
   session["user"] = params[:user_data].chomp('"').reverse.chomp('"').reverse
-  session["encrypted_auth_token"] = params[:encrypted_auth_token]
+  session["email"] = params[:email]
+  session["auth_token"] = params[:auth_token]
+  session["ssid"] = params[:ssid]
   session["store_owner"] = (params[:store_owner] == "true")
   if mobile_request?
     return

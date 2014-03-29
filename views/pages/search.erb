@@ -1,9 +1,9 @@
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="pull-left">
-      <%= render_partial(:search_filter) %>
+      <!--<%= render_partial(:search_filter) %>-->
     </div>
-    <div class="span9">
+    <div class="span12"><!-- When we re-add filters, change this back to a span9 -->
       <ul class="nav nav-pills pull-right">
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button">Sort By<b class="caret"></b></a>
@@ -26,14 +26,13 @@
       <div class="span12">
         <ul class="thumbnails">
         <% @search_results["results"].to_enum.with_index(0).each do |result, i| %>
-          <% if !@search_results["children_results"][result["name"]].empty? %>
-          <% matched_items = @search_results["matched_items"][result["name"]].join("/") %>
           <li>
-            <%= render_partial(:show_item, {:locals => {:matched_items => matched_items, :name => result["name"], :img_url => result["img_url"],
-                                            :rating => @search_results["children_results"][result["name"]][0]["rating"], :min_price => @search_results["price_ranges"][result["name"]]["min"],
-                                            :max_price => @search_results["price_ranges"][result["name"]]["max"]}}) %>
+            <%= render_partial(:show_item, {:locals => {:id => result["_id"], :store_ids => result["children_results"].map{|c| c["store_id"]},
+                                            :name => result["name"], :img_url => result["img_url"],
+                                            :rating =>(result["distinct"].nil? ? result["children_results"][0]["rating"] : nil),
+                                            :min_price => result["price_range"]["min"],
+                                            :max_price => result["price_range"]["max"]}}) %>
           </li>
-          <% end %>
         <% end %>
         </ul>
       </div>

@@ -1,10 +1,55 @@
 $(".navbar a").tooltip("hide");
 
+// Perform a CORS call to the backend.
+function cors_call(url, params, callback, method){
+  method = ((typeof method !== 'undefined') ? method : 'GET');
+
+  $.ajax({
+    url: domain + "" + url,
+    type: method,
+    contentType: "application/json",
+    dataType: "json",
+    data: JSON.stringify(params),
+    statusCode: {
+      200: callback,
+      500: function(data){
+        modalAlert("Error 500","Sorry, we messed something up. Please bear with us, we're working on it.");
+      },
+      502: function(data){
+        modalAlert("Error 502","Our config appears to be hosed. Employing the slaves - er, interns - to recover.");
+      },
+      503: function(data){
+        modalAlert("Error 503","Help, we're drowning!... Please try again later.");
+      },
+      504: function(data){
+        modalAlert("Error 504","WHERE NOWCADO GO?!?... Please try again later.");
+      },
+      404: function(data){
+        modalAlert("Error 404","I'm sorry, I'm afraid I can't do that.");
+      },
+      422: function(data){
+        modalAlert("Error 422","Whatchu talkin' 'bout?");
+      }
+    },
+    xhrFields: {
+      withCredentials: true
+    },
+    crossDomain: true
+  });
+}
+
 $(".navbar .navbar-form").submit(function(e) {
   e.preventDefault();
-  $.getJSON(domain + "/users/sign_in?callback=?", { user: {email: $(".navbar .navbar-form input:first").val(), password: $(".navbar .navbar-form input:last").val()} }, function(json) {
-    sign_in(json);
-  });
+  // Sign in via a CORS call to the backend.
+  cors_call("/users/sign_in", {
+      email: $(".navbar .navbar-form input:first").val(),
+      password: $(".navbar .navbar-form input:last").val()
+    },
+    function(json) {
+      sign_in(json);
+    },
+    "POST"
+  );
 });
 
 $(".navbar-search").submit(search_action);
@@ -18,23 +63,29 @@ $(document).ready(set_stars());
 
 $("#sign_up_submit").click(function(e) {
   e.preventDefault();
-  $.getJSON(domain + "/users/create?callback=?", { user: {email: $("#sign_up_email").val(), username: $("#sign_up_username").val(), password: $("#sign_up_password").val()}}, function(json) {
-    if(json.success) {
-      $("#sign_up_email_error,#sign_up_username_error,#sign_up_password_error").hide();
-      $("#sign_up").modal("hide");
-      alert("Account was successfully created.\nConfirm the account with the email you received to sign in.");
-    } else {
-      //display an error somewhere, probably as a popover
-      if(json.message.email != null) {
-        $("#sign_up_email_error").html(concat_err_string(json.message.email,"email")).show();
+  cors_call("/users", {
+    email: $("#sign_up_email").val(),
+    username: $("#sign_up_username").val(),
+    password: $("#sign_up_password").val()},
+    function(json) {
+      if(json.success) {
+        $("#sign_up_email_error,#sign_up_username_error,#sign_up_password_error").hide();
+        $("#sign_up").modal("hide");
+        modalAlert("Account Created.","Confirm the account with the email you received to sign in.");
+      } else {
+        //display an error somewhere, probably as a popover
+        if(json.message.email != null) {
+          $("#sign_up_email_error").html(concat_err_string(json.message.email,"email")).show();
+        }
+        if(json.message.username != null) {
+          $("#sign_up_username_error").html(concat_err_string(json.message.username,"username")).show();
+        }
+        if(json.message.password != null) {
+          $("#sign_up_password_error").html(concat_err_string(json.message.password,"password")).show();
+        }
       }
-      if(json.message.username != null) {
-        $("#sign_up_username_error").html(concat_err_string(json.message.username,"username")).show();
-      }
-      if(json.message.password != null) {
-        $("#sign_up_password_error").html(concat_err_string(json.message.password,"password")).show();
-      }
-    }
-  });
+    },
+    "POST"
+  );
 });
 

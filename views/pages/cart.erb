@@ -1,5 +1,5 @@
 <% if @cart_error %>
-<div class="alert alert-error"><%= @cart_error %></div>
+<div id="cart_alert" class="alert alert-error"><%= @cart_error %></div>
 <% else %>
 
 <h2>Shopping Cart</h2>
@@ -15,28 +15,28 @@
     <table>
       <tr>
         <td><b>Maximum total distance (miles) you would like to travel: </b></td>
-        <td><input type="text" id="cart_preferences_max_distance" class="input-mini" value="<%= @cart[1]["max_distance"] %>"></td>
+        <td><input type="text" id="cart_preferences_max_distance" class="input-mini" value="<%= @cart["max_distance"] %>"></td>
       </tr>
       <tr>
         <td><b>Maximum number of stores you would like to visit: </b></td>
-        <td><input type="text" id="cart_preferences_max_stores" class="input-mini" value="<%= @cart[1]["max_stores"] %>"></td>
+        <td><input type="text" id="cart_preferences_max_stores" class="input-mini" value="<%= @cart["max_stores"] %>"></td>
       </tr>
       <tr>
         <td><b>Minimum rating you would like an item to have (0-5): </b></td>
-        <td><input type="text" id="cart_preferences_min_rating" class="input-mini" value="<%= @cart[1]["min_rating"] %>"></td>
+        <td><input type="text" id="cart_preferences_min_rating" class="input-mini" value="<%= @cart["min_rating"] %>"></td>
       </tr>
       <tr>
         <td><b>Rank the following from most to least important to you: </b></td>
       </tr>
     </table>
     <ul id="cart_preferences_ranking" class="nav">
-      <% if !@cart[1]["sort"] %>
-        <%= render_partial(:cart_preferences_sort, {:locals => {:attribute => "price"}}) %>
-        <%= render_partial(:cart_preferences_sort, {:locals => {:attribute => "distance"}}) %>
-        <%= render_partial(:cart_preferences_sort, {:locals => {:attribute => "rating"}}) %>
+      <% if !@cart["sort"] %>
+        <%= render_partial(:cart_preferences_sort, {:locals => {:attribute => "price", :num_options => 3}}) %>
+        <%= render_partial(:cart_preferences_sort, {:locals => {:attribute => "distance", :num_options => 3}}) %>
+        <%= render_partial(:cart_preferences_sort, {:locals => {:attribute => "rating", :num_options => 3}}) %>
       <% else %>
-        <% @cart[1]["sort"].each do |sort| %>
-        <%= render_partial(:cart_preferences_sort, {:locals =>{:attribute => sort}}) %>
+        <% @cart["sort"].each do |sort| %>
+        <%= render_partial(:cart_preferences_sort, {:locals => {:attribute => sort, :num_options => @cart["sort"].length}}) %>
       <% end %>
       <% end %>
     </ul>
@@ -46,14 +46,27 @@
     <button class="btn btn-primary" id="cart_preferences_submit">Save Preferences</button>
   </div>
 </div>
-<div id="item_table_div">
-  <%= render_partial(:item_results_table) %>
-</div>
-<div><strong>Total Price: $<%= @cart[1]["overall_price"] %></strong></div>
-<div><strong>Total Distance: <%= @cart[1]["overall_distance"].round(2) %> miles</strong></div>
+<br /><br />
+<p>The best way to shop at these stores is by visiting them in this order:</p>
+<!-- Loop over the stores and print a item_results_table for the items obtained from each. -->
+<% @cart["path"].each do |store| %>
+  <span style="cursor:pointer;display:inline-block;" onclick="window.location = '/store/<%= store["id"] %>/' + (-new Date().getTimezoneOffset());"><h4>
+    <%= store["name"] %>
+    <% if store["items"][0]["open_now"] %>
+        <span class="badge badge-success" style="line-height:inherit;vertical-align:text-top;">Open Now</span>
+    <% else %>
+        <span class="badge badge-important" style="line-height:inherit;vertical-align:text-top;">Not Open Now</span>
+    <% end %>
+  </h4></span>
+  <div>
+    <% @item_results = store["items"] %>
+    <%= render_partial(:item_results_table) %>
+  </div>
+<% end %>
 
-<p>The best way to shop at these stores is by visiting them in this order: <%= @cart[1]["path"].map {|store| store["name"]}.to_s.gsub(/[\[\]\"\']/i,"")  %></p>
-<p>Directions for this path are provided below.</p>
+<div><strong>Total Price: $<%= @cart["overall_price"] %></strong></div>
+
+<p>Directions for this trip are provided below.</p>
 
 <div>
   <strong>Mode of Travel:</strong>
@@ -61,7 +74,6 @@
     <option value="DRIVING">Driving</option>
     <option value="WALKING">Walking</option>
     <option value="BICYCLING">Bicycling</option>
-    <option value="TRANSIT">Transit</option>
   </select>
 </div>
 
@@ -77,12 +89,13 @@
   var directions_map;
   var user_loc = new google.maps.LatLng(<%= session[:latitude] %>,<%= session[:longitude] %>);
   var waypts = [];
-  <% @cart[1]["path"].each do |store| %>
+  <% @cart["path"].each do |store| %>
   waypts.push({
     location:new google.maps.LatLng(<%= store["latitude"] %>,<%= store["longitude"] %>),
     stopover:true
   });
   <% end %>
+  var last_waypt = waypts.splice(waypts.length-1, 1)[0].location;
 
   function initialize() {
     directions_display = new google.maps.DirectionsRenderer();
@@ -90,7 +103,7 @@
       zoom: 14,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       center: user_loc
-    }
+    };
     directions_map = new google.maps.Map(document.getElementById("directions_map"),map_options);
     directions_display.setMap(directions_map);
     directions_display.setPanel(document.getElementById("directions_text"));
@@ -100,7 +113,7 @@
     var selected_mode = document.getElementById("mode").value;
     var request = {
       origin: user_loc,
-      destination: user_loc,
+      destination: last_waypt,
       waypoints: waypts,
       optimizeWaypoints: false,
       travelMode: google.maps.TravelMode[selected_mode]

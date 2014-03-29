@@ -1,4 +1,4 @@
-<div class="thumbnail" onclick="$.post('/set_item/<%= matched_items %>', function(){ window.location='/item/<%= matched_items %>' });" style="cursor:pointer;">
+<div class="thumbnail" onclick="window.location='/item/<%= id %>?store_ids=<%= CGI.escape(store_ids.to_s.gsub(" ","")) %>';" style="cursor:pointer;">
   <h6 style="height: 30px;"><%= name.length > 55 ? "#{cap_words(name)[0..54]}..." : cap_words(name) %></h6>
   <img src="<%= !img_url.nil? ? img_url : "holder.js/200x200"  %>" style="max-width:200px;height:200px;">
   <label><b>Rating: </b><%= render_partial(:rating, {:locals => {:rating => rating}}) %></label>

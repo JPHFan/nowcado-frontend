@@ -12,7 +12,7 @@
 <body>
 <div class="navbar navbar-fixed-top">
   <div class="navbar-inner">
-    <div class="container-fluid" style="width: auto;">
+    <div class="container-fluid" style="width: auto;padding-left:10px;padding-right:10px;">
       <div class="nav-collapse in collapse" style="height: auto;">
         <a class="brand" href="/" data-placement="bottom" data-original-title="Set your location"><%= render_partial :title %></a>
         <form class="navbar-search" data-placement="bottom" action="/search" method="get">
@@ -23,7 +23,7 @@
             <a type="submit" href=""><i class="icon-search"></i></a>
           </div>
         </form>
-        <div id="user_bar" class="container-fluid">
+        <div id="user_bar" class="container-fluid" style="padding-left:0;padding-right:0;">
           <%= render_partial :user_bar %>
         </div>
       </div>
@@ -71,11 +71,12 @@
     <button class="btn btn-primary" id="sign_up_submit">Create Account</button>
   </div>
 </div>
+<div class="modal hide fade" tabindex="1" role="dialog" aria-hidden="true">
+  <div id="modalAlertHeader" class="modal-header"></div>
+  <div id="modalAlertBody" class="modal-body"></div>
+  <div id="modalAlertFooter" class="modal-footer"></div>
+</div>
 <script src="/js/app.js"></script>
 <script src="/js/jquery.ui.addresspicker.js"></script>
 </body>
-<br />
-<div align="center">
-    <img src="/img/rackspace.png" width=128px height=38px />
-</div>
 </html>

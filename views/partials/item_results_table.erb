@@ -1,18 +1,17 @@
+<% on_cart_page = !@item_results[0]["price"].nil? %>
 <table class="table" id="item_results">
   <thead>
   <tr>
-    <%= "<th>Item</th>" if @item_results[0]["price"] %>
-    <th>Store</th>
+    <%= "<th>Item</th>" if on_cart_page %>
+    <%= "<th>Store</th>" if !on_cart_page %>
     <th>Rating</th>
-    <th>Distance</th>
+    <%= "<th>Distance</th>" if !on_cart_page %>
     <th>In Stock?</th>
-    <th>Open Now?</th>
+    <%= "<th>Open Now?</th>" if !on_cart_page %>
     <th>Price</th>
-    <%= "<th>Quantity</th>" if @item_results[0]["price"] %>
-    <% if @item_results[0]["price"] %>
+    <%= "<th>Quantity</th>" if on_cart_page %>
+    <% if on_cart_page %>
     <th>Update Item</th>
-    <% elsif @item_results.length > 1 %>
-    <th>Remove Item</th>
     <% end %>
   </tr>
   </thead>
@@ -21,24 +20,29 @@
       <% sales = sale(item["prices"]) %>
       <tr <%= sales.empty? ? "" : "class='success'"%>>
         <% if item["price"] %>
-        <td style="cursor:pointer;" onclick="$.post('/set_item/<%= item["id"] %>', function(){ window.location='/item/<%= item["id"]%>' });">
+        <td style="cursor:pointer;" onclick=" window.location='/cart/item/<%= CGI.escape(item["name"])%>?latitude=<%= session["latitude"]%>&longitude=<%= session["longitude"]%>';">
           <strong><%= item["name"] %></strong>
         </td>
-        <% end %>
+        <% else %>
         <td style="cursor:pointer;" onclick="window.location = '/store/<%= item["store_id"] %>/' + (-new Date().getTimezoneOffset());">
-          <strong><%= item["store_name"] %></strong>
+          <strong><%= $stores_hash[item["store_id"].to_i]["name"] %></strong>
         </td>
+        <% end %>
         <td style="min-width: 100px;"><%= render_partial(:rating, {:locals => {:rating => item["rating"]}}) %></td>
-        <td><%= "%.2f" % item["distance"] %> miles</td>
+        <% if !item["price"] %>
+        <td><%= "%.2f" % session["store_distances"][item["store_id"]] %> miles</td>
+        <% end %>
         <% if item["in_stock"] %>
             <td><span class="badge badge-success">Yes</span></td>
         <% else %>
             <td><span class="badge badge-important">No</span></td>
         <% end %>
+        <% if !item["price"] %>
         <% if item["open_now"] %>
             <td><span class="badge badge-success">Yes</span></td>
         <% else %>
             <td><span class="badge badge-important">No</span></td>
+        <% end %>
         <% end %>
         <% if item["price"] %>
         <td>$<%= item["price"] %></td>
@@ -48,8 +52,6 @@
         <% end %>
         <% if item["price"] %>
         <td><button class="btn btn-mini btn-primary" data-loading-text="Updating..." btnid="<%= item["id"] %>">Update</button></td>
-        <% elsif @item_results.length > 1 %>
-        <td><button class="btn btn-mini btn-danger" btnid="<%= item["id"] %>">Remove</button></td>
         <% end %>
       </tr>
       <% if !sales.empty? %>
