@@ -91,7 +91,7 @@ $("#sign_up_submit").click(function(e) {
 
 FB.init({
   appId      : '498305683523319',
-  status     : true, // check login status
+  status     : false, // check login status
   cookie     : false, // enable cookies to allow the server to access the session
   xfbml      : true  // parse XFBML
 });
