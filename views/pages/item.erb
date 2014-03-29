@@ -6,8 +6,8 @@
   <div class="row-fluid">
     <div class="pull-left">
       <div class="thumbnail" style="margin-bottom: 20px;width: 177px">
-        <% image=!@item_results[0]["img_url"].nil? ? @item_results[0]["img_url"] : "holder.js/200x200" %>
-        <img src="<%= image %>" style="height:200px;">
+        <% image=!@item_results[0]["img_url"].nil? ? "src=\"#{@item_results[0]["img_url"]}\"" : "data-src=\"holder.js/200x200\"" %>
+        <img <%= image %> style="height:200px;">
         <a style="margin-left:65px;" href="<%= image %>">Source</a>
       </div>
       <% if session[:error] %>

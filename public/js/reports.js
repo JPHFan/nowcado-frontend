@@ -1432,14 +1432,14 @@ function item_img_html(items_sold) {
   var html = "";
   for(var k in items_sold) {
     var item = items_sold[k][1],
-        img_url = item.img_url;
+        img_url = "src=\""+item.img_url+"\"";
     if(img_url === undefined || img_url == null) {
-      img_url = "holder.js/200x200";
+      img_url = "data-src=\"holder.js/200x200\"";
     }
     html +=
       '<li><div class="thumbnail">' +
         '<h6 style="height: 30px;">' + cap_words((item.name).substring(0,55)) + '</h6>' +
-        '<img src="' + img_url + '" style="max-width:200px;height:200px;">' +
+        '<img ' + img_url + ' style="max-width:200px;height:200px;">' +
         '<label><b>Rating: </b><div class="star read-only" data-rating="' + item.rating + '"></div></label>' +
         '<label><b>Price: </b>$' + item.prices[1] + ' <b>Sold: </b>' + items_sold[k][0] + '</label>' +
       '</div></li>';
