@@ -33,6 +33,9 @@ function sign_in(json) {
     $(".navbar .navbar-form")
       .attr("data-original-title", json.message)
       .tooltip("show")
+    if (json.message.subtring(0,"FB Error:".length) === "FB Error:"){
+      modalConfirm("Facebook Error", json.message.substring("FB Error: ".length) + "<br/>You must refresh the page.  Do you wish to do so now?", "window.location.reload(true)");
+    }
   }
 }
 

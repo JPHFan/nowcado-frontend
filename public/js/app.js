@@ -108,7 +108,6 @@ $("#facebook_login_icon").tooltip("hide").click(function(e) {
         },
         function(json) {
           sign_in(json);
-          document.cookie = "";
         },
         "POST"
       );
