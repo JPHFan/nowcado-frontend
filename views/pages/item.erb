@@ -6,9 +6,9 @@
   <div class="row-fluid">
     <div class="pull-left">
       <div class="thumbnail" style="margin-bottom: 20px;width: 177px">
-        <% image=!@item_results[0]["img_url"].nil? ? "src=\"#{@item_results[0]["img_url"]}\"" : "data-src=\"holder.js/200x200\"" %>
-        <img <%= image %> style="height:200px;">
-        <a style="margin-left:65px;" href="<%= image %>">Source</a>
+        <% img_valid = !@item_results[0]["img_url"].nil? %>
+        <% image= img_valid ? "src=\"#{@item_results[0]["img_url"]}\"" : "data-src=\"holder.js/200x200\"" %>
+        <a href="<%= img_valid ? image[(image.index("src=\"")+5)..(-2)] : "#" %>"><img <%= image %> style="height:200px;"></a>
       </div>
       <% if session[:error] %>
       <label class="label label-warning"><%= show_flash(:error) %></label>
