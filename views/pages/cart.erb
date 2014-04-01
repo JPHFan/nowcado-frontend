@@ -52,11 +52,11 @@
 <% @cart["path"].each do |store| %>
   <span style="cursor:pointer;display:inline-block;" onclick="window.location = '/store/<%= store["id"] %>/' + (-new Date().getTimezoneOffset());"><h4>
     <%= store["name"] %>
-    <% if store["items"][0]["open_now"] %>
+    <!--<% if store["items"][0]["open_now"] %>
         <span class="badge badge-success" style="line-height:inherit;vertical-align:text-top;">Open Now</span>
     <% else %>
         <span class="badge badge-important" style="line-height:inherit;vertical-align:text-top;">Not Open Now</span>
-    <% end %>
+    <% end %>-->
   </h4></span>
   <div>
     <% @item_results = store["items"] %>

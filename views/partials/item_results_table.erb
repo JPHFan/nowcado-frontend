@@ -6,8 +6,8 @@
     <%= "<th>Store</th>" if !on_cart_page %>
     <th>Rating</th>
     <%= "<th>Distance</th>" if !on_cart_page %>
-    <th>In Stock?</th>
-    <%= "<th>Open Now?</th>" if !on_cart_page %>
+    <!--<th>In Stock?</th>-->
+    <!--<%= "<th>Open Now?</th>" if !on_cart_page %>-->
     <th>Price</th>
     <%= "<th>Quantity</th>" if on_cart_page %>
     <% if on_cart_page %>
@@ -32,7 +32,7 @@
         <% if !item["price"] %>
         <td><%= "%.2f" % session["store_distances"][item["store_id"]] %> miles</td>
         <% end %>
-        <% if item["in_stock"] %>
+        <!--<% if item["in_stock"] %>
             <td><span class="badge badge-success">Yes</span></td>
         <% else %>
             <td><span class="badge badge-important">No</span></td>
@@ -43,7 +43,7 @@
         <% else %>
             <td><span class="badge badge-important">No</span></td>
         <% end %>
-        <% end %>
+        <% end %>-->
         <% if item["price"] %>
         <td>$<%= item["price"] %></td>
         <td><input class="input-mini" value="<%= item["quantity_requested"] %>"></td>
