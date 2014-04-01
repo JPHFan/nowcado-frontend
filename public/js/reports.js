@@ -1432,7 +1432,7 @@ function item_img_html(items_sold) {
   var html = "";
   for(var k in items_sold) {
     var item = items_sold[k][1],
-        img_url = "src=\""+item.img_url+"\"";
+        img_url = "src=\""+domain+item.img_url+"\"";
     if(img_url === undefined || img_url == null) {
       img_url = "data-src=\"holder.js/200x200\"";
     }
