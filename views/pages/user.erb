@@ -3,7 +3,7 @@
   <div class="row thumbnails">
     <% @memberships["result"].each do |chain| %>
     <div class="thumbnail span3" style="margin-bottom: 20px;">
-      <img <%= "src=\"#{chain["img_url"]}\"" if !chain["img_url"].nil? %> style="max-width: 200px;height: 50px;">
+      <img <%= "src=\"#{settings.domain}#{chain["img_url"]}\"" if !chain["img_url"].nil? %> style="max-width: 200px;height: 50px;">
       <div>
         <input type="checkbox" <%= "checked=\"checked\"" if @user_memberships["result"].include?(chain["id"]) %>>
         <input type="hidden" value="<%= chain["id"] %>">
