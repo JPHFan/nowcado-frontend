@@ -218,7 +218,8 @@ get "/cart/?" do
 end
 
 put "/cart/preferences/?" do
-  rest_call("/cart/preferences",params,"put")
+  json = rest_call("/cart/preferences",params,"put")
+  return JSON.generate(json)
 end
 
 get "/cart/itinerary/?" do
