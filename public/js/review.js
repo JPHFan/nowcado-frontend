@@ -62,6 +62,18 @@ function handle_review_btn_click(href, type) {
   else {
     link += "?";
   }
+  // For feedback buttons, toggle the UI now, instead of waiting for a backend response.
+  if(icon.attr("group") != "user"){
+    icon.toggleClass("active");
+    if(type == "helpful") {
+      // remove the unhelpful selection too.
+      icon.parent().children("div[type='unhelpful']").removeClass("active");
+    }
+    if(type == "unhelpful") {
+      // remove the helpful selection too.
+      icon.parent().children("div[type='helpful']").removeClass("active");
+    }
+  }
   $.post(link + "rating=" + rating + "&review=" + review,function(data) {
     if(icon.attr("group") == "user") {
       if(type == "remove") {
@@ -75,17 +87,6 @@ function handle_review_btn_click(href, type) {
         edited_review_last_html = icon.parent().parent()[0].outerHTML;
         icon.parent().parent().replaceWith(data);
         review_submit_handler("update");
-      }
-    }
-    else {
-      icon.toggleClass("active");
-      if(type == "helpful") {
-        // remove the unhelpful selection too.
-        icon.next().removeClass("active");
-      }
-      if(type == "unhelpful") {
-        // remove the helpful selection too.
-        icon.prev().removeClass("active");
       }
     }
   });
