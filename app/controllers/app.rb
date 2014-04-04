@@ -303,7 +303,9 @@ def modify_review(type)
 end
 
 def toggle_feedback_action(params, toggle_action)
-  item_or_store_action(params,toggle_action,"post")
+  params.delete(:review)
+  params.delete(:rating)
+  item_or_store_action(params,toggle_action,"post").to_json
 end
 
 def item_or_store_action(params, action, verb)
