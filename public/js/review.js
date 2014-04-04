@@ -103,7 +103,7 @@ function attach_form_handlers() {
       modalConfirm("Delete Review", "Are you sure you want to delete this review?", "handle_review_btn_click('"+href+"', '"+type+"')");
     }
     else {
-      handle_review_btn_click(icon, type);
+      handle_review_btn_click(href, type);
     }
 
   });
