@@ -16,7 +16,7 @@ $("#add_item_qty_to_cart").submit(function(e) {
       success: function(json){
         if (json.success && json.result !== undefined){
           var plur_text = "There are now ";
-          if (quantity <= 1){
+          if (json.result[item_id].quantity <= 1){
             plur_text = "There is now ";
           }
           $("#qty_confirm_text").html(plur_text + json.result[item_id].quantity);
