@@ -31,6 +31,7 @@ def rest_call(address, params = {}, verb="get")
   if session["user"]
     params.merge!({"email" => session["email"], "auth_token" => session["auth_token"], "ssid" => session["ssid"]})
   end
+  params.merge!({"remote_ip" => request.ip})
   json_types = {:content_type => :json, :accept => :json}
   if verb.match(/put/i)
     result = JSON.parse RestClient.put (settings.domain + address.to_s), params, json_types
