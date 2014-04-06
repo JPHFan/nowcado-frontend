@@ -32,7 +32,8 @@ $(document).ready(function() {
       }
     }
     else{
-      if ($("#cart_alert").html() !== undefined){
+      // Do not reload an empty cart
+      if ($("#cart_alert").html() !== undefined && json.message === undefined){
         location.reload(true);
       }
     }
