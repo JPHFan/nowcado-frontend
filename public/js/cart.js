@@ -15,17 +15,19 @@ $(document).ready(function() {
       var cart_retry = window.setInterval(function() {
         $.getJSON("/cart/itinerary", {}, cart_retry_func);
       }, CART_RETRY_INTERVAL_MS);
+      var loading_text = window.setInterval(function() {
+        // Append loading dots
+        var temp_text = alert_text;
+        for(var i = 0; i < dots%4; i++)
+          temp_text += ".";
+        alert_div.html(temp_text);
+        dots++;
+      }, 200);
       function cart_retry_func(json){
         if (json.success){
           window.clearInterval(cart_retry);
+          window.clearInterval(loading_text);
           location.reload(true);
-        } else {
-            // Append loading dots
-            var temp_text = alert_text;
-            for(var i = 0; i < dots%4; i++)
-              temp_text += ".";
-            alert_div.html(temp_text);
-            dots++;
         }
       }
     }
