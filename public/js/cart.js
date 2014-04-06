@@ -22,7 +22,7 @@ $(document).ready(function() {
           temp_text += ".";
         alert_div.html(temp_text);
         dots++;
-      }, 200);
+      }, 400);
       function cart_retry_func(json){
         if (json.success){
           window.clearInterval(cart_retry);

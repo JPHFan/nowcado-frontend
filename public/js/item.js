@@ -21,6 +21,9 @@ $("#add_item_qty_to_cart").submit(function(e) {
           }
           $("#qty_confirm_text").html(plur_text + json.result[item_id].quantity);
           $("#add_item_alert").show();
+
+          // Highlight the cart tooltip to make it more visible
+          $("#cart_link").tooltip("show");
         }
         else{
           // You were not able to add the item to your cart - limit reached.
