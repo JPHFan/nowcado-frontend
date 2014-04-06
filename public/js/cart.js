@@ -9,7 +9,9 @@ $(document).ready(function() {
 
   $.getJSON("/cart/itinerary", {}, function(json){
     if (!json.success){
-
+      var alert_div = $("#cart_alert");
+      var alert_text = alert_div.html();
+      var dots = 0;
       var cart_retry = window.setInterval(function() {
         $.getJSON("/cart/itinerary", {}, cart_retry_func);
       }, CART_RETRY_INTERVAL_MS);
@@ -17,6 +19,13 @@ $(document).ready(function() {
         if (json.success){
           window.clearInterval(cart_retry);
           location.reload(true);
+        } else {
+            // Append loading dots
+            var temp_text = alert_text;
+            for(var i = 0; i < dots%4; i++)
+              temp_text += ".";
+            alert_div.html(temp_text);
+            dots++;
         }
       }
     }
