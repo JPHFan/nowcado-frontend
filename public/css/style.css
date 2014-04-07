@@ -112,7 +112,7 @@ ul.thumbnails > li > div.thumbnail {
     color	: #FFF;
     font-weight	: bold;
     font-size	: 14px;
-    padding	: 2px;
+    padding	: 4px;
 }
 
 .feedback-form-wrapper {
@@ -124,7 +124,8 @@ of the screen.
     z-index	: 9999; /* Make sure it floats a little higher than the feedback form div below */
     top	: 100px;
     left	: -395px; /* Bring the div in and hide the left (top) border */
-    width	: 350px;
+    width	: 377px;
+    margin-left: 10px;
 }
 
 /* This will put some distance between the input box and the next label */
@@ -146,7 +147,7 @@ close button when the form is slid into view.
     left	: -10px\9; /* Less Than IE9 Hack - Bring the div in and hide the left (top) border */
     top	: 200px;
     cursor	: pointer;
-    padding-left: -75px;
+    padding-left: 20px;
     width	: 90px; /* Since this is getting rotated width appears as height to the eye*/
     height	: 15px; /* Since this is getting rotated height appears as width to the eye*/
     text-align	: center;
