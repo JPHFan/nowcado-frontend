@@ -147,11 +147,10 @@ close button when the form is slid into view.
     right	: -10px\9; /* Less Than IE9 Hack - Bring the div in and hide the right (top) border */
     top	: 200px;
     cursor	: pointer;
-    padding-bottom: 20px;
-    margin-right: 7px;
+    margin-right: 13px;
     width	: 90px; /* Since this is getting rotated width appears as height to the eye*/
     height	: 20px; /* Since this is getting rotated height appears as width to the eye*/
-    text-align	: right;
+    text-align	: center;
     border-top	: 2px solid #2F96B4;
     border-left	: 1px solid #333;
     border-right: 1px solid #333;
