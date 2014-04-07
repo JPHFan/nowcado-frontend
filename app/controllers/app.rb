@@ -18,22 +18,10 @@ post "/feedback/?" do
   email_hash = {
     :to => 'nowcado@gmail.com',
     :subject => params[:subject],
-    :body => params[:comment],
-    :port => '587',
-    :via => :smtp,
-    :via_options => {
-      :address => 'smtp.gmail.com',
-      :port => '587',
-      :enable_starttls_auto => true,
-      :user_name => ENV['EMAIL_USERNAME'],
-      :password => ENV['EMAIL_PASSWORD'],
-      :authentication => :plain,
-      :domain => 'localhost.localdomain'
-    }
+    :body => "Email: " + params[:email] + "\n" + params[:comment],
+    :from => ENV['EMAIL_USERNAME']
   }
-
-  email_hash.merge!({:from => '<' + params[:email] + '>'}) if !params[:email].nil?
-  Pony.mail(email_hash)
+  Mail.deliver email_hash
 end
 
 get "/api/?" do

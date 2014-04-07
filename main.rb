@@ -5,6 +5,7 @@ require 'rest_client'
 require 'profiler'
 require 'sanitize'
 require 'cgi'
+require 'mail'
 
 configure do
   set :views, ['views/layouts', 'views/pages', 'views/partials']
@@ -19,6 +20,18 @@ configure do
 
   set :mobile, ""
   set :erb, :layout => :layout
+
+  Mail.defaults do
+    delivery_method :smtp, {
+      :address => 'smtp.gmail.com',
+      :port => 587,
+      :enable_starttls_auto => true,
+      :user_name => ENV['EMAIL_USERNAME'],
+      :password => ENV['EMAIL_PASSWORD'],
+      :authentication => :plain
+    }
+  end
+
 end
 
 Dir["./app/models/*.rb"].each { |file| require file }
