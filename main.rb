@@ -25,12 +25,12 @@ Dir["./app/models/*.rb"].each { |file| require file }
 Dir["./app/helpers/*.rb"].each { |file| require file }
 Dir["./app/controllers/*.rb"].each { |file| require file }
 
-#before "/*" do
-#  #if mobile_request?
-#  #  set :mobile, "mobile/"
-#  #  set :erb, :layout => :mobile
-#  #else
-#  set :mobile, ""
-#  set :erb, :layout => :layout
-#  #end
-#end
+before "/*" do
+  if android_request?
+    # Prompt user to go to android page
+    redirect '/android'
+  elsif ios_request?
+    # Prompt user to go to ios page
+    redirect '/ios'
+  end
+end
