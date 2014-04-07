@@ -117,15 +117,15 @@ ul.thumbnails > li > div.thumbnail {
 
 .feedback-form-wrapper {
     /*
-This is the CSS for the feedback div that is fixed to the top left hand side
+This is the CSS for the feedback div that is fixed to the top right hand side
 of the screen.
 */
     display	: block;
     z-index	: 9999; /* Make sure it floats a little higher than the feedback form div below */
     top	: 100px;
-    left	: -395px; /* Bring the div in and hide the left (top) border */
+    right	: -395px; /* Bring the div in and hide the right (top) border */
     width	: 377px;
-    margin-left: 10px;
+    margin-right: 5px;
 }
 
 /* This will put some distance between the input box and the next label */
@@ -139,15 +139,15 @@ of the screen.
 
 .feedback-toggle {
     /*
-This is the CSS for the feedback div that is fixed to the top left hand side
+This is the CSS for the feedback div that is fixed to the top right hand side
 of the screen. This div should slide with the form so that it provides a
 close button when the form is slid into view.
 */
-    left	: -49px; /* Bring the div in and hide the left (top) border */
-    left	: -10px\9; /* Less Than IE9 Hack - Bring the div in and hide the left (top) border */
+    right	: -49px; /* Bring the div in and hide the right (top) border */
+    right	: -10px\9; /* Less Than IE9 Hack - Bring the div in and hide the right (top) border */
     top	: 200px;
     cursor	: pointer;
-    padding-left: 20px;
+    padding-right: 20px;
     width	: 90px; /* Since this is getting rotated width appears as height to the eye*/
     height	: 15px; /* Since this is getting rotated height appears as width to the eye*/
     text-align	: center;

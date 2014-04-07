@@ -29,10 +29,10 @@
     // This is the Feedback toggle functionality it slides the feedback form in and out
     // of view when the user clicks the div with the class .feedback-toggle
     $('.feedback-toggle').click( function(){
-        var left = parseFloat($('.feedback')[0].style.left.match(/[0-9]+/g)) || 49,
+        var right = parseFloat($('.feedback')[0].style.right.match(/[0-9]+/g)) || 49,
                 tgl	= '+=390';
-        (left > 49) ? tgl = '-=390' : tgl = '+=390';
-        $('.feedback').animate({ left: tgl}, 500);
+        (right > 49) ? tgl = '-=390' : tgl = '+=390';
+        $('.feedback').animate({ right: tgl}, 500);
     });
 
     /*
@@ -99,7 +99,7 @@ to add.
                 data	: data , // serializes the form's elements.
                 success	: function(data){
                     $('.feedback').find('.alert-error').fadeIn('fast');
-                    $('.feedback').animate({ left: '-=390'}, 500);
+                    $('.feedback').animate({ right: '-=390'}, 500);
                 },
                 error	: function(data){
                     $('.feedback').find('.alert-block').fadeIn('fast');
