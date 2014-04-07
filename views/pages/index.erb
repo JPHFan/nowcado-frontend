@@ -27,16 +27,22 @@
         <div id="location_search_map" style="height: 300px;"></div>
       </div>
     </div>
-    <br />
-    <div class="row">
-      <div class="span4 offset1">
-        <a href="https://play.google.com/store/apps/details?id=com.nowcado.android" target="_blank"><img style="height:100px;" src="/img/google-play-store.png"></a>
-       </div>
-      <div class="span4 offset1">
-        <a href="https://itunes.apple.com/us/app/nowcado-local-shopping/id718026965?mt=8" target="_blank"><img style="height: 100px;" src="/img/iOS-app-store.png"></a>
-      </div>
-    </div>
   </div>
 
   <script src="/js/index.js"></script>
 </div>
+<% if session["android"] == true %>
+  <script src="text/javascript">
+    var android_confirmation = confirm("Would you like to download the Nowcado app to improve your experience?");
+    if(android_confirmation)
+      window.location = "https://play.google.com/store/apps/details?id=com.nowcado.android";
+  </script>
+  <% session["android"] = false %>
+<% elsif session["ios"] == true %>
+  <script src="text/javascript">
+    var ios_confirmation = confirm("Would you like to download the Nowcado app to improve your experience?");
+    if(ios_confirmation)
+      window.location = "https://itunes.apple.com/us/app/nowcado-local-shopping/id718026965?mt=8";
+  </script>
+  <% session["ios"] = false %>
+<% end %>
