@@ -25,12 +25,12 @@ Dir["./app/models/*.rb"].each { |file| require file }
 Dir["./app/helpers/*.rb"].each { |file| require file }
 Dir["./app/controllers/*.rb"].each { |file| require file }
 
-before "/" do
-  if android_request?
-    # Prompt user to go to android page
-    session["android"] = true
-  elsif ios_request?
-    # Prompt user to go to ios page
-    session["ios"] = true
-  end
-end
+#before "/" do
+#  if android_request?
+#    # Prompt user to go to android page
+#    session["android"] = true
+#  elsif ios_request?
+#    # Prompt user to go to ios page
+#    session["ios"] = true
+#  end
+#end
