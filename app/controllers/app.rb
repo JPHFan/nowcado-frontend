@@ -4,6 +4,13 @@ error 401 do
 end
 
 get "/?" do
+  if android_request?
+    # Prompt user to go to android page
+    session["android"] = true if session["android"].nil?
+  elsif ios_request?
+    # Prompt user to go to ios page
+    session["ios"] = true if session["ios"].nil?
+  end
   erb (settings.mobile+"index").to_sym
 end
 
