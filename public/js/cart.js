@@ -32,8 +32,6 @@ $(document).ready(function() {
       }
     }
     else{
-      alert_div.html(alert_text);
-      window.clearInterval(loading);
       // Do not reload an empty cart
       if ($("#cart_alert").html() !== undefined && json.message === undefined){
         location.reload(true);
