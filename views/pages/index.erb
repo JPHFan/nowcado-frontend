@@ -32,14 +32,14 @@
   <script src="/js/index.js"></script>
 </div>
 <% if session["android"] == true %>
-  <script src="text/javascript">
+  <script>
     var android_confirmation = confirm("Would you like to download the Nowcado app to improve your experience?");
     if(android_confirmation)
       window.location = "https://play.google.com/store/apps/details?id=com.nowcado.android";
   </script>
   <% session["android"] = false %>
 <% elsif session["ios"] == true %>
-  <script src="text/javascript">
+  <script>
     var ios_confirmation = confirm("Would you like to download the Nowcado app to improve your experience?");
     if(ios_confirmation)
       window.location = "https://itunes.apple.com/us/app/nowcado-local-shopping/id718026965?mt=8";
