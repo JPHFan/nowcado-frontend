@@ -8,7 +8,7 @@
       <div class="thumbnail" style="margin-bottom: 20px;width: 177px">
         <% img_valid = !@item_results[0]["img_url"].nil? %>
         <% image= img_valid ? "src=\"#{settings.domain}#{@item_results[0]["img_url"]}\"" : "data-src=\"holder.js/200x200\"" %>
-        <a href="<%= img_valid ? image[(image.index("src=\"")+5)..(-2)] : "#" %>"><img <%= image %> style="height:200px;"></a>
+        <a href="<%= img_valid ? image[(image.index("src=\"")+5)..(-2)] : "#" %>"><img <%= image %> style="max-width:200px;height:200px;"></a>
       </div>
       <% if session[:error] %>
       <label class="label label-warning"><%= show_flash(:error) %></label>
