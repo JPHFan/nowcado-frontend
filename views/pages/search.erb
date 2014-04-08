@@ -30,13 +30,11 @@
           <ul class="thumbnails">
   
           <% @search_results["results"].to_enum.with_index(0).each do |result, i| %>
-            <li>
               <%= render_partial(:show_item, {:locals => {:id => result["_id"], :store_ids => result["children_results"].map{|c| c["store_id"]},
                                               :name => result["name"], :img_url => result["img_url"],
                                               :rating =>(result["distinct"].nil? ? result["children_results"][0]["rating"] : nil),
                                               :min_price => result["price_range"]["min"],
                                               :max_price => result["price_range"]["max"]}}) %>
-            </li>
           <% end %>
           </ul>
         <% end %>
