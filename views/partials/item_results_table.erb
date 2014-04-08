@@ -20,12 +20,12 @@
       <% sales = sale(item["prices"]) %>
       <tr <%= sales.empty? ? "" : "class='success'"%>>
         <% if item["price"] %>
-        <td style="cursor:pointer;" onclick=" window.location='/cart/item/<%= CGI.escape(item["name"])%>?latitude=<%= session["latitude"]%>&longitude=<%= session["longitude"]%>';">
-          <strong><%= item["name"] %></strong>
+        <td>
+          <a href="/cart/item/<%= CGI.escape(item["name"])%>?latitude=<%= session["latitude"]%>&longitude=<%= session["longitude"]%>" style="color:#555555;text-decoration:none;"><strong><%= item["name"] %></strong></a>
         </td>
         <% else %>
-        <td style="cursor:pointer;" onclick="window.location = '/store/<%= item["store_id"] %>/' + (-new Date().getTimezoneOffset());">
-          <strong><%= $stores_hash[item["store_id"].to_i]["name"] %></strong>
+        <td>
+          <a class="tmzOffset" href="/store/<%= item["store_id"] %>/" style="color:#555555;text-decoration:none;"><strong><%= $stores_hash[item["store_id"].to_i]["name"] %></strong></a>
         </td>
         <% end %>
         <td style="min-width: 100px;"><%= render_partial(:rating, {:locals => {:rating => item["rating"]}}) %></td>
@@ -66,3 +66,10 @@
   <% end %>
   </tbody>
 </table>
+
+<script>
+  $("a.tmzOffset").each(function() {
+    var _href = $(this).attr("href");
+    $(this).attr("href",_href + -new Date().getTimezoneOffset());
+  });
+</script>
