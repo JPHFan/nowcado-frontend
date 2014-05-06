@@ -65,6 +65,24 @@ $("#cart_preferences_submit").click(function(e) {
   });
 });
 
+$("#email_trip").click(function(e) {
+  e.preventDefault();
+  $.ajax({
+    url: "/cart/email",
+    type: "POST",
+    data: {},
+    success: function(data) {
+      var json = JSON.parse(data);
+      if(json.success) {
+        $("#cart_email_message").removeClass("alert-info").addClass("alert-success");
+      } else {
+        $("#cart_email_message").removeClass("alert-success").addClass("alert-info");
+      }
+      $("#cart_email_message").html(json.message).show();
+    }
+  });
+});
+
 function update_preferences_ranking_dropdowns() {
   var sorted_ids = $("#cart_preferences_ranking").sortable("toArray");
   for(var i=0; i<sorted_ids.length; i++) {

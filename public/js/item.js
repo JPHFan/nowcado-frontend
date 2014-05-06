@@ -10,7 +10,7 @@ $("#add_item_qty_to_cart").submit(function(e) {
     var item_id = $("#add_item_qty_to_cart #add_item").val();
     // Bring up existing modal, or simply add to cart if it is empty
     if($("#no_alternatives").length != 0) {
-      addToCart([item_id],quantity,true,true);
+      addToCart([item_id],quantity,true,true,false);
     } else {
       $('#alternatives').modal('show');
     }
@@ -27,7 +27,7 @@ $("#alternatives_apply").click(function(e) {
       clicked.push(obj.getAttribute("item_id"));
     }
   });
-  addToCart(clicked, quantity,true,true);
+  addToCart(clicked, quantity,true,true,false);
   $('#alternatives').modal('hide');
 })
 

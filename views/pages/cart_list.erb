@@ -13,7 +13,7 @@
     <ul class="thumbnails">
       <% @similar_items[item_ids_arr[0]].to_enum.with_index(0).each do |result, i| %>
         <%= render_partial(:show_alternative_item, {:locals => {:id => result["id"], :name => result["name"], :img_url => result["img_url"],
-                                                    :rating =>(result["rating"]), :prechecked => item_ids_arr.include?(result["id"])}}) %>
+                                                    :rating =>(result["rating"]), :prechecked => item_ids_arr.include?(result["id"].to_s)}}) %>
       <% end %>
     </ul>
     <% end %>
@@ -25,19 +25,19 @@
   </div>
 <% end %>
 
-<br /><br />
-<div class="span12" style="margin-left:0;">
+<div class="span12">
+  <button class="btn btn-primary btn-success" id="update_cart">Update Cart</button>
+  <a href="/cart"><button class="btn btn-primary">View Trip</button></a>
+</div>
+<div class="clearfix"></div>
+<br />
+<div>
   <ul class="thumbnails">
   <% @cart.each do |item_ids, items_array| %>
     <%= render_partial(:cart_entry, {:locals => { :name => items_array[0]["name"] , :img_url => items_array[0]["img_url"], :id => item_ids.split(",")[0],
                                                   :ids => item_ids, :quantity => items_array[0]["quantity"] }}) %>
   <% end %>
   </ul>
-</div>
-
-<div>
-  <button class="btn btn-primary btn-success" id="update_cart">Update Cart</button>
-  <a href="/cart"><button class="btn btn-primary">View Trip</button></a>
 </div>
 
 <script src="/js/cart_list.js"></script>

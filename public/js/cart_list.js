@@ -4,7 +4,7 @@ var loadedQty;
 
 $("button.show_alternatives").click(function(e) {
   e.preventDefault();
-  var itemIds = this.getAttribute("alt_btnid");
+  var itemIds = this.getAttribute("alt_btnid").replace(/,/g,'\\,');
 
   loadedModalIds = itemIds;
   loadedQty = this.getAttribute("alt_qty");
@@ -21,19 +21,19 @@ $("button[id^='alternativesApply_']").click(function(e) {
   e.preventDefault();
   var quantity = loadedQty;
   // Find all clicked items, and perform addToCart
-  var clicked = [loadedModalIds.split(',')[0]];
-  $(".alternative_item").each(function(index, obj) {
+  var clicked = [loadedModalIds.split('\\,')[0]];
+  $("#alternatives_" + loadedModalIds + " .alternative_item").each(function(index, obj) {
     if(obj.style.backgroundColor != "") {
       clicked.push(obj.getAttribute("item_id"));
     }
   });
   var preclicked = loadedModalRelIds.slice(0);
-  preclicked.unshift(loadedModalIds.split(',')[0]);
-  addToCart(preclicked, 0,false,false);
-  addToCart(clicked, quantity,false,false);
+  preclicked.unshift(loadedModalIds.split('\\,')[0]);
+  if(preclicked<clicked || clicked<preclicked) {
+    addToCart(preclicked, 0,false,false,false);
+    addToCart(clicked, quantity,true,false,true);
+  }
   $('#alternatives_' + loadedModalIds).modal('hide');
-  // Must refresh page now
-  window.location.reload(true);
 })
 
 $(".alternative_item").click(function(e) {
@@ -42,8 +42,8 @@ $(".alternative_item").click(function(e) {
 
 $("#update_cart").click(function(e) {
   // Update quantities for all items, then refresh page
-  $("input[id^='input_qty_']").each(function(index, obj) {
-    addToCart(obj.getAttribute("ids"),obj.getAttribute("value"),false,false);
+  var qtyInputs = $("input[id^='input_qty_']");
+  qtyInputs.each(function(index, obj) {
+    addToCart(obj.getAttribute("ids").split(","),obj.value,false,false,index == (qtyInputs.length-1));
   });
-  window.location.reload(true);
 });

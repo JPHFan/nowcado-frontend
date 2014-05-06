@@ -168,7 +168,7 @@ function modalConfirm(header, body, fn_string) {
 }
 
 // item ids must be in the order: selected item, similar1 sorted, similar2 sorted, ...
-function addToCart(item_ids, quantity, sum, notify) {
+function addToCart(item_ids, quantity, sum, notify, refresh) {
   $.ajax({
     url:"/cart/item/"+item_ids[0],
     type: sum==true ? "POST" : "PUT",
@@ -176,25 +176,28 @@ function addToCart(item_ids, quantity, sum, notify) {
     dataType: "json",
     success: function(json){
       if(notify != true) {
-        return;
-      }
-      if (json.success && json.result !== undefined){
-        var plur_text = "There are now ";
-        var qty = json.result[item_ids.join(",")][0].quantity ;
-        if (qty <= 1){
-          plur_text = "There is now ";
-        }
-        $("#qty_confirm_text").html(plur_text + qty);
-        $("#add_item_alert").show();
 
-        // Highlight the cart tooltip to make it more visible
-        $("#cart_link").tooltip("show");
+      } else {
+        if (json.success && json.result !== undefined){
+          var plur_text = "There are now ";
+          var qty = json.result[item_ids.join(",")][0].quantity ;
+          if (qty <= 1){
+            plur_text = "There is now ";
+          }
+          $("#qty_confirm_text").html(plur_text + qty);
+          $("#add_item_alert").show();
+
+          // Highlight the cart tooltip to make it more visible
+          $("#cart_link").tooltip("show");
+        }
+        else{
+          // You were not able to add the item to your cart - limit reached.
+          $("#add_item_alert").hide();
+          $("#add_item_fail").html(json.message).show();
+        }
       }
-      else{
-        // You were not able to add the item to your cart - limit reached.
-        $("#add_item_alert").hide();
-        $("#add_item_fail").html(json.message).show();
-      }
+      if(refresh)
+        window.location.reload(true);
     }
   });
 }

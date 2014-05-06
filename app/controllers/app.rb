@@ -288,7 +288,16 @@ def lookup_itinerary
   return json
 end
 
+post "/cart/email" do
+  return JSON.generate(rest_call("/cart/itinerary/email",{},"post"))
+end
+
 get "/cart_list/?" do
+  if(!get_or_set_session_var(params, ("latitude").to_sym) || !get_or_set_session_var(params, ("longitude").to_sym))
+    redirect '/?fail=true'
+    return
+  end
+  return 401 unless session["user"]
   @similar_items = {}
   @item_names = {}
   @cart = rest_call("/cart", {})["result"]
