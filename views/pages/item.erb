@@ -5,7 +5,7 @@
   </div>
   <div class="modal-body">
     <div>Select items you would be willing to swap for <%= @item_results[0]["name"] %></div>
-    <% if @similar_results.length == 0 %>
+    <% if @similar_results.nil? || @similar_results.length == 0 %>
       <div id="no_alternatives"></div>
     <% else %>
     <ul class="thumbnails">
