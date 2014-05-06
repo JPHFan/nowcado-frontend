@@ -6,8 +6,20 @@ body {
   padding-top: 60px;
 }
 
-@media (min-width: 981px) {
-  body { padding-top: 60px; }
+@media screen and (max-width: 935px) {
+    body { padding-top: 100px; }
+}
+
+@media screen and (max-width: 496px) {
+    body { padding-top: 140px; }
+}
+
+@media screen and (max-width: 471px) {
+    body { padding-top: 180px; }
+}
+
+@media screen and (max-width: 356px) {
+    body { padding-top: 220px; }
 }
 
 #location_search_map img, #directions_map img, #store_location_map img, #store_location_search_map img {
@@ -156,3 +168,7 @@ close button when the form is slid into view.
     border-right: 1px solid #333;
     z-index	: 10000; /* Make sure it floats above the content */
 }
+
+.modal { top:10%; bottom:10%; max-height: 540px; }
+.modal-body { height: 75%; }
+.modal-footer {height: 30px; }

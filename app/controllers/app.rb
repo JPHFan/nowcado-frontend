@@ -88,12 +88,12 @@ get "/search/?" do
   if(params[:min_price] && params[:min_price] != "")
     params[:min_price] = "%.2f" % params[:min_price].to_f
   else
-    params.delete("min_price")
+    params.delete("price_min")
   end
   if(params[:max_price] && params[:max_price] != "")
     params[:max_price] = "%.2f" % params[:max_price].to_f
   else
-    params.delete("max_price")
+    params.delete("price_max")
   end
   # Update params for in_stock and open_now if set to false
   if params[:in_stock] == "false"
@@ -107,7 +107,7 @@ get "/search/?" do
     params["departments"] = departments
   end
 
-  @search_results = rest_call("/search", params.reject {|k,v| k.match(/department_/i)})
+  @search_results = rest_call("/search", params.reject {|k,v| k.match(/department_/i) })
   if @search_results["success"]
     @search_results = @search_results["result"]
     @search_results["facets"] = [] if @search_results["facets"].nil?
@@ -171,6 +171,9 @@ get "/item/:id/?" do
   if !@item_results.empty? && !@item_results[0].empty?
     # Get relevant reviews
     @reviews = rest_call("/items/"+item_id.to_s+"/reviews", { :store_ids => CGI.unescape(params[:store_ids].to_s) })
+
+    # Get similar items
+    @similar_results = rest_call("/items/"+item_id.to_s+"/similar", {})["result"]
     
     erb (settings.mobile+"item").to_sym
   end
@@ -285,6 +288,18 @@ def lookup_itinerary
   return json
 end
 
+get "/cart_list/?" do
+  @similar_items = {}
+  @item_names = {}
+  @cart = rest_call("/cart", {})["result"]
+  @cart.each {|item_ids, items_array|
+    item_id = item_ids.split(",")[0]
+    @similar_items[item_id] = rest_call("/items/"+item_id+"/similar", {})["result"]
+    @item_names[item_id] = items_array[0]["name"]
+  }
+  erb (settings.mobile+"cart_list").to_sym
+end
+
 def get_cart(params)
   calc_cart(params)
 
@@ -295,6 +310,7 @@ def get_cart(params)
     @cart_error = nil
 
     add_to_stores_hash(@cart["path"].map{|s| s["id"]}, session["latitude"], session["longitude"])
+
   else
     # This may be a failure message or a wait message.
     @cart_error = @cart["message"]

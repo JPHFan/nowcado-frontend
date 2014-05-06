@@ -1,5 +1,6 @@
 <div class="well sidebar-nav">
   <ul class="nav nav-list">
+    <!-- TODO This currently does nothing -->
     <% @search_results["facets"].each do |facet| %>
         <% if facet[1]["_type"] == "terms" %>
             <li class="nav-header"><%= facet[0] %></li>
@@ -35,26 +36,33 @@
 
         <% end %>
     <% end %>
+    <li class="nav-header">Distance (mi)</li>
+    <li>
+      <table>
+        <tr>
+          <td>Max:</td>
+          <td><input type="text" id="max_distance" class="input-mini" placeholder="0.00" value="<%= params[:max_distance] %>" /></td>
+        </tr>
+      </table>
+    </li>
     <li class="nav-header">Price</li>
     <li>
       <table>
         <tr>
           <td>Min:</td>
-          <td>$<input type="text" id="min_price" class="input-mini" placeholder="0.00" value="<%= params[:min_price] %>" /></td>
+          <td>$<input type="text" id="min_price" class="input-mini" placeholder="0.00" value="<%= ("%.2f" % params[:min_price].to_f) if params[:min_price] %>" /></td>
         </tr>
         <tr>
           <td>Max:</td>
-          <td>$<input type="text" id="max_price" class="input-mini" value="<%= params[:max_price] %>"/></td>
-        </tr>
-        <tr>
-          <td colspan="2"><button class="btn btn-success btn-link" id="price_filter">Update</button></td>
+          <td>$<input type="text" id="max_price" class="input-mini" placeholder="0.00" value="<%= ("%.2f" % params[:max_price].to_f) if params[:max_price] %>"/></td>
         </tr>
       </table>
-    </li>
+    </li><!-- TODO Temporarily disabling these filters
     <li class="nav-header">Open Now</li>
     <li><input type="checkbox" id="open_now" <%= (params[:open_now] == "true") ? "checked" : "" %>> Open now</li>
     <li class="nav-header">In Stock</li>
-    <li><input type="checkbox" id="in_stock" <%= (params[:in_stock] == "true") ? "checked" : "" %>> In stock</li>
+    <li><input type="checkbox" id="in_stock" <%= (params[:in_stock] == "true") ? "checked" : "" %>> In stock</li> -->
+    <li class="nav-header" style="text-transform: capitalize;"><button class="btn btn-link btn-success" id="apply_filters">Apply</button></li>
     <li class="nav-header" style="text-transform: capitalize;"><button class="btn btn-link btn-inverse" id="filter_reset">Reset Filters</button></li>
   </ul>
 </div>

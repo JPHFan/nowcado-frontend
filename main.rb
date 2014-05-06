@@ -14,7 +14,7 @@ configure do
   if settings.production?
     set :domain, "https://be2.nowcado.com"
   else
-    set :domain, "https://127.0.0.1:3000"
+    set :domain, "http://127.0.0.1:3000"
   end
   #set :secret_key, File.read('secret-key').strip
 

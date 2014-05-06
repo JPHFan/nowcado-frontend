@@ -1,10 +1,10 @@
 <li style="width: 210px;">
   <a href="/item/<%= id %>?store_ids=<%= CGI.escape(store_ids.to_s.gsub(" ","")) %>" style="color:#555555;text-decoration:none;">
     <div class="thumbnail">
-      <h6 style="height: 30px;"><%= name.length > 55 ? "#{cap_words(name)[0..54]}..." : cap_words(name) %></h6>
+      <h6 style="height: 50px;"><%= name.length > 90 ? "#{cap_words(name)[0..89]}..." : cap_words(name) %></h6>
       <img <%= !img_url.nil? ? "src=\"#{settings.domain}#{img_url}\"" : "data-src=\"holder.js/200x200}\""  %> style="max-width:200px;height:200px;">
       <label><b>Rating: </b><%= render_partial(:rating, {:locals => {:rating => rating}}) %></label>
-      <label><b>Price Range: </b><small><%= "$#{min_price} to $#{max_price}" %></small></label>
+      <label><b>Price Range: </b><small><%= "$#{"%.2f" % min_price} to $#{"%.2f" % max_price}" %></small></label>
     </div>
   </a>
 </li>

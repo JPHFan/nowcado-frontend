@@ -1,0 +1,43 @@
+<h2>Shopping Cart</h2>
+
+<% @cart.each do |item_ids,items_array| %>
+  <div id="alternatives_<%= item_ids %>" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="alternativesLabel_<%= item_ids %>" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+      <h3 id="alternativesLabel_<%= item_ids %>">Alternatives</h3>
+    </div>
+    <div class="modal-body">
+    <% item_ids_arr = item_ids.split(",") %>
+    <div>Select items you would be willing to swap for <%= @item_names[item_ids_arr[0]] %></div>
+    <% if @similar_items[item_ids_arr[0]].length != 0 %>
+    <ul class="thumbnails">
+      <% @similar_items[item_ids_arr[0]].to_enum.with_index(0).each do |result, i| %>
+        <%= render_partial(:show_alternative_item, {:locals => {:id => result["id"], :name => result["name"], :img_url => result["img_url"],
+                                                    :rating =>(result["rating"]), :prechecked => item_ids_arr.include?(result["id"])}}) %>
+      <% end %>
+    </ul>
+    <% end %>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      <button class="btn btn-primary" id="alternativesApply_<%= item_ids %>">Apply</button>
+    </div>
+  </div>
+<% end %>
+
+<br /><br />
+<div class="span12" style="margin-left:0;">
+  <ul class="thumbnails">
+  <% @cart.each do |item_ids, items_array| %>
+    <%= render_partial(:cart_entry, {:locals => { :name => items_array[0]["name"] , :img_url => items_array[0]["img_url"], :id => item_ids.split(",")[0],
+                                                  :ids => item_ids, :quantity => items_array[0]["quantity"] }}) %>
+  <% end %>
+  </ul>
+</div>
+
+<div>
+  <button class="btn btn-primary btn-success" id="update_cart">Update Cart</button>
+  <a href="/cart"><button class="btn btn-primary">View Trip</button></a>
+</div>
+
+<script src="/js/cart_list.js"></script>

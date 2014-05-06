@@ -1,0 +1,8 @@
+<li style="width: 210px;">
+  <div class="thumbnail">
+    <h6 style="height: 50px;"><%= name.length > 90 ? "#{cap_words(name)[0..89]}..." : cap_words(name) %></h6>
+    <img <%= !img_url.nil? ? "src=\"#{settings.domain}#{img_url}\"" : "data-src=\"holder.js/200x200}\""  %> style="max-width:200px;height:200px;">
+    <button <%= "disabled=\"true\"" if @similar_items[id].nil? || @similar_items[id].empty? %> class="btn btn-mini btn-primary show_alternatives" alt_btnid="<%= ids %>" alt_qty="<%= quantity %>">Alternatives</button>
+    <label><b>Quantity: </b><input class="input-mini" id="input_qty_<%= ids %>" ids="<%= ids %>" value="<%= quantity %>"></label>
+  </div>
+</li>

@@ -90,15 +90,3 @@ function update_preferences_ranking_list_order(changed_elem) {
     update_preferences_ranking_dropdowns();
   });
 }
-
-$("#item_results button").click(function(e) {
-  $(this).button('loading');
-  $.ajax({
-    url: "/cart/item/" + $(this).attr("btnid"),
-    type: "PUT",
-    data: {quantity: $(this).parent().prev().children("input").val()},
-    success: function(){
-      window.location.reload(true);
-    }
-  });
-});

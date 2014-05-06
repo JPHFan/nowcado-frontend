@@ -1,4 +1,28 @@
-<legend><h2><%= cap_words(@item_results[0]["name"]) %></h2></legend>
+<div id="alternatives" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="alternativesLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="alternativesLabel">Alternatives</h3>
+  </div>
+  <div class="modal-body">
+    <div>Select items you would be willing to swap for <%= @item_results[0]["name"] %></div>
+    <% if @similar_results.length == 0 %>
+      <div id="no_alternatives"></div>
+    <% else %>
+    <ul class="thumbnails">
+      <% @similar_results.to_enum.with_index(0).each do |result, i| %>
+        <%= render_partial(:show_alternative_item, {:locals => {:id => result["id"], :name => result["name"], :img_url => result["img_url"],
+                                                    :rating =>(result["rating"])}}) %>
+      <% end %>
+    </ul>
+    <% end %>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="alternatives_apply">Apply</button>
+  </div>
+</div>
+
+<legend><h2 id="item_name"><%= cap_words(@item_results[0]["name"]) %></h2></legend>
 <div class="row" style="margin-bottom: 20px;">
 </div>
 

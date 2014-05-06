@@ -38,15 +38,19 @@ $("div.sidebar-nav.well input:checkbox").click(function(e) {
   load_query_page();
 });
 
-$("#price_filter").click(function(e) {
+$("#apply_filters").click(function(e) {
   e.preventDefault();
   var min_price = $("#min_price").val();
   var max_price = $("#max_price").val();
+  var max_distance = $("#max_distance").val();
   if(min_price != "") {
     append_query_string("min_price",min_price);
   }
   if(max_price != "") {
     append_query_string("max_price",max_price);
+  }
+  if(max_distance != "") {
+    append_query_string("max_distance",max_distance);
   }
   load_query_page();
 });

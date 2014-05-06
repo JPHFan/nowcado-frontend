@@ -10,9 +10,6 @@
     <!--<%= "<th>Open Now?</th>" if !on_cart_page %>-->
     <th>Price</th>
     <%= "<th>Quantity</th>" if on_cart_page %>
-    <% if on_cart_page %>
-    <th>Update Item</th>
-    <% end %>
   </tr>
   </thead>
   <tbody>
@@ -46,12 +43,9 @@
         <% end %>-->
         <% if item["price"] %>
         <td>$<%= item["price"] %></td>
-        <td><input class="input-mini" value="<%= item["quantity_requested"] %>"></td>
+        <td><label><%= item["quantity_requested"] %></label></td>
         <% else %>
         <td>$<%= item["prices"]["1"] %></td>
-        <% end %>
-        <% if item["price"] %>
-        <td><button class="btn btn-mini btn-primary" data-loading-text="Updating..." btnid="<%= item["id"] %>">Update</button></td>
         <% end %>
       </tr>
       <% if !sales.empty? %>
