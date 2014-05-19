@@ -8,6 +8,7 @@ gem 'json'
 gem 'rest-client'
 gem 'sanitize'
 gem 'mail'
+gem 'yui-compressor', :require => 'yui/compressor'
 
 group :development do
   gem 'sass'

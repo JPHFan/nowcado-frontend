@@ -74,7 +74,7 @@ configure do
         '/css/style.css'
     ]
 
-    css_compression :sqwish, :strict => true
+    css_compression :yui
     js_compression :closure, :level => "SIMPLE_OPTIMIZATIONS"
   }
 
