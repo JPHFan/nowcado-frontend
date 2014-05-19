@@ -1,9 +1,5 @@
 <!--[if lte IE8]><script language="javascript" type="text/javascript" src="excanvas.min.js"></script><![endif]-->
-<script src="/js/flotcharts/jquery.flot.js"></script>
-<script src="/js/flotcharts/jquery.flot.pie.js"></script>
-<script src="/js/flotcharts/jquery.flot.selection.js"></script>
-<script src="/js/markerclusterer/markerclusterer_packed.js"></script>
-<script src="/js/jquery.tablesorter.min.js"></script>
+<%= js :pre_reports %>
 
 <div class="pull-left span3">
   <div id="store_reports">
@@ -55,7 +51,7 @@
 <div class="span9" id="report"></div>
 <div id="loading_div" style="display: none" class="span9 offset3"><img src="/img/ajax-loader.gif" alt="Loading..."></div>
 
-<script language="javascript" type="text/javascript" src="/js/reports.js"></script>
+<%= js :post_reports %>
 <script type="text/javascript">
 $(document).ready(function() {
   if(stores.length == 0) {

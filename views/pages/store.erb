@@ -26,7 +26,7 @@
   <%= render_partial(:reviews, {:locals => {:type => "store", :id => @store["result"]["id"]}}) %>
 </div>
 
-<script src="/js/review.js"></script>
+<%= js :store %>
 <script type="text/javascript">
   var center = new google.maps.LatLng(<%= @store["result"]["latitude"] %>, <%= @store["result"]["longitude"] %>);
   var map_options = {

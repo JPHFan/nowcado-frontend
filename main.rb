@@ -1,5 +1,7 @@
 require 'sinatra'
 require 'sinatra/static_assets'
+require 'sinatra/base'
+require 'sinatra/assetpack'
 require 'json'
 require 'rest_client'
 require 'profiler'
@@ -10,6 +12,7 @@ require 'mail'
 configure do
   set :views, ['views/layouts', 'views/pages', 'views/partials']
   enable :sessions
+  set :environment, :production
   set :production, true
   if settings.production?
     set :domain, "https://be2.nowcado.com"
@@ -31,6 +34,49 @@ configure do
       :authentication => :plain
     }
   end
+
+  set :root, File.dirname(__FILE__)
+  register Sinatra::AssetPack
+  assets {
+    serve '/js', from: 'public/js'
+    serve '/css', from: 'public/css'
+
+    js :pre_app, [
+      '/js/bootstrap.min.js',
+      '/js/jquery.raty.min.js',
+      '/js/holder.js',
+      '/js/global_functions.js'
+    ]
+    js :pre_reports, [
+      '/js/flotcharts/jquery.flot.js',
+      '/js/flotcharts/jquery.flot.pie.js',
+      '/js/flotcharts/jquery.flot.selection.js',
+      '/js/markerclusterer/markerclusterer_packed.js',
+      '/js/jquery.tablesorter.min.js'
+    ]
+    js :post_reports, ['/js/reports.js']
+    js :post_app, [
+      '/js/app.js',
+      '/js/jquery.ui.addresspicker.js',
+      '/js/bootstrap.min.js'
+    ]
+    js :cart, ['/js/cart.js']
+    js :cart_list, ['/js/cart_list.js']
+    js :index, ['/js/index.js']
+    js :item, ['/js/item.js', '/js/search.js', '/js/review.js']
+    js :search, ['/js/search.js']
+    js :store, ['/js/review.js']
+    js :user, ['/js/user.js']
+
+    css :application, [
+        '/css/bootstrap.min.css',
+        '/css/cerulean.css',
+        '/css/style.css'
+    ]
+
+    css_compression :sqwish
+    js_compression :closure, :level => "SIMPLE_OPTIMIZATIONS"
+  }
 
 end
 
