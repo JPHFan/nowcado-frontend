@@ -36,7 +36,7 @@ configure do
   end
 
   set :root, File.dirname(__FILE__)
-  register Sinatra::AssetPack
+  Sinatra::Application.register Sinatra::AssetPack
   assets {
     serve '/js', from: 'public/js'
     serve '/css', from: 'public/css'
