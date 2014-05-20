@@ -75,7 +75,7 @@ configure do
     ]
 
     css_compression :yui
-    js_compression :closure, :level => "SIMPLE_OPTIMIZATIONS"
+    js_compression :closure, :level => "WHITESPACE_ONLY"
   }
 
 end
