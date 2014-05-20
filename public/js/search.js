@@ -1,3 +1,31 @@
+function update_search_results_width() {
+  var filter_ref = $(".pull-left");
+  var filter_width = filter_ref.width();
+  var row_width = filter_ref.parent().width();
+  filter_ref.next().width((row_width-filter_width) + "px");
+}
+
+$(document).ready(function() {
+  var filter_width = 148;
+
+  $("div.well.sidebar-nav li").each(function() {
+    var temp = $(this).textWidth()+50;
+    if(temp > filter_width) {
+      filter_width = temp;
+    }
+  });
+  $("div.well.sidebar-nav").width(filter_width + "px");
+  update_search_results_width();
+});
+
+var width = $(window).width();
+$(window).resize(function() {
+  if($(this).width() != width) {
+    width = $(this).width();
+    update_search_results_width();
+  }
+})
+
 $("div.pagination a, div.sidebar-nav.well a, div.sidebar-nav.well input:radio, li.dropdown ul a").click(function(e) {
   e.preventDefault();
   if($(this).attr("value") == "min_rating" && $(this).attr("id") == 0) {
