@@ -57,8 +57,7 @@ configure do
     js :post_reports, ['/js/reports.js']
     js :post_app, [
       '/js/app.js',
-      '/js/jquery.ui.addresspicker.js',
-      '/js/bootstrap.min.js'
+      '/js/jquery.ui.addresspicker.js'
     ]
     js :cart, ['/js/cart.js']
     js :cart_list, ['/js/cart_list.js']
@@ -75,7 +74,7 @@ configure do
     ]
 
     css_compression :yui
-    js_compression :closure, :level => "WHITESPACE_ONLY"
+    js_compression :closure, :level => "SIMPLE_OPTIMIZATIONS"
   }
 
 end
