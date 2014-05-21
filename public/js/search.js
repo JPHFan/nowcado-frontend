@@ -13,6 +13,7 @@ $(document).ready(function() {
   if(applied_filters_sha_str == null)
     return;
   append_query_string("applied_filters_sha",applied_filters_sha_str);
+  append_query_string("selected",encodeURIComponent(JSON.stringify(selected_departments)));
 
   // Update widths appropriately
   var filter_width = 150;
