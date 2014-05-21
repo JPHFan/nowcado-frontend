@@ -1,41 +1,72 @@
 <div class="well sidebar-nav">
-  <ul class="nav nav-list">
-    <!-- TODO This currently does nothing -->
-    <% @search_results["facets"].each do |facet| %>
-        <% if facet[1]["_type"] == "terms" %>
-            <li class="nav-header"><%= facet[0] %></li>
-            <% facet[1]["terms"].each do |term| %>
-                <li>
-                  <% elasticsearch_term = term["term"] %>
-                  <input type="checkbox" id="<%= elasticsearch_term %>" facet="<%= facet[0] %>" <%= (params[facet[0].downcase + "_" + elasticsearch_term] == "true") ? "checked" : "" %>/> <%= cap_words(term["term"]) %>
-                </li>
-            <% end %>
-        <% elsif facet[1]["_type"] == "geo_distance" %>
-            <li class="nav-header"><%= "Max Distance" %></li>
-            <% facet[1]["ranges"].each do |range| %>
-                <li>
-                  <% context_string = " mile" %>
-                  <% to_string = range["to"].to_i.to_s %>
-                  <% if !(to_string.include? "1") %>
-                      <% context_string += "s" %>
-                  <% end %>
-                  <a href="" id="<%= to_string %>" value="max_distance" facet="<%= facet[0].capitalize %>"><%= to_string + context_string %></a>
-                </li>
-            <% end %>
-        <% else %>
-            <li class="nav-header"><%= "Min Rating" %></li>
-            <% if facet[1]["ranges"] %>
-                <% facet[1]["ranges"].unshift({"from" => 0}).each do |range| %>
-                    <li>
-                      <% rating = (range["from"].to_s == "" ? 1 : range["from"].to_i) %>
-                      <input type="radio" name="rating" id="<%= rating %>" value="min_rating" <%= (params[:min_rating].to_i == rating) ? "checked" : "" %>>
-                      <%= render_partial(:rating, {:locals => {:rating => rating}}) %>
-                    </li>
-                <% end %>
-            <% end %>
+  <div class="accordion" id="search_filters_accordion">
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#search_filters_accordion" href="#search_filters_distance">
+          Distance (mi)
+        </a>
+      </div>
+      <div id="search_filters_distance" class="accordion-body collapse in">
+        <div class="accordion-inner">
+          <table>
+            <tr>
+              <td>Max:</td>
+              <td><input type="text" id="max_distance" class="input-mini" placeholder="0.00" value="<%= params[:max_distance] %>" /></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#search_filters_accordion" href="#search_filters_price">
+          Price ($)
+        </a>
+      </div>
+      <div id="search_filters_price" class="accordion-body collapse in">
+        <div class="accordion-inner">
+          <table>
+            <tr>
+              <td>Min:</td>
+              <td>$<input type="text" id="min_price" class="input-mini" placeholder="0.00" value="<%= ("%.2f" % params[:min_price].to_f) if params[:min_price] %>" /></td>
+            </tr>
+            <tr>
+              <td>Max:</td>
+              <td>$<input type="text" id="max_price" class="input-mini" placeholder="0.00" value="<%= ("%.2f" % params[:max_price].to_f) if params[:max_price] %>"/></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <% if !@departments.nil? && !@departments["selectable_options"].nil? %>
+      <% @departments["selectable_options"].each do |key,vals_arr| %>
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <% safe_key = key.gsub('/','_') %>
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#search_filters_accordion" href="#search_filters_<%= safe_key %>">
+              <%= key %>
+            </a>
+          </div>
 
-        <% end %>
+          <div id="search_filters_<%= safe_key %>" class="accordion-body collapse">
+            <div class="accordion-inner">
+              <table>
+                <% vals_arr.each do |term| %>
+                <tr><td>
+                  <input type="checkbox" term="<%= term %>" key="<%= key %>" /> <%= term %>
+                </td></tr>
+                <% end %>
+              </table>
+            </div>
+          </div>
+        </div>
+      <% end %>
     <% end %>
+  </div>
+
+
+  <!--
+  <ul class="nav nav-list">
     <li class="nav-header">Distance (mi)</li>
     <li>
       <table>
@@ -57,7 +88,20 @@
           <td>$<input type="text" id="max_price" class="input-mini" placeholder="0.00" value="<%= ("%.2f" % params[:max_price].to_f) if params[:max_price] %>"/></td>
         </tr>
       </table>
-    </li><!-- TODO Temporarily disabling these filters
+    </li>
+
+    <% if !@departments.nil? && !@departments["selectable_options"].nil? %>
+      <% @departments["selectable_options"].each do |key,vals_arr| %>
+        <li class="nav-header"><%= key %></li>
+        <% vals_arr.each do |term| %>
+        <li>
+          <input type="checkbox" term="<%= term %>" key="<%= key %>" /> <%= term %>
+        </li>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <!-- TODO Temporarily disabling these filters
     <li class="nav-header">Open Now</li>
     <li><input type="checkbox" id="open_now" <%= (params[:open_now] == "true") ? "checked" : "" %>> Open now</li>
     <li class="nav-header">In Stock</li>

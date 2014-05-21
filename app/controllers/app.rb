@@ -102,15 +102,26 @@ get "/search/?" do
   if params[:open_now] == "false"
     params.delete("open_now")
   end
-  departments = params.select {|k,v| v=="true" && k.match(/department_/i)}.map {|k,v| k[11..-1]}
-  if !departments.empty?
-    params["departments"] = departments
+
+  if params[:applied_filters_sha]
+    if params[:applied_filters_sha] != ""
+      params["department[applied_filters]"] = params[:applied_filters_sha]
+    else
+      params["department[applied_filters]"] = "{}"
+    end
+    params.delete("applied_filters_sha")
   end
 
-  @search_results = rest_call("/search", params.reject {|k,v| k.match(/department_/i) })
+  if params[:selected]
+    params["department[selected]"] = params[:selected]
+    params.delete("selected")
+  end
+
+  @search_results = rest_call("/search", params)
   if @search_results["success"]
     @search_results = @search_results["result"]
-    @search_results["facets"] = [] if @search_results["facets"].nil?
+    @departments = @search_results["filters"]["department"] if @search_results && @search_results["filters"]
+    @applied_filters_sha = @departments["applied_filters_sha"].to_s.gsub("=>",":") if @departments && @departments["applied_filters_sha"]
     erb (settings.mobile+"search").to_sym
   end
 end
@@ -208,12 +219,14 @@ post "/remove/:type/:id/:review_id/?" do
 end
 
 post "/cart/item/:id/?" do
+  return JSON.generate({"success" => false, "message" => "You must sign in to access cart functions."}) if !session["user"]
   json = rest_call("/cart/item/" + params[:id].to_s,params,"post")
   calc_cart(params)
   return JSON.generate(json)
 end
 
 put "/cart/item/:id/?" do
+  return JSON.generate({"success" => false, "message" => "You must sign in to access cart functions."}) if !session["user"]
   json = rest_call("/cart/item/" + params[:id].to_s,params,"put")
   get_cart(params)
   return JSON.generate(json)

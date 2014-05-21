@@ -1,3 +1,5 @@
+var selected_departments = {};
+
 function update_search_results_width() {
   var filter_ref = $(".pull-left");
   var filter_width = filter_ref.width();
@@ -6,10 +8,17 @@ function update_search_results_width() {
 }
 
 $(document).ready(function() {
-  var filter_width = 148;
+  // Add the applied filters value to the query string
+  var applied_filters_sha_str = $("div#applied_filters_sha").attr("sha");
+  if(applied_filters_sha_str == null)
+    return;
+  append_query_string("applied_filters_sha",applied_filters_sha_str);
 
-  $("div.well.sidebar-nav li").each(function() {
-    var temp = $(this).textWidth()+50;
+  // Update widths appropriately
+  var filter_width = 150;
+
+  $("div.well.sidebar-nav table td").each(function() {
+    var temp = $(this).textWidth()+52;
     if(temp > filter_width) {
       filter_width = temp;
     }
@@ -26,7 +35,7 @@ $(window).resize(function() {
   }
 })
 
-$("div.pagination a, div.sidebar-nav.well a, div.sidebar-nav.well input:radio, li.dropdown ul a").click(function(e) {
+$("div.pagination a, li.dropdown ul a").click(function(e) {
   e.preventDefault();
   if($(this).attr("value") == "min_rating" && $(this).attr("id") == 0) {
     remove_query_string("min_rating");
@@ -61,9 +70,24 @@ $("div.sidebar-nav.well input:checkbox").click(function(e) {
       append_query_string("in_stock",set_filter);
       break;
     default:
-      append_query_string("department_"+encodeURIComponent($(this).attr("id")),set_filter);
+      var key = $(this).attr("key");
+      var term = $(this).attr("term");
+      if(key != null && term != null) {
+        if(selected_departments[key] == null) {
+            selected_departments[key] = [];
+        }
+        if(set_filter) {
+          selected_departments[key].push(term);
+        } else {
+          var select_index = selected_departments[key].indexOf(term);
+          if(select_index != -1) {
+            selected_departments[key].splice(select_index,1);
+          }
+        }
+      }
+      append_query_string("selected",encodeURIComponent(JSON.stringify(selected_departments)));
   }
-  load_query_page();
+  // Do not refresh page until clicking apply
 });
 
 $("#apply_filters").click(function(e) {
