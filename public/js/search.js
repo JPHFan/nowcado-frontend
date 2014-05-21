@@ -97,12 +97,18 @@ $("#apply_filters").click(function(e) {
   var max_distance = $("#max_distance").val();
   if(min_price != "") {
     append_query_string("min_price",min_price);
+  } else {
+    remove_query_string("min_price");
   }
   if(max_price != "") {
     append_query_string("max_price",max_price);
+  } else {
+    remove_query_string("max_price");
   }
   if(max_distance != "") {
     append_query_string("max_distance",max_distance);
+  } else {
+    remove_query_string("max_distance");
   }
   load_query_page();
 });
