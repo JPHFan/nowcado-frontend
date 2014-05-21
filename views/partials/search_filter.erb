@@ -42,7 +42,7 @@
       <% @departments["selectable_options"].each do |key,vals_arr| %>
         <div class="accordion-group">
           <div class="accordion-heading">
-            <% safe_key = key.gsub('/','_') %>
+            <% safe_key = key.gsub('/','_').gsub(' ','-') %>
             <a class="accordion-toggle" data-toggle="collapse" data-parent="#search_filters_accordion" href="#search_filters_<%= safe_key %>">
               <%= key %>
             </a>
