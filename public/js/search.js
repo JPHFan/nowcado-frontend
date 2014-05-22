@@ -9,10 +9,10 @@ function update_search_results_width() {
 
 $(document).ready(function() {
   // Add the applied filters value to the query string
-  var applied_filters_sha_str = $("div#applied_filters_sha").attr("sha");
-  if(applied_filters_sha_str == null)
+  var applied_filters_str = $("div#applied_filters").attr("sha");
+  if(applied_filters_str == null)
     return;
-  append_query_string("applied_filters_sha",applied_filters_sha_str);
+  append_query_string("applied_filters",applied_filters_str);
   append_query_string("selected",encodeURIComponent(JSON.stringify(selected_departments)));
 
   // Update widths appropriately
@@ -93,6 +93,7 @@ $("div.sidebar-nav.well input:checkbox").click(function(e) {
 
 $("#apply_filters").click(function(e) {
   e.preventDefault();
+  remove_query_string("page");
   var min_price = $("#min_price").val();
   var max_price = $("#max_price").val();
   var max_distance = $("#max_distance").val();

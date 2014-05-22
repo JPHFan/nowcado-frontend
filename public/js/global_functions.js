@@ -25,14 +25,13 @@ function alert_load(div_id,duration) {
 
 function sign_in(json) {
   if(json.success) {
-    $(".navbar .navbar-form").tooltip("destroy");
+    $("#sign_in_error").hide();
+    $("#sign_in").modal("hide");
     // Use the encrypted auth token for further requests
     $("#user_bar").load("/user_bar/" + json.result.username + "?email=" + json.result.email +
         "&auth_token=" + json.result.auth_token + "&ssid=" + json.result.ssid + "&store_owner=" + json.result.store_owner);
   } else {
-    $(".navbar .navbar-form")
-      .attr("data-original-title", json.message)
-      .tooltip("show")
+    $("#sign_in_error").html(json.message).show();
     if (json.message.substring(0,"FB Error:".length) === "FB Error:"){
       modalConfirm("Facebook Error", json.message.substring("FB Error: ".length) + "<br/>You must refresh the page.  Do you wish to do so now?", "window.location.reload(true)");
     }
@@ -153,7 +152,7 @@ function cap_words(str) {
 }
 
 function modalAlert(header, body) {
-  $("#modalAlertHeader").html(header);
+  $("#modalAlertHeader").html('<h3>' + header + '</h3>');
   $("#modalAlertBody").html(body);
   $("#modalAlertFooter").html('<button class="btn" data-dismiss="modal" aria-hidden="true">OK</button>')
       .parent().modal("show");
@@ -161,7 +160,7 @@ function modalAlert(header, body) {
 
 // You can only pass a function as a string with only string arguments for modelConfirm.
 function modalConfirm(header, body, fn_string) {
-  $("#modalAlertHeader").html(header);
+  $("#modalAlertHeader").html('<h3>' + header + '</h3>');
   $("#modalAlertBody").html(body);
   $("#modalAlertFooter").html('<button class="btn btn-primary" data-dismiss="modal" onclick="'+fn_string+'">OK</button><button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>')
       .parent().modal("show");

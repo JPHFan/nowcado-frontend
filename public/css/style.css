@@ -168,3 +168,40 @@ close button when the form is slid into view.
 .modal { top:10%; bottom:10%; max-height: 540px; }
 .modal-body { height: 75%; }
 .modal-footer {height: 30px; }
+
+.outerGoogleLoginDiv {
+    -moz-user-select: none;
+    display: inline-block;
+    font-family: Roboto,arial,sans-serif;
+    outline: medium none;
+    overflow: hidden;
+    position: relative;
+    text-decoration: none;
+    white-space: nowrap;
+    background-color: #DD4B39;
+    border-radius: 3px 3px 3px 3px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+    color: #FFFFFF;
+    font-size: 12px;
+    height: 31px;
+    line-height: 31px;
+    font-weight:bold;
+}
+
+.innerGoogleLoginIcon {
+    background: url("/img/googlesigninbutton.png") no-repeat scroll -32px -44px transparent;
+    height: 32px;
+    margin-top: -1px;
+    width: 32px;
+    border-color: #BB3F30;
+    border-right-width: 1px;
+    border-style: solid;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.innerGoogleLoginText {
+    padding: 0 20px;
+    border-radius: 0 3px 3px 0;
+    display: inline-block;
+}

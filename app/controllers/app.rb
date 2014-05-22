@@ -81,8 +81,11 @@ get "/search/?" do
     redirect '/?fail=true'
     return
   end
-  if(!get_or_set_session_var(params, ("search").to_sym))
-    params[:search] = ""
+
+  if(params[:search].to_s.empty?)
+    params.delete("search")
+  else
+    get_or_set_session_var(params, ("search").to_sym)
   end
   # Format the price string so it looks pretty for the user.
   if(params[:min_price] && params[:min_price] != "")
@@ -103,13 +106,13 @@ get "/search/?" do
     params.delete("open_now")
   end
 
-  if params[:applied_filters_sha]
-    if params[:applied_filters_sha] != ""
-      params["department[applied_filters]"] = params[:applied_filters_sha]
+  if params[:applied_filters]
+    if params[:applied_filters] != ""
+      params["department[applied_filters]"] = params[:applied_filters]
     else
       params["department[applied_filters]"] = "{}"
     end
-    params.delete("applied_filters_sha")
+    params.delete("applied_filters")
   end
 
   if params[:selected]
@@ -121,7 +124,7 @@ get "/search/?" do
   if @search_results["success"]
     @search_results = @search_results["result"]
     @departments = @search_results["filters"]["department"] if @search_results && @search_results["filters"]
-    @applied_filters_sha = @departments["applied_filters_sha"].to_s.gsub("=>",":") if @departments && @departments["applied_filters_sha"]
+    @applied_filters = @departments["applied_filters"].to_s.gsub("=>",":") if @departments && @departments["applied_filters"]
     erb (settings.mobile+"search").to_sym
   end
 end

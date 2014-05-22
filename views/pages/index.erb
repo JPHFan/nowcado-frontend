@@ -1,8 +1,13 @@
 <div class="container">
   <div class="jumbotron">
-    <h1>Get ready to shop NOW at stores near you!</h1>
+    <h1>Optimize your local shopping NOW!</h1>
+    <% if !session["user"] %>
+    <p>
+      Note that all optimization calculations do require <a href="#sign_in" role="button" data-toggle="modal">signing in</a> to create a cart first.
+    </p>
+    <% end %>
     <p class="lead">
-      To start, either type in the address where you want to shop and hit enter, or automatically detect your location by clicking the button "Use my current location!"
+      To begin, either type in the address where you want to shop and hit enter, or automatically detect your location by clicking the button "Use my current location!"
     </p>
   </div>
   <div class="container">

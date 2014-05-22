@@ -38,12 +38,17 @@ function cors_call(url, params, callback, method){
   });
 }
 
-$(".navbar .navbar-form").submit(function(e) {
+$("#sign-in-form").submit(function(e) {
   e.preventDefault();
+  // Do nothing if missing a param
+  var email = $("#sign-in-form input:first").val();
+  var pass = $("#sign-in-form input:last").val();
+  if(email == "" || pass == "")
+    return;
   // Sign in via a CORS call to the backend.
   cors_call("/users/sign_in", {
-      email: $(".navbar .navbar-form input:first").val(),
-      password: $(".navbar .navbar-form input:last").val()
+      email: email,
+      password: pass
     },
     function(json) {
       sign_in(json);
@@ -56,7 +61,36 @@ $(".navbar-search").submit(search_action);
 $(".navbar-search a").click(function(e) {
   search_action(e);
   e.preventDefault();
+  if($(this).attr("id") == "browse") {
+      $("#search-text").val("");
+  }
   $(".navbar-search").submit();
+});
+
+$("#forgot_password_link").click(function(e) {
+    e.preventDefault();
+    // If email DNE then show an error asking them to enter it first
+    var email = $("#sign-in-form input:first").val();
+    if(email == "") {
+        $("#sign_in_error").html("Must enter in an email to send reset password instructions to.").show();
+        return;
+    }
+    $("#sign_in_error").hide();
+    // Sign in via a CORS call to the backend.
+    cors_call("/users/reset_password", {
+        email: email
+      },
+      function(json) {
+        if(json.success) {
+          // Close out the modal and show dialog saying we have email them password reset instructions
+          $("#sign_in").modal("hide");
+          modalAlert("Instructions sent","Please check your email for instructions to reset your password.");
+        } else {
+          $("#sign_in_error").html(json.message).show();
+        }
+      },
+      "POST"
+    );
 });
 
 $(document).ready(set_stars());
@@ -68,8 +102,8 @@ $("#sign_up_submit").click(function(e) {
     username: $("#sign_up_username").val(),
     password: $("#sign_up_password").val()},
     function(json) {
+      $("#sign_up_email_error,#sign_up_username_error,#sign_up_password_error").hide();
       if(json.success) {
-        $("#sign_up_email_error,#sign_up_username_error,#sign_up_password_error").hide();
         $("#sign_up").modal("hide");
         modalAlert("Account Created.","Confirm the account with the email you received to sign in.");
       } else {
@@ -95,7 +129,7 @@ FB.init({
   cookie     : true, // enable cookies to allow the server to access the session
   xfbml      : true  // parse XFBML
 });
-
+$("#google_login_icon").tooltip("hide");
 $("#facebook_login_icon").tooltip("hide").click(function(e) {
   FB.login(function(response) {
     // Handle the response
@@ -111,6 +145,43 @@ $("#facebook_login_icon").tooltip("hide").click(function(e) {
         },
         "POST"
       );
+    } else {
+      $("#sign_in_error").html(response.status).show();
     }
  }, {scope: 'email'});
 });
+
+$("#google_login_icon").click(function(e) {
+  e.preventDefault();
+  gapi.auth.signIn({
+      'callback':googleSignIn,
+      'clientid':"1084976520334-372n755g0pshf06vvae80a2fcg5dc9r1.apps.googleusercontent.com",
+      'cookiepolicy':"single_host_origin",
+      'scope':"email"
+  });
+});
+
+function googleSignIn(authResult) {
+  if (authResult['status']['signed_in']) {
+    // Update the app to reflect a signed in user
+    cors_call("/users/sign_in_googleplus", {
+      access_token: authResult['access_token']
+    },
+    function(json) {
+      sign_in(json);
+    },
+    "POST"
+    );
+  } else {
+    // Update the app to reflect a signed out user
+    // Possible error values:
+    //   "user_signed_out" - User is signed-out
+    //   "access_denied" - User denied access to your app
+    //   "immediate_failed" - Could not automatically log in the user
+    if(authResult['error'] == "access_denied") {
+      $("#sign_in_error").html("You must grant Nowcado access to sign in.").show();
+    } else if (authResult['error'] == "user_signed_out") {
+      $("#sign_in_error").html("You must successfully sign in to use this account.").show();
+    }
+  }
+}

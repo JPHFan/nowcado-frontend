@@ -15,10 +15,11 @@
         <a class="brand" href="/" data-placement="bottom" data-original-title="Set your location"><%= render_partial :title %></a>
         <form class="navbar-search" data-placement="bottom" action="/search" method="get">
           <div class="input-append">
-            <input class="search-query span4" type="text" name="search" placeholder="Search for local items" />
+            <input id="search-text" class="search-query span4" type="text" name="search" placeholder="Search for local items" />
             <input id="latitude" name="latitude" type="hidden" value=<%= session["latitude"] %> />
             <input id="longitude" name="longitude" type="hidden" value=<%= session["longitude"] %> />
             <a type="submit" href=""><i class="icon-search"></i></a>
+            <a id="browse" style="cursor:pointer;padding-bottom:20px" data-placement="bottom" data-original-title="Browse items by tag"><i class="icon-tag icon-white"></i></a>
           </div>
         </form>
         <div id="user_bar" class="container-fluid" style="padding-left:0;padding-right:0;">
@@ -38,6 +39,46 @@
 <div>
   <%= yield %>
 </div>
+
+<div id="sign_in" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="sign_inLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="sign_inLabel">Sign In</h3>
+  </div>
+  <div class="modal-body">
+    <h4>Automatic Sign In Options</h4>
+    <ul style="list-style: none;">
+      <li style="text-align: center;vertical-align: middle;">
+        <div class="fb-login-button" id="facebook_login_icon" style="cursor:pointer;margin-right:20px;vertical-align: middle;display:inline-block;" data-size="large" data-placement="bottom" data-original-title="Login with Facebook credentials"></div>
+        <div id="google_login_icon" style="cursor:pointer;width:112px;height:31px;vertical-align:middle;display:inline-block;" data-placement="bottom" data-original-title="Login with Google credentials">
+          <div tabindex="0" role="button" class="outerGoogleLoginDiv">
+            <div class="innerGoogleLoginIcon"></div><div class="innerGoogleLoginText">Sign in</div>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <h4>Manual Sign In Options</h4>
+    <ul style="list-style: none;">
+      <li>
+        <form id="sign-in-form" class="navbar-form" data-placement="bottom">
+          <input class="input-small span2" type="text" placeholder="Email">
+          <input class="input-small" type="password" placeholder="Password">
+          <button class="btn" style="margin-top:10px" type="submit">Sign In</button>
+        </form>
+        <div id="sign_in_error" class="alert alert-error" style="display: none;"></div>
+      </li>
+      <li>
+        <a href="#" id="forgot_password_link">Forgot your password?</a>
+      </li>
+      <br />
+      <li>
+        <a href="#sign_up" role="button" data-toggle="modal"><button class="btn btn-primary" style="">Sign Up</button></a>
+      </li>
+    </ul>
+  </div>
+</div>
+
 <div id="sign_up" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="sign_upLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
@@ -67,6 +108,7 @@
     <button class="btn btn-primary" id="sign_up_submit">Create Account</button>
   </div>
 </div>
+
 <div class="modal hide fade" tabindex="1" role="dialog" aria-hidden="true">
   <div id="modalAlertHeader" class="modal-header"></div>
   <div id="modalAlertBody" class="modal-body"></div>
@@ -75,6 +117,7 @@
 <%= render_partial :feedback %>
 <div id="fb-root"></div>
 <script src="//connect.facebook.net/en_US/all.js"></script>
+<script src='https://apis.google.com/js/client:plusone.js'></script>
 <%= js :post_app %>
 </body>
 </html>
