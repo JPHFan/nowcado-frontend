@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   <meta charset="utf-8">
   <title><%= render_partial :title %></title>
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css">
   <%= css :application %>
 </head>
 
@@ -31,7 +31,7 @@
 </div>
 <input id="domain" type="hidden" value=<%= settings.domain %> />
 <input id="query_string" type="hidden" value = <%= session["query_string"] %> />
-<script src="//code.jquery.com/jquery-latest.js"></script>
+<script src="//code.jquery.com/jquery-latest.min.js"></script>
 <script src="//code.jquery.com/ui/1.9.2/jquery-ui.min.js"></script>
 <script src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
 <%= js :pre_app %>

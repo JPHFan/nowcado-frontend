@@ -89,6 +89,18 @@ function getParameterByName(name) {
 
 function load_query_page() {
   var new_query = $("#query_string").val();
+  // Determine if this query is too long and if so do not do it.
+  var ua = window.navigator.userAgent;
+  var msie = ua.indexOf("MSIE ");
+
+  if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer, return version number
+  {
+      if(new_query.length > 2048) {
+          modalAlert("Too many options selected!","Please remove some options before attempting this query.")
+          return;
+      }
+  }
+
   if(new_query != window.location.href) {
     window.location = new_query;
   }

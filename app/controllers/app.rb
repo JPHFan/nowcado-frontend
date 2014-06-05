@@ -113,6 +113,9 @@ get "/search/?" do
       params["department[applied_filters]"] = "{}"
     end
     params.delete("applied_filters")
+  elsif params[:multiple_selections] && params[:multiple_selections] != "[]"
+    params["department[multiple_selections]"] = params[:multiple_selections]
+    params.delete("multiple_selections")
   end
 
   if params[:selected]
@@ -120,11 +123,52 @@ get "/search/?" do
     params.delete("selected")
   end
 
+  # Set up initial @prev_applied_filters, and append to it later
+  if params[:multiple_selections] && params[:multiple_selections] != "[]"
+    begin
+      @prev_applied_filters = JSON.parse(params[:multiple_selections].to_s.gsub("=>",":"))
+    rescue
+      @prev_applied_filters = nil
+    end
+  end
+
   @search_results = rest_call("/search", params)
   if @search_results["success"]
     @search_results = @search_results["result"]
     @departments = @search_results["filters"]["department"] if @search_results && @search_results["filters"]
-    @applied_filters = @departments["applied_filters"].to_s.gsub("=>",":") if @departments && @departments["applied_filters"]
+    if @departments
+      @applied_filters = @departments["applied_filters"].to_s.gsub("=>",":") if @departments["applied_filters"]
+      if params["department[selected]"] && !params["department[multiple_selections]"]
+        new_valid_selections = JSON.parse(params["department[selected]"])
+        if @departments["valid_selections"]
+          if new_valid_selections.is_a?(Array)
+            @departments["valid_selections"] += new_valid_selections
+          else
+            @departments["valid_selections"].push(new_valid_selections)
+          end
+        else
+          @departments["valid_selections"] = [new_valid_selections]
+        end
+      end
+      if @departments["valid_selections"]
+        p "@departments[\"valid_selections\"]: "
+        p @departments["valid_selections"]
+        temp_prev_applied_filters = @departments["valid_selections"]
+        if @prev_applied_filters
+          @prev_applied_filters += temp_prev_applied_filters
+        else
+          @prev_applied_filters = temp_prev_applied_filters
+        end
+        p "@prev_applied_filters: "
+        p @prev_applied_filters
+      end
+    end
+
+    # Remove any empty hashes in prev_applied_filters
+    if @prev_applied_filters && @prev_applied_filters.length > 0
+      @prev_applied_filters.select! {|filter| !filter.empty? }
+    end
+
     erb (settings.mobile+"search").to_sym
   end
 end

@@ -12,7 +12,7 @@ require 'mail'
 configure do
   set :views, ['views/layouts', 'views/pages', 'views/partials']
   enable :sessions
-  set :environment, :production
+  set :environment, :development
   set :production, true
   if settings.production?
     set :domain, "https://be2.nowcado.com"
@@ -42,10 +42,10 @@ configure do
     serve '/css', from: 'public/css'
 
     js :pre_app, [
-      '/js/bootstrap.min.js',
       '/js/jquery.raty.min.js',
       '/js/holder.js',
-      '/js/global_functions.js'
+      '/js/global_functions.js',
+      '/js/bootstrap.min.js'
     ]
     js :pre_reports, [
       '/js/flotcharts/jquery.flot.js',
@@ -68,6 +68,7 @@ configure do
     js :user, ['/js/user.js']
 
     css :application, [
+        '/css/jquery-ui-1.9.2.css',
         '/css/bootstrap.min.css',
         '/css/cerulean.css',
         '/css/style.css'

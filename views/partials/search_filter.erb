@@ -38,6 +38,32 @@
         </div>
       </div>
     </div>
+    <% if @prev_applied_filters && @prev_applied_filters.length > 0 %>
+      <button type="button" id="prev_applied_popover" class="btn btn-default" data-html="true" data-container="body" data-toggle="popover" data-placement="right" data-content="<ul id='tag-cloud'>
+      <% state = 0 %>
+      <% @prev_applied_filters.each do |h| %>
+        <% h.each do |k,v| %>
+        <li class='tag-cloud <%=
+            state += 1
+            case(state % 6)
+            when 0
+              "tag-cloud-success"
+            when 1
+              "tag-cloud-danger"
+            when 2
+              "tag-cloud-info"
+            when 3
+              "tag-cloud-inverse"
+            when 4
+              "tag-cloud-warning"
+            else
+              ""
+            end
+          %>'><%= "#{k}:#{v.to_s.gsub(/["\[\]]/,"")}" %></li>
+        <% end %>
+      <% end %>
+      </ul>">Applied Tags</button>
+    <% end %>
     <% if !@departments.nil? && !@departments["selectable_options"].nil? %>
       <% @departments["selectable_options"].each do |key,vals_arr| %>
         <div class="accordion-group">
@@ -110,3 +136,6 @@
     <li class="nav-header" style="text-transform: capitalize;"><button class="btn btn-link btn-inverse" id="filter_reset">Reset Filters</button></li>
   </ul>
 </div>
+<% if @prev_applied_filters %>
+<div id="applied_selections_ordered" json="<%= CGI::escape(@prev_applied_filters.to_json) %>"></div>
+<% end %>
