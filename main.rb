@@ -12,7 +12,7 @@ require 'mail'
 configure do
   set :views, ['views/layouts', 'views/pages', 'views/partials']
   enable :sessions
-  set :environment, :development
+  set :environment, :production
   set :production, true
   if settings.production?
     set :domain, "https://be2.nowcado.com"
