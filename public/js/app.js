@@ -131,6 +131,7 @@ FB.init({
 });
 $("#google_login_icon").tooltip("hide");
 $("#facebook_login_icon").tooltip("hide").click(function(e) {
+  e.preventDefault();
   FB.login(function(response) {
     // Handle the response
     if (response.status === 'connected') {
