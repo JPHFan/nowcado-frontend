@@ -200,6 +200,14 @@ close button when the form is slid into view.
     vertical-align: top;
 }
 
+div#facebook_login_icon {
+    background-image: url("/img/facebooksigninbutton.png");
+    background-position: center;
+    width: 100px;
+    height: 32px;
+    vertical-align: middle;
+}
+
 .innerGoogleLoginText {
     padding: 0 20px;
     border-radius: 0 3px 3px 0;

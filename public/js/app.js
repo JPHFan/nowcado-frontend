@@ -130,7 +130,9 @@ FB.init({
   xfbml      : true  // parse XFBML
 });
 $("#google_login_icon").tooltip("hide");
-$("#facebook_login_icon").tooltip("hide").click(function(e) {
+$("#facebook_login_icon").tooltip("hide");
+
+$("#facebook_login_icon").click(function(e) {
   e.preventDefault();
   FB.login(function(response) {
     // Handle the response
