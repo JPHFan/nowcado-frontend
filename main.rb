@@ -45,7 +45,8 @@ configure do
       '/js/jquery.raty.min.js',
       '/js/holder.js',
       '/js/global_functions.js',
-      '/js/bootstrap.min.js'
+      '/js/bootstrap.min.js',
+      '/js/growl.js'
     ]
     js :pre_reports, [
       '/js/flotcharts/jquery.flot.js',

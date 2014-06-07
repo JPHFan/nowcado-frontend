@@ -1,3 +1,18 @@
+function update_price(item, store) {
+  var price = $("input[store_id=" + store + "]").val();
+  $.post("/item/" + item + "/price", {
+    store_id: store,
+    price: price
+  }, function(data) {
+    data = JSON.parse(data);
+    if(data.success) {
+      $.growl("Item updated",{type:'success',offset:{from:'top',amount:65}});
+    } else {
+      $.growl(data.message,{type:'error',offset:{from:'top',amount:65}});
+    }
+  });
+}
+
 $("#add_item_qty_to_cart").submit(function(e) {
   e.preventDefault();
   var quantity = $("#add_item_qty_to_cart #add_qty").val();

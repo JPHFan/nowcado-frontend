@@ -237,6 +237,10 @@ get "/item/:id/?" do
   end
 end
 
+post "/item/:id/price/?" do
+  return JSON.generate(rest_call("/items/" + params[:id],params,"put"))
+end
+
 post "/toggle_helpful/:type/:id/:review_id/?" do
   toggle_feedback_action(params,"toggle_helpful")
 end

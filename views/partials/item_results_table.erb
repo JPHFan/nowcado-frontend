@@ -45,7 +45,7 @@
         <td>$<%= item["price"] %></td>
         <td><label><%= item["quantity_requested"] %></label></td>
         <% else %>
-        <td>$<%= item["prices"]["1"] %></td>
+        <td><form onsubmit="update_price(<%= item["id"] %>,<%= item["store_id"] %>);return false;">$<input type="number" min="0.00" step="0.01" store_id="<%= item["store_id"] %>" class="input-mini" value="<%= item["prices"]["1"] %>" style="margin-bottom:0px;"><button type="submit" class="btn btn-mini btn-success">Update</button></form></td>
         <% end %>
       </tr>
       <% if !sales.empty? %>
