@@ -191,7 +191,6 @@ close button when the form is slid into view.
 .innerGoogleLoginIcon {
     background: url("/img/googlesigninbutton.png") no-repeat scroll -32px -44px transparent;
     height: 32px;
-    margin-top: -1px;
     width: 32px;
     border-color: #BB3F30;
     border-right-width: 1px;
