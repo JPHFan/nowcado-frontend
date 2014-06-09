@@ -40,6 +40,10 @@ get "/user/?" do
   erb (settings.mobile+"user").to_sym
 end
 
+post "/user/edit/?" do
+  return JSON.generate(rest_call("/users",params,"put"))
+end
+
 post "/set_memberships/?" do
   rest_call("/memberships",{"memberships" => params[:memberships]},"post")
 end

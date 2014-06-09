@@ -95,6 +95,38 @@ $("#forgot_password_link").click(function(e) {
 
 $(document).ready(set_stars());
 
+$("#edit_account_submit").click(function(e) {
+  e.preventDefault();
+  // Hide all errors
+  $("#edit_account_password_confirm_error,#edit_account_password_error,#edit_account_username_error").hide();
+  var username = $("#edit_account_username").val();
+  var password = $("#edit_account_password").val();
+  var password_conf = $("#edit_account_password_confirm").val();
+  if(password != password_conf) {
+    $("#edit_account_password_confirm_error").html("Password does not match confirmation.").show();
+    return;
+  }
+  $.post("/user/edit", {
+    username: username,
+    password: password},
+    function(json) {
+      if(json.success) {
+        $("#edit_account").modal("hide");
+        $.growl("Account successfully updated.",{type:'success',offset:{from:'top',amount:65}});
+      } else {
+        // Display errors
+        if(json.message.username != null) {
+          $("#edit_account_username_error").html(concat_err_string(json.message.username,"username")).show();
+        }
+        if(json.message.password != null) {
+          $("#edit_account_password_error").html(concat_err_string(json.message.password,"password")).show();
+        }
+      }
+    },
+    "json"
+  );
+});
+
 $("#sign_up_submit").click(function(e) {
   e.preventDefault();
   cors_call("/users", {

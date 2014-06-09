@@ -108,6 +108,36 @@
     <button class="btn btn-primary" id="sign_up_submit">Create Account</button>
   </div>
 </div>
+<div id="edit_account" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="edit_accountLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="edit_accountLabel">Edit Account</h3>
+  </div>
+  <div class="modal-body">
+    <div style="text-align:center;">Note: Blank fields are not updated</div>
+    <table>
+      <tr>
+        <td><b>Username: </b></td>
+        <td><input type="text" id="edit_account_username"></td>
+        <td><div id="edit_account_username_error" class="alert alert-error" style="display: none;"></div></td>
+      </tr>
+      <tr>
+        <td><b>New Password: </b></td>
+        <td><input type="password" id="edit_account_password"></td>
+        <td><div id="edit_account_password_error" class="alert alert-error" style="display: none;"></div></td>
+      </tr>
+      <tr>
+        <td><b>Confirm New Password: </b></td>
+        <td><input type="password" id="edit_account_password_confirm"></td>
+        <td><div id="edit_account_password_confirm_error" class="alert alert-error" style="display: none;"></div></td>
+      </tr>
+    </table>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="edit_account_submit">Edit Account</button>
+  </div>
+</div>
 
 <div class="modal hide fade" tabindex="1" role="dialog" aria-hidden="true">
   <div id="modalAlertHeader" class="modal-header"></div>
