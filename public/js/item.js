@@ -4,13 +4,12 @@ function update_price(item, store) {
     store_id: store,
     price: price
   }, function(data) {
-    data = JSON.parse(data);
     if(data.success) {
       $.growl("Item updated",{type:'success',offset:{from:'top',amount:65}});
     } else {
       $.growl(data.message,{type:'error',offset:{from:'top',amount:65}});
     }
-  });
+  }, 'json');
 }
 
 $("#add_item_qty_to_cart").submit(function(e) {

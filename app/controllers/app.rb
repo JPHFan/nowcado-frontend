@@ -41,7 +41,9 @@ get "/user/?" do
 end
 
 post "/user/edit/?" do
-  return JSON.generate(rest_call("/users",params,"put"))
+  response = rest_call("/users",params,"put")
+  session["user"] = response["result"]["username"].chomp('"').reverse.chomp('"').reverse if response && response["result"] && response["result"]["username"]
+  return JSON.generate(response)
 end
 
 post "/set_memberships/?" do

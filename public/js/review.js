@@ -25,7 +25,6 @@ function review_submit_handler(action) {
     var rating = form.children("label").children("div.star.read-write").children("input").val();
     var review = encodeURI(form.children("textarea").val());
     $.post("/" + action + "/" + $(this).attr("type") + "/" + $("#reviews_parent_id").attr("parent-id") + "/" + $(this).attr("review-id") + "?rating=" + rating + "&review=" + review, function(data) {
-      data = JSON.parse(data);
       if(data["success"] == false) {
         form.children("div.alert").html(concat_err_string(data["message"],null)).show();
       } else {
@@ -34,7 +33,7 @@ function review_submit_handler(action) {
         set_stars();
         $("pre > div.btn-group > div").tooltip("hide");
       }
-    });
+    }, 'json');
   });
 
   $("button[cancel-id]").click(function(e) {

@@ -67,20 +67,15 @@ $("#cart_preferences_submit").click(function(e) {
 
 $("#email_trip").click(function(e) {
   e.preventDefault();
-  $.ajax({
-    url: "/cart/email",
-    type: "POST",
-    data: {},
-    success: function(data) {
-      var json = JSON.parse(data);
-      if(json.success) {
-        $("#cart_email_message").removeClass("alert-info").addClass("alert-success");
-      } else {
-        $("#cart_email_message").removeClass("alert-success").addClass("alert-info");
-      }
-      $("#cart_email_message").html(json.message).show();
+  $.post("/cart/email", {},function(json) {
+    if(json.success) {
+      $("#cart_email_message").removeClass("alert-info").addClass("alert-success");
+    } else {
+      $("#cart_email_message").removeClass("alert-success").addClass("alert-info");
     }
-  });
+    $("#cart_email_message").html(json.message).show();
+
+  }, 'json');
 });
 
 function update_preferences_ranking_dropdowns() {
