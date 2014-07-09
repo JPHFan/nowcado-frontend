@@ -1,0 +1,50 @@
+<div id="edit_image_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="editImgLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="editImgLabel">Set Image</h3>
+  </div>
+  <div class="modal-body">
+    <div style="width:245px;float:left;">
+      <div class="row-fluid">
+        <div class="btn-toolbar" style="margin: 0;text-align:center">
+          <div class="btn-group">
+            <button class="btn dropdown-toggle centered" data-toggle="dropdown">
+              <span id="primary_img_datetime_span"><%= Time.parse(@item_img_history["cur_image"]["time"]).utc %></span>
+              <span class="caret"></span>
+            </button>
+            <ul id="img_datetime_list" class="dropdown-menu">
+              <% @item_img_history["images"].each do |img| %>
+                <li><a img_url="<%= settings.domain + img["img_url"] %>" href="#"><%= Time.parse(img["time"]).utc %></a></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="row-fluid">
+        <img id="cur_img" src="<%= settings.domain + @item_img_history["cur_image"]["img_url"] %>" style="max-width:200px;height:200px;margin-left:auto;margin-right:auto;margin-top:40px;margin-bottom:25px;display:block;">
+      </div>
+      <div class="row-fluid">
+        <button id="apply_edit_image" class="btn btn-success centered">Apply</button>
+      </div>
+    </div>
+    <div style="border-left:1px solid #AAAAAA;;border-right:1px solid #DDDDDD;;height:325px;float:left;"></div>
+    <div style="margin-left:10px;width:250px;float:left;">
+      <span class="fileinput-button">
+        <i class="glyphicon glyphicon-plus"></i>
+        <!-- The file input field used as target for the file upload widget -->
+        <input id="fileupload" type="file" name="files[]">
+      </span>
+      <!-- The global progress bar -->
+      <div id="progress" class="progress">
+        <div class="progress-bar progress-bar-success"></div>
+      </div>
+      <!-- The container for the uploaded files -->
+      <div id="files" class="files" style="text-align:center;"></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
+
+

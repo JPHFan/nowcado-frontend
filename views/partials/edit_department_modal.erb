@@ -1,0 +1,47 @@
+<div id="edit_department_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="editDepartmentLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="editDepartmentLabel">Set Department</h3>
+  </div>
+  <div class="modal-body">
+    <% if !@item_dept_history.nil? && !@item_dept_history.empty? %>
+    <div class="row-fluid">
+      <div class="btn-toolbar" style="margin: 0;text-align:center">
+        <div class="btn-group">
+          <button class="btn dropdown-toggle centered" data-toggle="dropdown">
+            <span id="primary_department_span"><%= Time.parse(@item_dept_history[0]["time"]).utc if @item_dept_history[0] %></span>
+            <span class="caret"></span>
+          </button>
+          <ul id="dept_datetime_list" class="dropdown-menu">
+            <% @item_dept_history.each do |dept| %>
+              <li><a dept="<%= dept["name"] %>" href="#"><%= Time.parse(dept["time"]).utc %></a></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <% end %>
+    <textarea id="jsonTEXTAREA"></textarea>
+    <button onclick="jE.jsonToForm();">JSON to Form</button>
+    <div class="row-fluid" id="jsonFormDIV"></div>
+    <div style="display:none; " class="messageCloseDIV" id="messageDIV">
+	<img title="Close" onclick="jE.messageClose(); " src="/img/je/popupClose.gif" id="messageCloseIMG">
+	<div id="messageContentDIV"></div>
+</div>
+  </div>
+  <div class="modal-footer">
+    <button id="apply_edit_department" class="btn btn-success">Apply</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
+
+<div class="text-editor-wrap" style="display:none;">
+  <div class="title-bar"><span class="title">AwesomeSauce - bash - 80x<span class="terminal-height">2</span></span></div>
+  <div class="text-body">
+    $ <span id="typed"></span><span id="typed-cursor"></span>
+  </div>
+</div>
+
+<% @item_dept_history.each do |dept|%>
+<div time="<%= dept["time"] %>" hash="<%= dept["name"] %>" style="display:none;"></div>
+<% end %>

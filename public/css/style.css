@@ -262,3 +262,324 @@ div#facebook_login_icon {
 .tag-cloud.tag-cloud-inverse {
     background-color: #333333;
 }
+
+.show-child-icon-on-hover i {
+    visibility: hidden;
+}
+
+.show-child-icon-on-hover:hover i {
+    visibility: visible;
+}
+
+.dev-mode-lock.show-child-icon-on-hover:hover i {
+    visibility: hidden;
+}
+
+.top-right-icon {
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+#edit_name_link .tooltip-inner {
+    height: 14px;
+    line-height: 14px;
+}
+
+.price_history_minimap {
+    height: 30px;
+    width: 100px;
+    cursor: pointer;
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 999px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+.centered {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*jsonEditor CSS*/
+
+IMG.pasteIMG {
+    display: none;
+}
+IMG.pasteAttributesIMG {
+    display: none;
+}
+IMG.pasteChildnodesIMG {
+    display: none;
+}
+/*
+* {
+    color: #666666;
+    font-family: Verdana,Arial,Helvetica,sans-serif;
+    font-size: 10px;
+} */
+.red {
+    color: #FF0000;
+}
+.gray {
+    color: #808080;
+}
+.clickable {
+    color: #748FB2;
+    cursor: pointer;
+}
+SPAN.sampleSPAN {
+    display: none;
+}
+DIV#jsonFormDataDIV {
+    border: 1px solid #000000;
+}
+/*
+OL {
+    color: #999999;
+    margin: 2px;
+    padding: 2px;
+} */
+OL.hashOL {
+    list-style-type:none;
+}
+OL {
+    list-style-type:decimal;
+}
+/*
+LI {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 1px solid #DDDDDD;
+    color: #999999;
+    margin-left: 22px;
+    padding: 2px;
+} */
+LI.arrayLI {
+    background: none repeat scroll 0 0 #DDDDDD;
+    border-color: #FFFFFF;
+}
+LI.deleted {
+    background: none repeat scroll 0 0 #FFC0CB;
+    color: #FF0000;
+}
+/*
+LI * {
+    color: #999999;
+    vertical-align: top;
+}
+TEXTAREA {
+    color: #000000;
+}
+*/
+TEXTAREA.rightTEXTAREA {
+    border: 1px solid #748FB2;
+    height: 16px;
+    margin: 0;
+    width: 200px;
+}
+TEXTAREA.expandedTEXTAREA {
+    height: 180px;
+    width: 360px;
+}
+TEXTAREA#jsonTEXTAREA, TEXTAREA#newJsonTEXTAREA {
+    width: 500px;
+}/*
+INPUT {
+    border: 1px solid #748FB2;
+    color: #000000;
+    margin-bottom: 2px;
+}   */
+INPUT.buttonINPUT {
+    color: #748FB2;
+    cursor: pointer;
+}     /*
+INPUT.checkbox {
+    border: medium none;
+}       */
+input[type="text"].leftINPUT {
+    margin-bottom: 0;
+}
+INPUT.objectNameINPUT {
+}
+INPUT.readonlyINPUT {
+    color: #777777;
+}
+LI.activeLI {
+    border: 1px solid #FFA500;
+}
+DIV#messageDIV {
+    padding: 12px;
+    position: absolute;
+    width: 200px;
+}
+DIV.messageCloseDIV {
+    background: none repeat scroll 0 0 #000000;
+}
+DIV.messageAutoCloseDIV {
+    background: none repeat scroll 0 0 #999999;
+}
+DIV#messageDIV IMG#messageCloseIMG {
+    cursor: pointer;
+    float: right;
+}
+DIV#messageContentDIV, DIV#messageContentDIV B {
+    color: #FFFFFF;
+}
+INPUT#removeAllDeletedINPUT {
+    background: none repeat scroll 0 0 #FF0000;
+    color: #FFFFFF;
+}
+DIV.IDIV {
+    float: left;
+    height: 11px;
+    margin: 1px;
+    width: 11px;
+}
+DIV.IDIV_down {
+    background: url("/img/je/down.gif") repeat scroll 0 0 rgba(0, 0, 0, 0);
+}
+DIV.IDIV_up {
+    background: url("/img/je/up.gif") repeat scroll 0 0 rgba(0, 0, 0, 0);
+}
+DIV.IDIV_copy {
+    background: url("/img/je/copy.gif") repeat scroll 0 0 rgba(0, 0, 0, 0);
+}
+DIV.IDIV_close {
+    background: url("/img/je/close.gif") repeat scroll 0 0 rgba(0, 0, 0, 0);
+}
+DIV.lIDIV {
+    float: left;
+    height: 12px;
+    margin: 1px;
+    width: 13px;
+}
+DIV.lIDIV_blank {
+    background: url("/img/je/blank.gif") repeat scroll 0 0 rgba(0, 0, 0, 0);
+}
+DIV.xcIDIV {
+    background: url("/img/je/collapse.gif") repeat scroll 0 0 rgba(0, 0, 0, 0);
+}
+DIV.xcIDIV_collapsed {
+    background: url("/img/je/expand.gif") repeat scroll 0 0 rgba(0, 0, 0, 0);
+}
+
+/* text editor styles */
+.text-editor-wrap {
+  position: absolute;
+  display: block;
+  margin: auto;
+  left: 0;
+  right: 0;
+  width: 410px;
+  height: 90px;
+  bottom: 0px;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.8) 0px 20px 70px;
+  clear: both;
+  overflow: hidden;
+}
+.title-bar {
+  padding: 5px 0;
+  font-family: "Lucida Grande", sans-serif;
+  font-size: 0.75em;
+  text-align: center;
+  text-shadow: rgba(255, 255, 255, 0.8) 0px 1px 0px;
+  background-color: #f8f8f8;
+  background-image: -webkit-linear-gradient(top, #e8e8e8, #bcbbbc);
+  background-image: -moz-linear-gradient(top, #e8e8e8, #bcbbbc);
+  background-image: linear-gradient(top, #e8e8e8, #bcbbbc);
+  box-shadow: inset rgba(255, 255, 255, 0.7) 0px 1px 1px;
+  border-bottom: #6a6a6a 1px solid; }
+
+.text-body {
+  height: 250px;
+  background-color: rgba(0, 0, 0, 0.85);
+  padding: 10px;
+  color: #f0f0f0;
+  text-shadow: #000 0px 1px 0px;
+  font-family: "Consolas", "Courier New", "Courier";
+  font-size: 1.75em;
+  line-height: 1.40em;
+  font-weight: 500;
+  text-align: left;
+  overflow: hidden;
+  -webkit-transition: all 0.5s ease-out;
+  -moz-transition: all 0.5s ease-out;
+  -ms-transition: all 0.5s ease-out;
+  -o-transition: all 0.5s ease-out;
+  transition: all 0.5s ease-out; }
+
+#typed-cursor {
+  opacity: 1;
+  font-weight: 100;
+  -webkit-animation: blink 0.7s infinite;
+  -moz-animation: blink 0.7s infinite;
+  -ms-animation: blink 0.7s infinite;
+  -o-animation: blink 0.7s infinite;
+  animation: blink 0.7s infinite; }
+
+@-keyframes blink {
+  0% {
+    opacity: 1; }
+
+  50% {
+    opacity: 0; }
+
+  100% {
+    opacity: 1; } }
+
+@-webkit-keyframes blink {
+  0% {
+    opacity: 1; }
+
+  50% {
+    opacity: 0; }
+
+  100% {
+    opacity: 1; } }
+
+@-moz-keyframes blink {
+  0% {
+    opacity: 1; }
+
+  50% {
+    opacity: 0; }
+
+  100% {
+    opacity: 1; } }
+
+@-ms-keyframes blink {
+  0% {
+    opacity: 1; }
+
+  50% {
+    opacity: 0; }
+
+  100% {
+    opacity: 1; } }
+
+@-o-keyframes blink {
+  0% {
+    opacity: 1; }
+
+  50% {
+    opacity: 0; }
+
+  100% {
+    opacity: 1; } }

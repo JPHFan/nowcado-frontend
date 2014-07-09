@@ -8,6 +8,10 @@ var error_string = {
 var success_string = {
   location_set: "Your location has been successfully set."
 };
+growl_resp = {
+  pass: {type:'success',offset:{from:'top',amount:65}},
+  fail: {type:'error',offset:{from:'top',amount:65}}
+};
 
 function alert_error(div_id, error_string) {
   $(div_id).removeClass("alert-success").addClass("alert-error").html(error_string).show();

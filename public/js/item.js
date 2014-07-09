@@ -1,3 +1,7 @@
+var item_id = $("#add_item_qty_to_cart #add_item").val();
+
+$("#edit_name_icon,#edit_department_icon,#edit_image_icon").tooltip("hide");
+
 function update_price(item, store) {
   var price = $("input[store_id=" + store + "]").val();
   $.post("/item/" + item + "/price", {
@@ -5,9 +9,9 @@ function update_price(item, store) {
     price: price
   }, function(data) {
     if(data.success) {
-      $.growl("Item updated",{type:'success',offset:{from:'top',amount:65}});
+      $.growl("Item updated",growl_resp.pass);
     } else {
-      $.growl(data.message,{type:'error',offset:{from:'top',amount:65}});
+      $.growl(data.message,growl_resp.fail);
     }
   }, 'json');
 }
@@ -21,7 +25,6 @@ $("#add_item_qty_to_cart").submit(function(e) {
   }
   else{
     $("#add_item_fail").hide();
-    var item_id = $("#add_item_qty_to_cart #add_item").val();
     // Bring up existing modal, or simply add to cart if it is empty
     if($("#no_alternatives").length != 0) {
       addToCart([item_id],quantity,true,true,false);
@@ -29,6 +32,25 @@ $("#add_item_qty_to_cart").submit(function(e) {
       $('#alternatives').modal('show');
     }
   }
+});
+
+$("#edit_name_form").submit(function(e) {
+  e.preventDefault();
+  var name = $("#edit_name_input").val();
+  if(name === "") {
+    $.growl("You must specify a new name. Name has not been changed.",growl_resp.fail);
+    return;
+  }
+  $.post("/item/" + item_id + "/name", {
+    name: name
+  }, function(data) {
+    if(data.success) {
+      $.growl("Item updated",growl_resp.pass);
+      window.location.reload(true);
+    } else {
+      $.growl(data.message,growl_resp.fail);
+    }
+  }, 'json');
 });
 
 $("#alternatives_apply").click(function(e) {

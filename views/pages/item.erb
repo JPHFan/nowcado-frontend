@@ -1,42 +1,41 @@
-<div id="alternatives" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="alternativesLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-    <h3 id="alternativesLabel">Alternatives</h3>
-  </div>
-  <div class="modal-body">
-    <div>Select items you would be willing to swap for <%= @item_results[0]["name"] %></div>
-    <% if @similar_results.nil? || @similar_results.length == 0 %>
-      <div id="no_alternatives"></div>
-    <% else %>
-    <ul class="thumbnails">
-      <% @similar_results.to_enum.with_index(0).each do |result, i| %>
-        <%= render_partial(:show_alternative_item, {:locals => {:id => result["id"], :name => result["name"], :img_url => result["img_url"],
-                                                    :rating =>(result["rating"])}}) %>
-      <% end %>
-    </ul>
-    <% end %>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary" id="alternatives_apply">Apply</button>
-  </div>
+<div style="border: 0;border-bottom: 1px solid #e5e5e5">
+  <legend style="display:inline; width:inherit;border-bottom: none;margin-bottom: 0;" class="show-child-icon-on-hover">
+    <h2 id="item_name"><%= cap_words(@item_results[0]["name"]) %>
+      <a id="edit_name_link" href="#edit_name_modal" role="button" data-toggle="modal">
+        <i id="edit_name_icon" class="icon-pencil top-right-icon" data-original-title="Edit name" data-placement="right"></i>
+      </a>
+    </h2>
+  </legend>
 </div>
-
-<legend><h2 id="item_name"><%= cap_words(@item_results[0]["name"]) %></h2></legend>
 <div class="row" style="margin-bottom: 20px;">
 </div>
 
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="pull-left">
-      <div class="thumbnail" style="margin-bottom: 20px;width: 200px">
+      <div class="thumbnail show-child-icon-on-hover" style="margin-bottom: 20px;width: 200px">
         <% img_valid = !@item_results[0]["img_url"].nil? %>
         <% image= img_valid ? "src=\"#{settings.domain}#{@item_results[0]["img_url"]}\"" : "data-src=\"holder.js/200x200\"" %>
-        <a href="<%= img_valid ? image[(image.index("src=\"")+5)..(-2)] : "#" %>"><img <%= image %> style="max-width:200px;height:200px;margin-left:auto;margin-right:auto;display:block;"></a>
+        <a id="edit_image_link" href="#edit_image_modal" role="button" data-toggle="modal"><i id="edit_image_icon" class="icon-pencil top-right-icon pull-right" data-original-title="Edit image" data-placement="right"></i></a>
+        <img <%= image %> style="max-width:200px;height:200px;margin-left:auto;margin-right:auto;display:block;">
       </div>
       <% if session[:error] %>
       <label class="label label-warning"><%= show_flash(:error) %></label>
       <% end %>
+      <div class="show-child-icon-on-hover dev-mode-lock" style="width: 200px;font-size:12px">
+        <a id="edit_department_link" href="#edit_department_modal" role="button" data-toggle="modal"><i id="edit_department_icon" class="icon-pencil top-right-icon pull-right" data-original-title="Edit tags" data-placement="right"></i></a>
+        <% @department_strings.each do |arr| %>
+        <div style="margin-left: <%= 10*arr[0] %>px">
+          <% if arr[2] && arr[2][-1] && arr[2][-1][0]!='.' %>
+          <% multiple_selections, full_path = [], (arr[2] + [arr[1]]) %>
+          <% full_path.each_with_index{|x,i| multiple_selections += [{x => full_path[i+1]}] if i < full_path.length - 1} %>
+          <a href="/search?latitude=<%= session["latitude"] %>&longitude=<%= session["longitude"] %>&multiple_selections=<%= CGI.escape(JSON.generate(multiple_selections)) %>" ><%= arr[1] %></a>
+          <% else %>
+          <%= arr[1] if arr[1] %>
+          <% end %>
+        </div>
+        <% end %>
+      </div>
     </div>
 
     <div class="span9">
@@ -49,7 +48,7 @@
         <form id="add_item_qty_to_cart" action="" class="form-inline" method="">
           Qty: <input type="text" id="add_qty" class="input-small" name="quantity">
           <input type="hidden" id="add_item" name="items" value="<%= @item_results[0]["id"] %>">
-          <button class="btn" type="submit">Add to cart</button>
+          <button class="btn btn-success" type="submit">Add to cart</button>
         </form>
       </div>
       <% end %>
@@ -75,5 +74,64 @@
     </div>
   </div>
 </div>
+
+<div id="alternatives" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="alternativesLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="alternativesLabel">Alternatives</h3>
+  </div>
+  <div class="modal-body">
+    <div>Select items you would be willing to swap for <%= @item_results[0]["name"] %></div>
+    <% if @similar_results.nil? || @similar_results.length == 0 %>
+      <div id="no_alternatives"></div>
+    <% else %>
+    <ul class="thumbnails">
+      <% @similar_results.to_enum.with_index(0).each do |result, i| %>
+        <%= render_partial(:show_alternative_item, {:locals => {:id => result["id"], :name => result["name"], :img_url => result["img_url"],
+                                                    :rating =>(result["rating"])}}) %>
+      <% end %>
+    </ul>
+    <% end %>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="alternatives_apply">Apply</button>
+  </div>
+</div>
+
+<div id="edit_name_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="editNameLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="editNameLabel">Enter New Name</h3>
+  </div>
+  <div class="modal-body">
+    <form id="edit_name_form" action="" class="form-inline" method="">
+      Name: <input type="text" id="edit_name_input" class="input-large" name="edit_name">
+      <button class="btn btn-success" type="submit">Apply</button>
+    </form>
+    <table class="table table-condensed">
+      <thead>
+        <tr>
+          <th>Name History</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @item_name_history.each do |name_history| %>
+          <tr>
+            <td><%= name_history["name"] %></td>
+            <td><%=Time.parse(name_history["time"]).utc %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
+
+<%= render_partial(:edit_image_modal, {:locals => {:item_id => @item_results[0]["id"]}}) %>
+<%= render_partial(:edit_department_modal) %>
 
 <%= js :item %>

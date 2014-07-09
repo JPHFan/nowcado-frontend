@@ -45,7 +45,7 @@ configure do
       '/js/jquery.raty.min.js',
       '/js/holder.js',
       '/js/global_functions.js',
-      '/js/bootstrap.min.js',
+      '/js/bootstrap.js',
       '/js/growl.js'
     ]
     js :pre_reports, [
@@ -55,15 +55,15 @@ configure do
       '/js/markerclusterer/markerclusterer_packed.js',
       '/js/jquery.tablesorter.min.js'
     ]
-    js :post_reports, ['/js/reports.js']
+    js :post_reports, ['/js/charts_helper.js', '/js/reports.js']
     js :post_app, [
       '/js/app.js',
       '/js/jquery.ui.addresspicker.js'
     ]
-    js :cart, ['/js/cart.js']
+    js :cart, ['/js/flotcharts/jquery.flot.js', '/js/flotcharts/jquery.flot.selection.js', '/js/cart.js', '/js/charts_helper.js', '/js/price_history.js']
     js :cart_list, ['/js/cart_list.js']
     js :index, ['/js/index.js']
-    js :item, ['/js/item.js', '/js/search.js', '/js/review.js']
+    js :item, ['/js/flotcharts/jquery.flot.js', '/js/flotcharts/jquery.flot.selection.js', '/js/item.js', '/js/search.js', '/js/review.js', '/js/charts_helper.js', '/js/price_history.js', '/js/load-image.js', '/js/canvas-to-blob.js',  '/js/jquery.iframe-transport.js', '/js/jquery.fileupload.js', '/js/jquery.fileupload-process.js', '/js/jquery.fileupload-image.js', '/js/jquery.fileupload-validate.js', '/js/edit_image.js', '/js/xregexp-min.js', '/js/edit_department.js', '/js/jsoneditor.js']
     js :search, ['/js/search.js']
     js :store, ['/js/review.js']
     js :user, ['/js/user.js']
@@ -72,7 +72,8 @@ configure do
         '/css/jquery-ui-1.9.2.css',
         '/css/bootstrap.min.css',
         '/css/cerulean.css',
-        '/css/style.css'
+        '/css/style.css',
+        '/css/jquery.fileupload-ui.css'
     ]
 
     css_compression :yui

@@ -115,7 +115,7 @@ $("#edit_account_submit").click(function(e) {
         // Update signed in username if present
         if(username != "")
           $("#edit_account_link").html("Welcome back, " + username);
-        $.growl("Account successfully updated.",{type:'success',offset:{from:'top',amount:65}});
+        $.growl("Account successfully updated.",growl_resp.pass);
       } else {
         // Display errors
         if(json.message.username != null) {

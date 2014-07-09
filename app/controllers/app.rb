@@ -238,12 +238,65 @@ get "/item/:id/?" do
 
     # Get similar items
     @similar_results = rest_call("/items/"+item_id.to_s+"/similar", {})["result"]
+
+    # Get history
+    history = rest_call("/items/"+item_id.to_s+"/history", {})["result"]
+
+    # Get item name history
+    @item_name_history = history["name"]
+
+    # Get department history
+    @item_dept_history = history["department"]
+
+    # Get image history
+    @item_img_history = history["image"]
+
+    # Generate current department string
+    @department_strings = get_department_strings(@item_results[0]["department"])
     
     erb (settings.mobile+"item").to_sym
   end
 end
 
+def get_department_strings(children)
+  arr = []
+  dfs(children, []) do |path,str,dotted|
+    arr.push([path.length,str,path,dotted])
+  end
+  return arr
+end
+
+def dfs(obj, path, &blk)
+  case obj
+  when Hash
+    obj.each{|k,v|
+      dotted = k[0]=='.'
+      blk.call(path.dup,dotted ? k[1..-1]:k,dotted)
+      dfs(v,path.dup << k,&blk)
+    }
+  when Array
+    obj.each{|v|
+      dfs(v, path.dup, &blk)
+    }
+  else
+    blk.call(path.dup,obj,false)
+  end
+  return path
+end
+
+post "/item/:id/img/?" do
+  return JSON.generate(rest_call("/items/" + params[:id] + "/img",params,"put"))
+end
+
+get "/item/:id/price/?" do
+  return JSON.generate(rest_call("/items/" + params[:id] + "/price_history",params))
+end
+
 post "/item/:id/price/?" do
+  return JSON.generate(rest_call("/items/" + params[:id],params,"put"))
+end
+
+post "/item/:id/name/?" do
   return JSON.generate(rest_call("/items/" + params[:id],params,"put"))
 end
 

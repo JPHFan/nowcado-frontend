@@ -9,6 +9,7 @@
     <!--<th>In Stock?</th>-->
     <!--<%= "<th>Open Now?</th>" if !on_cart_page %>-->
     <th>Price</th>
+    <th>Price History</th>
     <%= "<th>Quantity</th>" if on_cart_page %>
   </tr>
   </thead>
@@ -43,9 +44,13 @@
         <% end %>-->
         <% if item["price"] %>
         <td>$<%= item["price"] %></td>
-        <td><label><%= item["quantity_requested"] %></label></td>
         <% else %>
         <td><form onsubmit="update_price(<%= item["id"] %>,<%= item["store_id"] %>);return false;">$<input type="number" min="0.00" step="0.01" store_id="<%= item["store_id"] %>" class="input-mini" value="<%= item["prices"]["1"] %>" style="margin-bottom:0px;"><button type="submit" class="btn btn-mini btn-success">Update</button></form></td>
+        <% end %>
+        <td><div style="display:none;" class="price_history_minimap" store="<%= item["store_id"] %>" item="<%= item["id"] %>" cur_price="<%= item["price"] ? item["price"] : item["prices"]["1"] %>"></div></td>
+
+        <% if item["price"] %>
+        <td><label><%= item["quantity_requested"] %></label></td>
         <% end %>
       </tr>
       <% if !sales.empty? %>
@@ -60,6 +65,21 @@
   <% end %>
   </tbody>
 </table>
+
+<div id="price_history_detail_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="priceHistoryLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="priceHistoryLabel">Price History</h3>
+  </div>
+  <div class="modal-body">
+    <div style="margin-bottom:10px;">
+      <div id="price_detail_chart" style="height: 200px; width: 500px;"></div>
+    </div>
+    <div style="margin-left:21px;">
+      <div id="price_detail_chart_overview" style="height:50px;width: 479px;"></div>
+    </div>
+  </div>
+</div>
 
 <script>
   $("a.tmzOffset").each(function() {
