@@ -9,7 +9,7 @@
         <div class="btn-toolbar" style="margin: 0;text-align:center">
           <div class="btn-group">
             <button class="btn dropdown-toggle centered" data-toggle="dropdown">
-              <span id="primary_img_datetime_span"><%= Time.parse(@item_img_history["cur_image"]["time"]).utc %></span>
+              <span id="primary_img_datetime_span"><%= Time.parse(@item_img_history["cur_image"]["time"]).utc if @item_img_history["cur_image"]["time"] %></span>
               <span class="caret"></span>
             </button>
             <ul id="img_datetime_list" class="dropdown-menu">

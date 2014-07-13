@@ -1,3 +1,8 @@
+// Format of arr_path_and_vals: [[<Path to new key in hash, with key and default value at end>]]
+// Format of arr_path_and_old_val_key: [[<Path through newly dotted key, ending with the new key name pointing to old values (e.g. "Value")>]]
+// Format of rename_paths: [[[<Path to old value, including the value itself>],<New Value to rename to>]]
+var arr_path_and_vals = [], arr_path_and_old_val_key = [], rename_paths = [];
+
 a_dBg2 = (location.search.indexOf("&debug2") > 0);
 a_isIE = (navigator.userAgent.toLowerCase().indexOf('msie') > 0) && (navigator.userAgent.toLowerCase().indexOf('opera') < 0);
 a_isWK = (navigator.userAgent.indexOf("AppleWebKit") > 0);
@@ -353,68 +358,68 @@ jsonEditor = {
 //		jE.alterCSS("IMG.pasteIMG", "display", "none");
 //		jE.alterCSS("IMG.pasteChildnodesIMG", "display", "none");
 //		jE.alterCSS("IMG.pasteAttributesIMG", "display", "none");
-		setTimeout(delayedJsonToForm, 100);
+    if(g) return delayedJsonToForm();
+    else setTimeout(delayedJsonToForm, 100);
 		function delayedJsonToForm() {
 			var a = a_getObI("jsonTEXTAREA");
 			if (a) {
 				var b = a_trim(a.value);
 				if (b) {
 					var c = "";
-					if (b.indexOf("<") == 0) {
-						jE.jsonObj = jE.xmlToJs(b);
-						if (typeof(jE.jsonObj) == "string") {
-							c = jE.jsonObj;
-							jE.jsonObj = null
-						}
-					} else {
-						b = b.replace(/\n/g, "");
-						try {
-              jE.jsonObj = eval("(" + b + ")");
-              if(b.match(/\"\"/g) || b.match(/\{\}/g) || b.match(/\[\]/g))
-                throw {message:"Cannot have empty nodes",name:"Invalid Hash"};
-              if(!b.match(/^{\"Department\":/))
-                throw {message:"Must begin hash with only \"Department\" key",name:"Invalid Hash"};
-              var arrStack = XRegExp.matchRecursive(b,'\\[','\\]','g');
-              while(arrStack.length > 0) {
-                if(arrStack[0] != "") {
-                  var tempTopObj = eval("([" + arrStack[0] + "])");
-                  for(var tempObjInd in tempTopObj) {
-                    var tempObj = tempTopObj[tempObjInd];
-                    if(typeof(tempObj) == "object" && tempObj.length === undefined && Object.keys(tempObj).length > 1)
-                      throw {message:"Hash inside of array must have only one root key",name:"Invalid Hash"}
-                  }
-                  var tempStack = XRegExp.matchRecursive(arrStack[0],'\\[','\\]','g');
-                  arrStack = arrStack.concat(tempStack);
+
+					b = b.replace(/\n/g, "");
+					try {
+            jE.jsonObj = eval("(" + b + ")");
+            if(b.match(/\"\"/g) || b.match(/\{\}/g) || b.match(/\[\]/g))
+              throw {message:"Cannot have empty nodes",name:"Invalid Hash"};
+            if(!b.match(/^{\"Department\":/))
+              throw {message:"Must begin hash with only \"Department\" key",name:"Invalid Hash"};
+            var arrStack = XRegExp.matchRecursive(b,'\\[','\\]','g');
+            while(arrStack.length > 0) {
+              if(arrStack[0] != "") {
+                var tempTopObj = eval("([" + arrStack[0] + "])");
+                for(var tempObjInd in tempTopObj) {
+                  var tempObj = tempTopObj[tempObjInd];
+                  if(typeof(tempObj) == "object" && tempObj.length === undefined && Object.keys(tempObj).length > 1)
+                    throw {message:"Hash inside of array must have only one root key",name:"Invalid Hash"}
                 }
-                arrStack.shift();
+                var tempStack = XRegExp.matchRecursive(arrStack[0],'\\[','\\]','g');
+                arrStack = arrStack.concat(tempStack);
               }
-              if(Object.keys(jE.jsonObj).length != 1)
-                throw {message:"Must only have the \"Department\" key at the root",name:"Invalid Hash"};
-              if(Object.keys(jE.jsonObj["Department"]).length != 1)
-                throw {message:"Department must only have one key below it",name:"Invalid Hash"};
-						} catch(e) {
-							c = "JS " + e.name + ": " + e.message;
-							jE.jsonObj = null
-						}
+              arrStack.shift();
+            }
+            if(Object.keys(jE.jsonObj).length != 1)
+              throw {message:"Must only have the \"Department\" key at the root",name:"Invalid Hash"};
+            if(typeof jE.jsonObj["Department"] == "string")
+              throw {message:"Please specify an additional subdepartment",name:"Invalid Hash"};
+            if(Object.keys(jE.jsonObj["Department"]).length != 1)
+              throw {message:"Department must only have one key below it",name:"Invalid Hash"};
+					} catch(e) {
+						c = "JS " + e.name + ": " + e.message;
+						jE.jsonObj = null
 					}
 					if (jE.jsonObj) {
 						var d = jE.jsonObj.length != undefined;
 						var f = jE.xMLflag ? "XML Root:<br><input id='xmlRootINPUT' value='" + jE.xMLRootStr + "'> ": "";
 						f += "Form | <span onclick='jE.expandCollapseAllFormItems(true); ' class='clickable'>Expand all nodes</span> | <span onclick='jE.expandCollapseAllFormItems(false); ' class='clickable'>Collapse all nodes</span>" + "<br/><div id='jsonFormDataDIV'>" + jE.jsonToFormStep("", jE.jsonObj, d,[]) + "</div>" + "<br/>";
-						for (var i in jE.formatStrArray) {
-							if (i < 2 || jE.xMLflag) f += "<input type='button' class='buttonINPUT' onclick='jE.form2json(" + i + "); ' value='Convert Form to " + jE.formatStrArray[i] + "'> "
-						}
-						f += "<br/><textarea id='newJsonTEXTAREA' cols='120' rows='10'></textarea>";
-						f += "<br/><input id='evalButtonINPUT' type='button' class='buttonINPUT' onclick='jE.evalNewJson(); ' value='Eval' style='display:none; '> ";
+						f += "<input type='button' class='buttonINPUT' onclick='jE.form2json(0);' value='Convert Form to " +
+              jE.formatStrArray[0] + "'> ";
+						f += "<br/><textarea class='editor' id='newJsonTEXTAREA'></textarea>";						
 						a_fill(jE.jsonFormDIVObj, f);
+            $("#newJsonTEXTAREA.editor").highlightTextarea('setOptions', {color: '#ffdf00'});
 						jE.jsonFormDataDIVObj = a_getObI("jsonFormDataDIV");
             fixDeptWidth();
             renderAutocomplete();
 						a_addListener(jE.jsonFormDataDIVObj, "click", jE.formClicked)
 					} else {
 						a_fill(jE.jsonFormDIVObj, "");
-						alert("Source was invalid.\n\n" + c)
+						alert("Source was invalid.\n\n" + c);
+            return -1;
 					}
+				} else {
+					a_fill(jE.jsonFormDIVObj, "");
+					alert("Source was invalid.\n\nMust provide input.");
+          return -1;
 				}
 			}
 		}
@@ -643,7 +648,20 @@ jsonEditor = {
 	allDeletedFormItems: function() {
 		var a = a_getArrayDbT(jE.jsonFormDataDIVObj, "li", "deleted");
 		if (a) {
-			for (var i in a) {$(a[i].parentNode).children("div").children("span").show();a[i].parentNode.removeChild(a[i])}
+			for (var i in a) {
+        $(a[i].parentNode).children("div").children("span").show();
+        // May need to delete "Value" (with "autocreated" class) if nothing else is at this level now and push everything below it up
+        var other_key = $(a[i]).siblings("li");
+        a[i].parentNode.removeChild(a[i]);
+        if (other_key.length == 1){
+          if (other_key.children("input").hasClass("autocreated")){
+            // Push its children up and then remove the li with the "Value" input.
+            var old_parent = other_key.parent();
+            other_key.children("ol").insertAfter(old_parent);
+            old_parent.remove();
+          }
+        }
+      }
 		}
     fixDeptWidth();
 		jE.messageClose()
@@ -676,6 +694,7 @@ jsonEditor = {
           jE.addFormItem(a_getDbT(d,"div"),4,path,0);
           var valueObj = $(a_getDbT(a_getDbT(d,"li"),"input"));
           valueObj.val("Value");
+          valueObj.addClass("autocreated");
           valueObj.siblings("ol").append(oLiArr);
         }
         $(d).addClass("dotted");
@@ -839,12 +858,12 @@ jsonEditor = {
 				}
 				d += "<" + jE.xMLRootStr
 			}
-			d += jE.form2jsonStep(b, e, "");
+			d += jE.form2jsonStep(b, e, "", false, []);
 			if (a == 2) {
 				d += "</" + jE.xMLRootStr + ">"
 			}
 			c.value = d;
-			a_display(a_getObI("evalButtonINPUT"), (a < 2));
+			//a_display(a_getObI("evalButtonINPUT"), (a < 2));
 			var f = "";
 			if (jE.errorCount[0]) f = jE.getPluralStr(jE.errorCount[0], 'name') + 'left empty, replaced by "Unspecified".\n';
 			if (jE.errorCount[1]) f += jE.getPluralStr(jE.errorCount[1], 'nonstring value') + "left empty, replaced by 0 in " + jE.error1Msg.substr(0, jE.error1Msg.length - 2) + ".";
@@ -854,105 +873,131 @@ jsonEditor = {
 			}
 		}
 	},
-	form2jsonStep: function(d, e, f, g) {
+	form2jsonStep: function(d, e, f, in_arr, path) {
 		var h = jE.getChildrenByTag(d, "input");
+		if (!h){
+			h = $(d).find("input")[0];
+			d = $(h).parent()[0];
+		}
+		else{
+			h = h[0];
+		}
 		if (h) {
 			var j = "";
-			var k;
+			var p;
 			var k = "";
-			var l = processText(h[0].value);
-			var m = false;
-			if (h[0].type != "hidden") {
+			var l = processText(h.value);
+			var n = jE.getChildrenByTag(d, "ol", "first");
+      var s = e;
+			
+			if (n){
+				p = jE.getChildrenByTag(n, "li");
+			}
+			if (h.type != "hidden") {
 				if (!l || l == "*") {
 					jE.errorCount[0]++;
 					l = "Unspecified";
-					h[0].value = l
+					h.value = l
 				}
-				if (jE.formatNum == 2) {
-					m = (l == "attributes" || l == "childNodes");
-					k = "";
-					if (!m && l != "textNode") {
-						if (g == "attributes") {
-							j += " " + l + "="
-						} else {
-							j += padHTML("<" + l, e)
-						}
-					}
+				if (!p){
+					k += '"' + l + '"';
 				} else {
-					k = '"' + l + '":'
-				}
+          s = e + 1;
+          if (in_arr) {
+  					k += '{"' + l + '":';
+  				} else {
+  					k += '"' + l + '":';
+  				}
+        }
+        // Check if this is a renamed key.
+        var oldval = h.getAttribute("oldval");
+        if (oldval != null && oldval != l){
+          var this_path = $.extend(true,[],path);
+          this_path.push(oldval);
+          // First check if it was the auto-injected "Value" key that was renamed (pointing to the old vals). Note if "Value" is not renamed, the backend will just assume that the name is "Value" anyway.
+          var sibs = $(d).siblings("li");
+          var key_to_old_vals = sibs.length > 0;
+          $.each(sibs, function(index, val){
+            if ($(val).children("input").length != 2){
+              key_to_old_vals = false;
+            }
+          });
+          if (key_to_old_vals){
+            // Add to path pointing to new key for old values.
+            var path_and_key_to_old = $.extend(true, [], path);
+            path_and_key_to_old.push(l);
+            for (var idx = 0; idx < arr_path_and_old_val_key.length; idx++){
+              if (JSON.stringify(arr_path_and_old_val_key[idx]) == JSON.stringify(path_and_key_to_old)){
+                arr_path_and_old_val_key.splice(idx,1);
+                break;
+              }
+            }
+            arr_path_and_old_val_key.push(path_and_key_to_old);
+          } else {
+            for(var idx = 0; idx < rename_paths.length; idx++){
+              if (JSON.stringify(rename_paths[idx][0]) == JSON.stringify(this_path)){
+                rename_paths.splice(idx,1);
+                break;
+              }
+            }
+            rename_paths.push([this_path, l]);
+          }
+        }
+        // Check if this is a new key (and has a sibling Default input)
+        var defaultInput = $(h).siblings("input.leftINPUT:not(.objectNameINPUT)");
+        if (defaultInput.length == 1 && $(d).siblings("li").length > 0){
+          var path_new_key_and_default = $.extend(true,[],path).concat([l, defaultInput.val()]);
+          for (var idx = 0; idx < arr_path_and_vals.length; idx++){
+            if (JSON.stringify(arr_path_and_vals[idx]) == JSON.stringify(path_new_key_and_default)){
+              arr_path_and_vals.splice(idx,1);
+              break;
+            }
+          }
+          arr_path_and_vals.push(path_new_key_and_default);
+        }
 			}
-			if (jE.formatNum < 2) j += padHTML(k, e);
-			var n = jE.getChildrenByTag(d, "ol", "first");
+			j += padHTML(k, e);
 			if (n) {
 				var o = a_hasClass(n, "hashOL");
-				if (jE.formatNum < 2) j += (o ? "[": "{") + jE.linebreakStr;
-				var p = jE.getChildrenByTag(n, "li");
+				var p_ol_children = null;
+				if (p && p.length >= 1){
+					var p_ol = jE.getChildrenByTag(p[0], "ol", "first");
+		
+					if (p_ol){
+						p_ol_children = jE.getChildrenByTag(p_ol, "li");
+					}
+				}
+        var one_child = (p && p.length == 1);
+				j += p ? (o ? (p_ol_children ? "{" : "") : (one_child ? "" : "[")) : "";
+				j += jE.linebreakStr;
 				if (p) {
 					var q = 0;
+          if (p_ol_children && p.length > 1 && o) l = "." + l;
 					for (var i in p) {
 						if (!a_hasClass(p[i], "deleted")) {
-							q++;
-							var r = "";
-							var s;
-							if (jE.formatNum == 2) {
-								r = l;
-								s = e;
-								if (r == "") {
-									r = g
-								} else {
-									if (!m) s = e + 1
-								}
-							} else {
-								s = e + 1
-							}
-							j += jE.form2jsonStep(p[i], s, ",", r)
+							q++;              
+              var ext_path = $.extend(true,[],path);
+              if (l != "") ext_path.push(l);
+							j += jE.form2jsonStep(p[i], s, ",", !o, ext_path);
 						}
 					}
-					if (jE.formatNum < 2 && q) {
+					if (q) {
 						var L = j.lastIndexOf(",");
 						j = j.substring(0, L) + j.substring(L + 1)
 					}
 				}
-				if (jE.formatNum == 2) {
-					if (l == "attributes") j += ">" + jE.linebreakStr;
-					k = "";
-					if (l != "attributes" && l != "childNodes" && l != "textNode" && l != "") {
-						k = "</" + l + ">" + jE.linebreakStr
-					}
-				} else {
-					k = o ? "]": "}"
-				}
-				if (k) j += padHTML(k, e)
-			} else {
-				var t = true;
-				if (h[1]) t = h[1].checked;
-				if (jE.formatNum == 2 && g != "attributes") t = false;
-				var u = t ? '"': "";
-				var v = jE.getChildrenByTag(d, "textarea", "first");
-				if (v) {
-					k = v.value;
-					if (jE.formatNum < 2) k = processText(k);
-					else k = a_trim(k)
-				}
-				if (!k && !t && jE.formatNum < 2) {
-					k = "0";
-					v.value = k;
-					jE.errorCount[1]++;
-					jE.error1Msg += (l ? "'" + l + "'": "[array item]") + ", "
-				}
-				k = u + k + u;
-				if (jE.formatNum == 2) {
-					if (g != "attributes") {
-						k = padHTML(k, e) + jE.linebreakStr
-					}
-				}
-				j += k
+				k = p ? (o ? (p_ol_children ? "}" : "") : (one_child ? "" : "]")) : "";
 			}
-			if (jE.formatNum < 2) j = j + f + jE.linebreakStr;
+      if (k) j += padHTML(k, e);
+			if (h.type != "hidden" && p && in_arr){
+				j += "}"
+			}
+			j += f + jE.linebreakStr;
 			return j
 		}
 		function processText(a) {
+			if (typeof a != "string")
+				return "";
 			return a_trim(a.replace(/\\/g, "\\\\").replace(/"/g, "\\\"").replace(/\n/g, "\\n"))
 		}
 		function padHTML(a, b) {
@@ -968,13 +1013,27 @@ jsonEditor = {
 	evalNewJson: function() {
 		var a = a_getObI("newJsonTEXTAREA");
 		if (a) {
-			var b = "Eval OK.";
+			var b = null;
 			try {
-				jE.jsonObj = eval("(" + a.value + ")")
+				jE.jsonObj = eval("(" + a.value + ")");
+        try {
+          // Ensure department at root with only one key
+          var jERootKeys = Object.keys(jE.jsonObj);
+          if(jERootKeys.length != 1 || jERootKeys[0] != "Department" || 
+            !(jE.jsonObj[jERootKeys[0]] instanceof Object) || (jE.jsonObj[jERootKeys[0]] instanceof Array) || 
+            Object.keys(jE.jsonObj[jERootKeys[0]]).length != 1)
+            throw {message:"Must have \"Department\" key at root pointing to a hash with only one key",name:"Invalid Hash"};
+          dfs(jE.jsonObj);
+        } catch(e) {
+          b = e.name + ": " + e.message;
+        }
 			} catch(e) {
-				b = "Invalid.\n\nJS " + e.name + ": " + e.message
+				b = "Invalid.\n\nJS " + e.name + ": " + e.message;
 			} finally {
-				alert(b)
+        if(b != null) {
+          alert(b);
+          return -1;
+        }        
 			}
 		}
 	},
@@ -1104,7 +1163,20 @@ jsonEditor = {
 		a_display(jE.messageDivObj, false);
 		jE.messageCloseObj = a_getObI("messageCloseIMG");
 		jE.messageDivContentObj = a_getObI("messageContentDIV")
-	}
+	},
+  checkValidDepartment: function(f) {
+    // Runs through all steps that have not been completed, and if have not broken at any point, then execute delegated function
+    // In this case, the function does a backend call to update department
+    // In other case (add item) we will have one modal and update its current row (and wipe existing department modal view on render), so we know what the global var corresponds to.
+    if(jE.jsonObj == null) {
+      if(jE.jsonToForm(true) == -1) return -1;
+    }    
+    if($("#newJsonTEXTAREA").val() == "") {
+      jE.form2json(0);
+    }
+    if(jE.evalNewJson() == -1) return -1;
+    f();
+  }
 };
 jE = jsonEditor;
 a_addListener(window, "load", jE.pageInit);
@@ -1221,5 +1293,57 @@ function enableRename(ele) {
     ele.removeClass("readonlyINPUT");
     ele.attr("oldVal",ele.val());
     ele.next().hide();
+  }
+}
+
+function hasDuplicates(obj) {
+  var o = {}, i, l = obj.length, dupes = [];
+  for(i=0; i<l;i+=1) {
+    if(o[obj[i]] !== undefined) dupes.push(obj[i]);
+    o[obj[i]] = obj[i];
+  }
+  return dupes;
+}
+
+// Dot keys for multiple children under object. Also throw if:
+//   1) 2 children have same name (note this is impossible within an object by eval rules)
+//   2) Arrays are in arrays
+//   3) Hashes have more than one key in an array
+function dfs(obj) {
+  if(obj instanceof Object) {
+    var badStrings = [];
+    if(obj instanceof Array) {
+      var objEles = obj.map(function(val,ind) {
+        if(typeof val == "string") return val;
+        if(val instanceof Object) {
+          if(val instanceof Array) {
+            throw {message:"Cannot have array as child of array",name:"Invalid Hash"};
+          } else {
+            var objKeys = Object.keys(val);
+            if(objKeys.length != 1) {
+              throw {message:"Hashes in arrays must have exactly one key",name:"Invalid Hash"};
+            } else return objKeys[0];
+          }
+        }
+      });
+      if((badStrings = hasDuplicates(objEles)).length > 0) {
+        throw {message:"Cannot have duplicate keys " + badStrings.toString() + " for the same parent",name:"Invalid Hash"};
+      }      
+      for(var i = 0; i < obj.length; i++) {
+        dfs(obj[i]);
+      }
+    } else {          
+      var objKeys = Object.keys(obj);
+      for(var i = 0; i < objKeys.length; i++) {
+        var k = objKeys[i];
+        if(obj[k] instanceof Object && !(obj[k] instanceof Array) && Object.keys(obj[k]).length > 1) {
+          var old_k = k;
+          k = "." + k;
+          obj[k] = obj[old_k];
+          delete obj[old_k];
+        }
+        dfs(obj[k]);
+      }
+    }
   }
 }

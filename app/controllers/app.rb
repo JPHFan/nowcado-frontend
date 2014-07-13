@@ -258,6 +258,10 @@ get "/item/:id/?" do
   end
 end
 
+post "/item/:id/department/?" do
+  return JSON.generate(rest_call("/items/" + params[:id],params,"put"))
+end
+
 def get_department_strings(children)
   arr = []
   dfs(children, []) do |path,str,dotted|

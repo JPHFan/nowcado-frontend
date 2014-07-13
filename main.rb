@@ -14,6 +14,7 @@ configure do
   enable :sessions
   set :environment, :production
   set :production, true
+  set :protection, except: :session_hijacking
   if settings.production?
     set :domain, "https://be2.nowcado.com"
   else

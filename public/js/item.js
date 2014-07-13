@@ -72,3 +72,55 @@ $(".alternative_item").click(function(e) {
 });
 
 window.history.replaceState("","",$("#query_string").val());
+
+function toggleLoadingButton(a) {
+  a.toggleClass('active');
+  a.attr('disabled') ? (a.removeAttr('disabled') && addApplyDeptListener()) : a.attr('disabled', 'disabled');
+}
+
+function checkDepartmentUploadState(t_id, a) {
+  cors_call("/items/dept_transaction/" + t_id,{},function(json) {
+    if(json.success) {
+      $.growl("Department successfully updated",growl_resp.pass);
+      toggleLoadingButton(a);
+      window.location.reload(true);
+    } else {
+      if(json.message == "Still calculating") {
+        setTimeout(function(){checkDepartmentUploadState(t_id,a)},500);
+      } else {
+        toggleLoadingButton(a);
+        $.growl(json.message,growl_resp.fail);
+      }
+    }
+  }, "GET");
+}
+
+function addApplyDeptListener() {
+  $("#apply_edit_department").one("click",function(e) {
+    e.preventDefault();
+    toggleLoadingButton($(this));
+    var $this = $(this);
+    // Runs through all steps that have not been completed, and if have not broken at any point, then execute delegated function which does a backend call to update department
+    if(-1 == jE.checkValidDepartment(function() {
+      if(!confirm("Are you sure you want to update this department?")) {
+        toggleLoadingButton($this);
+        return;
+      }
+      // Execute BE call
+      $.post("/item/"+item_id+"/department", {
+        department: JSON.stringify(jE.jsonObj).replace(/\"/g,""),
+        new_dept_attr_paths: JSON.stringify(arr_path_and_vals),
+        key_rename_dept_attr_paths: JSON.stringify(arr_path_and_old_val_key),
+        rename_dept_attr_paths: JSON.stringify(rename_paths)
+      }, function(data) {
+        if(data.success) {
+          checkDepartmentUploadState(data.result.department_transaction_id, $this);      
+        } else {
+          toggleLoadingButton($this);
+          $.growl(data.message,growl_resp.fail);
+        }
+      }, 'json');
+    })) toggleLoadingButton($this);
+  });
+}
+addApplyDeptListener();

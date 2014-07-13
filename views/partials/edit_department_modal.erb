@@ -21,7 +21,7 @@
       </div>
     </div>
     <% end %>
-    <textarea id="jsonTEXTAREA"></textarea>
+    <textarea id="jsonTEXTAREA" class="editor"></textarea>
     <button onclick="jE.jsonToForm();">JSON to Form</button>
     <div class="row-fluid" id="jsonFormDIV"></div>
     <div style="display:none; " class="messageCloseDIV" id="messageDIV">
@@ -30,7 +30,10 @@
 </div>
   </div>
   <div class="modal-footer">
-    <button id="apply_edit_department" class="btn btn-success">Apply</button>
+    <a class="btn btn-success has-spinner" id="apply_edit_department" style="width:80px">
+        Apply
+        <span class="spinner"><i class="icon-spin icon-refresh icon-white"></i></span>
+    </a>
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
   </div>
 </div>
