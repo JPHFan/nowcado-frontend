@@ -906,12 +906,12 @@ var keyMap = {
 
 var cur_highlight_ranges = [];
 
-function scanChars(ltr,char,matchChar,text) {
+function scanChars(ltr,cha,matchChar,text) {
   var cnt = 1;
   var ind = 0;
   if(!ltr) ind = text.length-1;
   while(ltr ? (ind < text.length) : (ind >= 0)) {
-    if(text[ind] == char) cnt++;
+    if(text[ind] == cha) cnt++;
     if(text[ind] == matchChar) {
       cnt--;
       if(cnt == 0) return ind;

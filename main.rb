@@ -79,6 +79,7 @@ configure do
 
     css_compression :yui
     js_compression :closure, :level => "SIMPLE_OPTIMIZATIONS"
+    prebuild true
   }
 
 end
