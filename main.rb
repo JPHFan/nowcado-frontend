@@ -78,7 +78,7 @@ configure do
     ]
 
     css_compression :yui
-    js_compression :yui, :munge => true#closure, :level => "SIMPLE_OPTIMIZATIONS"
+    js_compression :jsmin#:yui, :munge => true#closure, :level => "SIMPLE_OPTIMIZATIONS"
     prebuild true
   }
 
