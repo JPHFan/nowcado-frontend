@@ -14,7 +14,9 @@
             </button>
             <ul id="img_datetime_list" class="dropdown-menu">
               <% @item_img_history["images"].each do |img| %>
+                <% if img["time"] %>
                 <li><a img_url="<%= settings.domain + img["img_url"] %>" href="#"><%= Time.parse(img["time"]).utc %></a></li>
+                <% end %>
               <% end %>
             </ul>
           </div>
