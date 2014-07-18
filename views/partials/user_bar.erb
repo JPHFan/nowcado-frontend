@@ -3,6 +3,8 @@
   <% if session["user"] %>
     <li><a id="edit_account_link" href="#edit_account" role="button" data-toggle="modal" data-original-title="Edit account" data-placement="bottom">Welcome back, <%= session["user"] %></a></li>
     <li class="divider-vertical"></li>
+    <li><a id="add_item_link" href="/item/add" data-original-title="Add items to Nowcado" data-placement="bottom"><i class="icon-plus icon-white"></i></a></li>
+    <li class="divider-vertical"></li>
     <li><a id="cart_link" href="/cart_list" data-original-title="View your cart" data-placement="bottom"><i class="icon-shopping-cart icon-white"></i></a></li>
     <li class="divider-vertical"></li>
     <% if session["store_owner"] %>
@@ -12,7 +14,9 @@
     <li>
       <%= link_to "Sign out", "/sign_out" %>
     </li>
-  <% else %>
+  <% else %>    
+    <li><a id="add_item_link" href="/item/add" data-original-title="Add items to Nowcado" data-placement="bottom"><i class="icon-plus icon-white"></i></a></li>
+    <li class="divider-vertical"></li>
     <li><a href="#sign_in" role="button" data-toggle="modal" data-original-title="View your cart" data-placement="bottom"><i class="icon-shopping-cart icon-white"></i></a></li>
     <li class="divider-vertical"></li>
     <li>

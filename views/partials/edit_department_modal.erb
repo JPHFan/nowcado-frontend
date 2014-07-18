@@ -45,6 +45,8 @@
   </div>
 </div>
 
-<% @item_dept_history.each do |dept|%>
-<div time="<%= dept["time"] %>" hash="<%= dept["name"] %>" style="display:none;"></div>
+<% if @item_dept_history && !@item_dept_history.empty? %>
+  <% @item_dept_history.each do |dept|%>
+  <div time="<%= dept["time"] %>" hash="<%= dept["name"] %>" style="display:none;"></div>
+  <% end %>
 <% end %>

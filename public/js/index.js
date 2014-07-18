@@ -48,6 +48,7 @@ $("#search_explanation_text").hover(
 
 $("#location_search_form").submit(function(e) {
   e.preventDefault();
+  $("#ui-id-1").children("li").first().children("a").mouseover();
   geo_process({
     coords: {
       latitude: $("#latitude").val(),

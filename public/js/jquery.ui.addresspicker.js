@@ -50,12 +50,18 @@ function map_center() {
       return this.gmap;
     },
 
+    updateAndHidePosition: function() {
+      this._updatePosition(this.gmarker.getPosition());
+      this.gmarker.setVisible(false);
+      this.hideMarker = true;
+    },
+
     updatePosition: function() {
       this._updatePosition(this.gmarker.getPosition());
     },
 
     reloadPosition: function() {
-      this.gmarker.setVisible(true);
+      if(!this.hideMarker) this.gmarker.setVisible(true);
       this.gmarker.setPosition(new google.maps.LatLng(this.lat.val(), this.lng.val()));
       this.gmap.setCenter(this.gmarker.getPosition());
     },
@@ -147,7 +153,7 @@ function map_center() {
 
       if (this.gmarker) {
         this.gmarker.setPosition(address.geometry.location);
-        this.gmarker.setVisible(true);
+        if(!this.hideMarker) this.gmarker.setVisible(true);
 
         this.gmap.fitBounds(address.geometry.viewport);
       }

@@ -2,7 +2,7 @@ var selected_departments = {};
 var applied_selections_ordered = [];
 
 function update_search_results_width() {
-  var filter_ref = $(".pull-left");
+  var filter_ref = $("div#search_filter_div.pull-left");
   var filter_width = filter_ref.width();
   var row_width = filter_ref.parent().width();
   filter_ref.next().width((row_width-filter_width) + "px");

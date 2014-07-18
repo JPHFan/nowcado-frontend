@@ -1,0 +1,48 @@
+<div class="item active">
+  <div class="span<%= full_width ? "12" : "4" %>">
+    <form id="map_search_form">                            
+      <div class="input-append">
+        <input id="store_address_search" class="search-query" type="text" name="store_address" placeholder="Search by store location" style="background-color: rgb(255, 255, 255);z-index: 2000;"/>
+        <a type="submit" href="" data-original-title=""><i class="icon-search" style="margin-top:7px;z-index:2001;"></i></a>
+      </div>
+    </form>
+    <div id="store_map" style="height: 300px"></div>
+  </div>
+  <div class="span<%= full_width ? "12" : "8" %>" id="known_stores_div">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Marker</th>
+          <th>Store Name</th>
+          <th>Address</th>
+        </tr>
+      </thead>
+      <tbody id="known_stores_table">
+        <!-- Fill out in JS -->
+      </tbody>
+    </table>
+    <button id="add_unlisted_store_button" class="btn btn-primary" redir="1">Add Unlisted Store</button>
+  </div>
+</div>      
+<div class="item">
+  <h3>Enter Store Name</h3>
+  <form id="new_store_form">
+    <div><input id="store_name_input" placeholder="Enter store name here" type="text"></div>
+    <div><a type="submit" href=""><button class="btn btn-primary" style="margin-right: 20px">Submit</button></a><button class="btn" redir="0">Cancel</button></div>
+  </form>
+</div>
+<div class="item">
+  <div>
+    <div><h3>Is this the correct store?</h3></div>
+    <div><span id="found_store_name"></span></div>
+    <div><span id="found_store_address"></span></div>
+  </div>
+  <div style="margin-top:20px"><button class="btn btn-primary" style="margin-right: 20px" onclick="findStoreRequestSuccess();">Yes</button><button class="btn btn-error" onclick="findStoreRequestFailed($('#store_name_input').val())">No</button></div>
+</div>
+<div class="item">
+  <h3>Enter Address for <span id="new_store_name"></span></h3>
+  <form id="new_store_address_form">
+    <div><input id="store_address_input" placeholder="Enter store address here" type="text"></div>
+    <div><a type="submit" href=""><button class="btn btn-primary" style="margin-right: 20px">Submit</button></a><button class="btn" redir="0">Cancel</button></div>
+  </form>
+</div>

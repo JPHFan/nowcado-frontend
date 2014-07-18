@@ -1,0 +1,41 @@
+<div class="container">
+  <input id="store_lat" type="hidden" />
+  <input id="store_lng" type="hidden" />
+  <h1>Add items to Nowcado</h1>
+  <div id="addItemSuccessStatus" class="alert alert-success" style="display:none;text-align:center"></div>
+  <div class="carousel slide">
+    <div class="carousel-inner row-fluid" style="text-align:center">
+      <%= render_partial :select_store, {:locals => {:full_width => false}} %>
+      <div class="item">
+        <h3 id="add_store_name"></h3>
+        <div><span style="color:red">*</span> = Required entry. Without these fields, the row will be ignored.</div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Item Name <span style="color:red">*</span></th>
+              <th>Price ($) <span style="color:red">*</span></th>
+              <th>Image</th>
+              <th <%= request.cookies['devModeUnlock'].to_i != 1 ? "class=\"dev-mode-lock\"" : "" %>>Department</th>
+              <th>Barcode</th>
+            </tr>
+          </thead>
+          <tbody id="addItemTableRows">
+            <tr rowid="1">
+              <td class="first"><input type="text" autocomplete="off" /></td>
+              <td><input type="number" min="0.00" step="0.01" class="input-mini" /></td>
+              <td><a class="btn" href="#edit_image_modal" role="button" data-toggle="modal" onclick="cleanEditImageModal()">Edit Image</a></td>
+              <td <%= request.cookies['devModeUnlock'].to_i != 1 ? "class=\"dev-mode-lock\"" : "" %>><a class="btn" href="#edit_department_modal" role="button" data-toggle="modal" onclick="initDepartmentString(1);">Edit Dept</a></td>
+              <td><input type="text" /></td>
+            </tr>
+          </tbody>
+        </table>
+        <button id="addItemTableSubmit" class="btn btn-success" style="margin-right: 20px">Submit</button><button class="btn" redir="0" prompt="Are you sure you want to discard all currently entered data and return to the store selection screen?">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= render_partial(:edit_image_modal) %>
+<%= render_partial(:edit_department_modal) %>
+
+<%= js :add_item %>

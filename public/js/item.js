@@ -53,6 +53,35 @@ $("#edit_name_form").submit(function(e) {
   }, 'json');
 });
 
+$("form#newPriceForm").submit(function(e) {
+  e.preventDefault();
+  $.post("/item", {
+    item_name_id: item_id,
+    store: JSON.stringify(store),
+    price: $("#price").val()
+  }, function(data) {
+    if (data.success){
+      $.growl("Item added", growl_resp.pass);
+      var new_store_id = data.result.store_id;
+      var close_bracket_idx = window.location.href.indexOf('%5D');
+      window.location.href = window.location.href.substring(0, close_bracket_idx) + "%2C" + new_store_id + "%5D";
+    } else {
+      if(data.message instanceof Object) {
+        for (var key in data.message){
+          if (typeof data.message[key] == "string"){
+            data.message[key] = [data.message[key]]
+          }
+          for (var i = 0; i < data.message[key].length; i++){
+            $.growl(key.charAt(0).toUpperCase() + key.slice(1) + " " + data.message[key][i], growl_resp.fail);
+          }
+        }
+      } else {
+        $.growl(data.message, growl_resp.fail);
+      }
+    }
+  }, 'json');
+});
+
 $("#alternatives_apply").click(function(e) {
   e.preventDefault();
   var quantity = $("#add_item_qty_to_cart #add_qty").val();
@@ -69,6 +98,10 @@ $("#alternatives_apply").click(function(e) {
 
 $(".alternative_item").click(function(e) {
   this.style.backgroundColor=="" ? this.style.backgroundColor="rgb(200,240,255)" : this.style.backgroundColor="";
+});
+
+$("#add_to_other_store_modal").on("shown", function(){
+  google.maps.event.trigger(store_addresspicker_map, "resize");
 });
 
 window.history.replaceState("","",$("#query_string").val());
@@ -124,3 +157,12 @@ function addApplyDeptListener() {
   });
 }
 addApplyDeptListener();
+
+var width = $(window).width();
+$("div#item_results_div").width(width-290);
+$(window).resize(function() {
+  if($(this).width() != width) {
+    width = $(this).width();
+    $("div#item_results_div").width(width-290);
+  }
+});

@@ -4,26 +4,37 @@
     <h3 id="editImgLabel">Set Image</h3>
   </div>
   <div class="modal-body">
+    <% has_existing_image = @item_img_history && @item_img_history["cur_image"] && @item_img_history["cur_image"]["time"] %>
+    <% if has_existing_image %>
     <div style="width:245px;float:left;">
       <div class="row-fluid">
         <div class="btn-toolbar" style="margin: 0;text-align:center">
           <div class="btn-group">
             <button class="btn dropdown-toggle centered" data-toggle="dropdown">
-              <span id="primary_img_datetime_span"><%= Time.parse(@item_img_history["cur_image"]["time"]).utc if @item_img_history["cur_image"]["time"] %></span>
+              <% if @item_img_history && @item_img_history["cur_image"] && @item_img_history["cur_image"]["time"] %>
+                <% cur_img_time = Time.parse(@item_img_history["cur_image"]["time"]).utc %>
+              <% else %>
+                <% cur_img_time = Time.now.utc %>
+              <% end %>
+              <span id="primary_img_datetime_span"><%= cur_img_time %></span>
               <span class="caret"></span>
             </button>
             <ul id="img_datetime_list" class="dropdown-menu">
-              <% @item_img_history["images"].each do |img| %>
-                <% if img["time"] %>
-                <li><a img_url="<%= settings.domain + img["img_url"] %>" href="#"><%= Time.parse(img["time"]).utc %></a></li>
+              <% if @item_img_history && @item_img_history["images"] %>
+                <% @item_img_history["images"].each do |img| %>
+                  <% if img["time"] %>
+                  <li><a img_url="<%= settings.domain + img["img_url"] %>" href="#"><%= Time.parse(img["time"]).utc %></a></li>
+                  <% end %>
                 <% end %>
+              <% else %>
+                 <li><a img_url="<%= settings.domain + "/img/dummy-200x200.png" %>" href="#"><%= cur_img_time %></a></li>
               <% end %>
             </ul>
           </div>
         </div>
       </div>
       <div class="row-fluid">
-        <img id="cur_img" src="<%= settings.domain + @item_img_history["cur_image"]["img_url"] %>" style="max-width:200px;height:200px;margin-left:auto;margin-right:auto;margin-top:40px;margin-bottom:25px;display:block;">
+        <img id="cur_img" src="<%= (@item_img_history && @item_img_history["cur_image"]) ? settings.domain + @item_img_history["cur_image"]["img_url"] : settings.domain + "/img/dummy-200x200.png" %>" style="max-width:200px;height:200px;margin-left:auto;margin-right:auto;margin-top:40px;margin-bottom:25px;display:block;">
       </div>
       <div class="row-fluid">
         <button id="apply_edit_image" class="btn btn-success centered">Apply</button>
@@ -31,15 +42,18 @@
     </div>
     <div style="border-left:1px solid #AAAAAA;;border-right:1px solid #DDDDDD;;height:325px;float:left;"></div>
     <div style="margin-left:10px;width:250px;float:left;">
+    <% else %>
+    <div style="text-align: center;">
+    <% end %>
       <span class="fileinput-button">
         <i class="glyphicon glyphicon-plus"></i>
         <!-- The file input field used as target for the file upload widget -->
-        <input id="fileupload" type="file" name="files[]">
+        <input id="fileupload" type="file" name="files[]" style="width: 180px;line-height: 15px;">
       </span>
       <!-- The global progress bar -->
-      <div id="progress" class="progress">
+      <!--<div id="progress" class="progress">
         <div class="progress-bar progress-bar-success"></div>
-      </div>
+      </div>-->
       <!-- The container for the uploaded files -->
       <div id="files" class="files" style="text-align:center;"></div>
     </div>

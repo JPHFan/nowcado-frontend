@@ -1175,6 +1175,11 @@ jsonEditor = {
       jE.form2json(0);
     }
     if(jE.evalNewJson() == -1) return -1;
+    // Check if this object is the same. If so, alert there was no change and return -1.
+    if(JSON.stringify(jE.jsonObj).replace(/\"/g,"") == $("ul#dept_datetime_list li:first a").attr("dept")) {
+      $.growl("You did not change the department.",growl_resp.pass);
+      return -1;
+    }
     f();
   }
 };

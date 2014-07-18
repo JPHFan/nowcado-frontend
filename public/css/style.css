@@ -275,6 +275,10 @@ div#facebook_login_icon {
     visibility: hidden;
 }
 
+th.dev-mode-lock, td.dev-mode-lock {
+  display: none;
+}
+
 .top-right-icon {
     margin-left: 5px;
     margin-top: 5px;
@@ -714,3 +718,4 @@ DIV.xcIDIV_collapsed {
         transform: rotate(359deg)
     }
 }
+

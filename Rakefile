@@ -1,6 +1,10 @@
+APP_FILE = 'main.rb'
+APP_CLASS = 'App'
+
 require 'rake/testtask'
 require 'open-uri'
 require 'fileutils'
+require 'sinatra/assetpack/rake'
 require 'zip/zipfilesystem'
 
 Rake::TestTask.new do |t|

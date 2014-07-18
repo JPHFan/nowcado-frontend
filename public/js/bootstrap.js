@@ -630,10 +630,11 @@
 }(window.jQuery), ! function ($) {
     "use strict";
     var Typeahead = function (element, options) {
-      console.log(options);
       var bt_upd = undefined;
-      if(options.updater) {
+      if(typeof options.updater == "string") {
         bt_upd = new Function('k',options.updater);
+      } else {
+        bt_upd = options.updater;
       }
       this.$element = $(element), this.isModal = (this.$element.closest('.modal').length > 0),this.options = $.extend({}, $.fn.typeahead.defaults, options), this.matcher = this.options.matcher || this.matcher, this.sorter = this.options.sorter || this.sorter, this.highlighter = this.options.highlighter || this.highlighter, this.updater = bt_upd || this.updater, this.source = this.options.source, this.$menu = $(this.options.menu), this.shown = !1, this.listen()
     };
@@ -651,7 +652,6 @@
                 height: this.$element[0].offsetHeight
             });
 
-            if (this.isModal){
                 this.$menu.css({
                     top: 0,
                     left: 0,
@@ -663,21 +663,21 @@
                          top: pos.top + pos.height,
                          left: pos.left
                 })
-            } else {
-                        this.$menu.css({
-                         top: pos.top + pos.height,
-                         left: pos.left
-                        });
-            }
         },
         resize: function() {
-            if (this.shown) this.setMenuPosition();
+            //if (this.shown) 
+            this.setMenuPosition();
             return this;
         },
         show: function () {
-            this.setMenuPosition();
+            var thisRef = this;
             this.$menu.insertAfter(this.$element).show();
             this.shown = true;
+            this.setMenuPosition();
+            window.onscroll = function() {thisRef.setMenuPosition()};
+            $(document).on("mousewheel DOMMouseScroll",function(e) {
+              thisRef.setMenuPosition()
+            });
             return this;
         },
         hide: function () {

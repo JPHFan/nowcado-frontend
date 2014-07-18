@@ -50,21 +50,21 @@ post "/set_memberships/?" do
   rest_call("/memberships",{"memberships" => params[:memberships]},"post")
 end
 
-def rest_call(address, params = {}, verb="get")
+def rest_call(address, params = {}, verb="get", domain=settings.domain)
   if session["user"]
     params.merge!({"email" => session["email"], "auth_token" => session["auth_token"], "ssid" => session["ssid"]})
   end
   params.merge!({"remote_ip" => request.ip})
   json_types = {:content_type => :json, :accept => :json}
   if verb.match(/put/i)
-    result = JSON.parse RestClient.put (settings.domain + address.to_s), params, json_types
+    result = JSON.parse RestClient.put (domain + address.to_s), params, json_types
   elsif verb.match(/post/i)
-    result = JSON.parse RestClient.post (settings.domain + address.to_s), params, json_types
+    result = JSON.parse RestClient.post (domain + address.to_s), params, json_types
   elsif verb.match(/delete/i)
-    result = JSON.parse RestClient.delete (settings.domain + address.to_s), params: params
+    result = JSON.parse RestClient.delete (domain + address.to_s), params: params
   else
     # Assume get
-    result = JSON.parse RestClient.get (settings.domain + address.to_s), params: params
+    result = JSON.parse RestClient.get (domain + address.to_s), params: params
   end
 
   return result
@@ -186,6 +186,24 @@ get "/store/:id/:offset_mins/?" do
   erb (settings.mobile+"store").to_sym
 end
 
+get "/store/unlisted/?" do
+  @store = rest_call("/maps/api/place/textsearch/json", params.merge({
+    sensor: true,
+    key: ENV['GOOGLE_PLACES_API_KEY'],
+    radius: 1000
+  }),
+  "GET", "https://maps.googleapis.com")
+  JSON.generate(@store)
+end
+
+get "/item/add/?" do
+  if(!get_or_set_session_var(params, ("latitude").to_sym) || !get_or_set_session_var(params, ("longitude").to_sym))
+    redirect '/?fail=true'
+    return
+  end
+  erb (settings.mobile+"item_add").to_sym
+end
+
 get "/item/:id/?" do
   if(!get_or_set_session_var(params, ("latitude").to_sym) || !get_or_set_session_var(params, ("longitude").to_sym))
     redirect '/?fail=true'
@@ -286,6 +304,14 @@ def dfs(obj, path, &blk)
     blk.call(path.dup,obj,false)
   end
   return path
+end
+
+post "/items/?" do
+  return JSON.generate(rest_call("/items/", params, "put"))
+end
+
+post "/item/?" do
+  return JSON.generate(rest_call("/items/", params, "post"))
 end
 
 post "/item/:id/img/?" do

@@ -1,7 +1,11 @@
+var has_item_id = typeof item_id != "undefined";
 $(function () {
     'use strict';
     // Change this to the location of your server-side upload handler:
-    var url = domain + "/items/" + item_id + "/img",
+    has_item_id = typeof item_id != "undefined";
+    var item_str = "img";
+    if(has_item_id) item_str = item_id + "/img";
+    var url = domain + "/items/" + item_str,
         uploadButton = $('<button/>')
             .addClass('btn btn-success centered')
             .prop('disabled', true)
@@ -108,8 +112,19 @@ $("#apply_edit_image").click(function(e) {
 
 function img_update_success(data) {
   if(data.success) {
-    $.growl("Item image updated",growl_resp.pass);
-    window.location.reload(true);
+    if(has_item_id) {
+      $.growl("Item image updated",growl_resp.pass);
+      window.location.reload(true);
+    } else {
+      // If data.result.rename is true, then this will be passed forward to the create as img_url_hash. Otherwise it is img_url.
+      if(data.result.rename)
+        add_item_row.attr("img_url_hash",data.result.file_name);
+      else
+        add_item_row.attr("img_url",data.result.file_name);
+      $(add_item_row.children()[2]).children().attr("onclick","cleanEditImageModal(\""+ data.result.file_name +"\")");
+      // Hide the modal
+      $("#edit_image_modal").modal('hide');
+    }
   } else {
     $.growl(data.message,growl_resp.fail);
   }

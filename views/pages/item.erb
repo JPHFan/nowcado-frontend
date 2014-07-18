@@ -1,7 +1,7 @@
 <div style="border: 0;border-bottom: 1px solid #e5e5e5">
-  <legend style="display:inline; width:inherit;border-bottom: none;margin-bottom: 0;" class="show-child-icon-on-hover">
+  <legend style="border-bottom: none;margin-bottom: 0;" class="show-child-icon-on-hover">
     <h2 id="item_name"><%= cap_words(@item_results[0]["name"]) %>
-      <a id="edit_name_link" href="#edit_name_modal" role="button" data-toggle="modal">
+      <a style="text-decoration:none" id="edit_name_link" href="#edit_name_modal" role="button" data-toggle="modal">
         <i id="edit_name_icon" class="icon-pencil top-right-icon" data-original-title="Edit name" data-placement="right"></i>
       </a>
     </h2>
@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <div class="span9">
+    <div id="item_results_div" style="float:right;margin-left:20px;">
       <% if true %>
       <div class="alert alert-success" id="add_item_alert" style="display: none;">
         <span id="qty_confirm_text"></span> x <%= @item_results[0]["name"] %> in your cart!
@@ -66,6 +66,7 @@
       </div>
 
       <%= render_partial(:item_results_table) %>
+      <div><a data-toggle="modal" href="#add_to_other_store_modal"><button id="addToOtherStore" class="btn btn-primary">Add to other store</button></a></div>
       <%= render_partial(:similar_items) %>
 
       <div class="container-fluid">
@@ -125,6 +126,33 @@
         <% end %>
       </tbody>
     </table>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
+
+<div id="add_to_other_store_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="editStoreLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="editStoreLabel">Add <%= cap_words(@item_results[0]["name"]) %> to other store</h3>
+  </div>
+  <div class="modal-body">
+    <input id="store_lat" type="hidden" />
+    <input id="store_lng" type="hidden" />
+    <div id="addItemSuccessStatus" class="alert alert-success" style="display:none;text-align:center"></div>
+    <div class="carousel slide">
+      <div class="carousel-inner row-fluid" style="text-align:center">
+        <%= render_partial :select_store, {:locals => {:full_width => true}} %>
+        <div class="item">
+          <h3><span id="add_store_name"></span></h3>
+          <form id="newPriceForm">
+          <div><span>Price: $</span><input id="price" type="number" min="0.00" step="0.01" class="input-mini" style="vertical-align:0" /></div>       
+          <a type="submit" href=""><button class="btn btn-success" style="margin-right: 20px">Submit</button></a><button class="btn" redir="0">Cancel</button>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>

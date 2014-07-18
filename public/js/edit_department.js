@@ -780,7 +780,10 @@ backDelay: 500
             }
             if (typeof option == 'string') {
                 data[option].apply(data, Array.prototype.slice.call(args, 1));
-            }
+                if(option == "destroy") {
+                  data.$el.val(data.$el.html());
+                }
+            }            
         });
     };
 }(jQuery));
@@ -858,12 +861,71 @@ backDelay: 500
 })(jQuery,"length","createRange","duplicate");
 
 // Render first hash to kick things off
-$(document).ready(function() {
-  var txt = $("div[time]")[0];
-  if(txt !== undefined) txt = txt.getAttribute("hash").replace(/([^{}:\[\],]+)/g,"\"$1\"").replace(/\"\./g,"\"");
-  else txt = '{"Department":{"Grocery":"Other"}}';
-  $("#jsonTEXTAREA").html(txt);
+$(function() {
+  initDepartmentString();
 });
+
+function pad(number) {
+      var r = String(number);
+      if ( r.length === 1 ) {
+        r = '0' + r;
+      }
+      return r;
+    }
+Date.prototype.toNowcadoDateTimeString = function() {
+      return this.getUTCFullYear()
+        + '-' + pad( this.getUTCMonth() + 1 )
+        + '-' + pad( this.getUTCDate() )
+        + ' ' + pad( this.getUTCHours() )
+        + ':' + pad( this.getUTCMinutes() )
+        + ':' + pad( this.getUTCSeconds() )
+        + ' UTC';
+    };
+
+function initDepartmentString(id) {
+  var txt;
+  if(typeof id != "undefined") {
+    jE.jsonObj = null;
+    txt = dept_histories[id];
+    // Must clear out history stuff
+    $("#jsonHistoryArea").remove();
+    
+    if(txt != null) {
+      // Must fill out history stuff
+      var dept_history_txt = "";
+      for(var i = 0; i < txt.length; i++) {
+        dept_history_txt += "<li><a dept=\"" + txt[i]["name"] + "\" href=\"#\">" + new Date(Date.parse(txt[i]["time"])).toNowcadoDateTimeString() + "</a></li>";
+      }
+      $("div#edit_department_modal .modal-body").prepend("<div id=\"jsonHistoryArea\" class=\"row-fluid\">" +
+        "<div class=\"btn-toolbar\" style=\"margin: 0;text-align:center\">" +
+          "<div class=\"btn-group\">" +
+            "<button class=\"btn dropdown-toggle centered\" data-toggle=\"dropdown\">" +
+              "<span id=\"primary_department_span\">" + new Date(Date.parse(txt[0]["time"])).toNowcadoDateTimeString() + "</span>" +
+              "<span class=\"caret\"></span>" +
+            "</button>" +
+            "<ul id=\"dept_datetime_list\" class=\"dropdown-menu\">" + dept_history_txt +
+            "</ul>" +
+          "</div>" +
+        "</div>" +
+      "</div>");
+      txt = txt[0]["name"];
+    } 
+    var cur_dep_str = $("tr[rowid=" + id + "]")[0].getAttribute("department");
+    if(cur_dep_str) {
+      txt = cur_dep_str;
+    }
+  }
+  else {
+    txt = $("div[time]")[0];
+    if(txt != null) txt = txt.getAttribute("hash");
+  }
+  if(txt == null) txt = '{"Department":{"Grocery":"Other"}}';
+  else txt = txt.replace(/([^{}:\[\],]+)/g,"\"$1\"").replace(/\"\./g,"\"");
+  $("#jsonTEXTAREA").html(txt);
+  $("textarea.editor").highlightTextarea('destroy');
+  $("textarea.editor").highlightTextarea('setOptions', {color: '#ffdf00'});
+  $("#jsonFormDIV").html("");
+}
 
 var devSnd = new Audio("/DevMode.mp3");
 var devInp = "POWEROVERWHELMING";
@@ -978,7 +1040,7 @@ $('#edit_department_modal .modal-body').on("keyup click focus", 'div textarea.ed
   
 });
 
-$("a[dept]").click(function(e) {
+$("div#edit_department_modal").on("click","a[dept]",function(e) {
   e.preventDefault();
   // Strip dots and insert quotes, then fill in #jsonTEXTAREA. Also clear existing highlights.
   var jt = $("#jsonTEXTAREA");
