@@ -54,6 +54,8 @@ function cleanEditImageModal(img_url) {
 
 function resetAddItemTable() {
   var devModeLock = $(".dev-mode-lock").length != 0;
+  all_item_data = {};
+  dept_histories = {};
   $("tbody#addItemTableRows").html("<tr rowid=\"1\">" +
             "<td class=\"first\"><input type=\"text\" autocomplete=\"off\" /></td>" +
             "<td><input type=\"number\" min=\"0.00\" step=\"0.01\" class=\"input-mini\" /></td>" +
