@@ -314,6 +314,19 @@ post "/item/?" do
   return JSON.generate(rest_call("/items/", params, "post"))
 end
 
+get "/item/img/url/?" do
+  # Return {files: binary} for url param
+  return JSON.generate({:fail => "No url provided"}) if !params[:url] || !(params[:url].is_a? (String))
+  return JSON.generate({:fail => "Invalid url provided"}) if !(params[:url].match(/(\.|\/)(gif|jpe?g|png|bmp)$/i))
+  begin
+    file = RestClient.get params[:url], {:content_type => :json, :accept => :json}
+    file = Base64.encode64(file.to_s) 
+    return file
+  rescue
+    return JSON.generate({:fail => "Could not retrieve this image"})
+  end
+end
+
 post "/item/:id/img/?" do
   return JSON.generate(rest_call("/items/" + params[:id] + "/img",params,"put"))
 end

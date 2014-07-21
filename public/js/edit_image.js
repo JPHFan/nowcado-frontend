@@ -29,7 +29,7 @@ $(function () {
         dataType: 'json',
         autoUpload: false,
         acceptFileTypes: /(\.|\/)(gif|jpe?g|png|bmp)$/i,
-        maxFileSize: 5000000, // 5 MB
+        maxFileSize: 100000000, // 100 MB
         // Enable image resizing, except for Android and Opera,
         // which actually support image resizing, but fail to
         // send Blob objects via XHR requests:
@@ -110,10 +110,80 @@ $("#apply_edit_image").click(function(e) {
   }, img_update_success, 'json');
 });
 
+$("#set_image_url").submit(function(e) {
+  e.preventDefault();
+  var fileUrlPtr = $("#fileurl");
+  fileUrlPtr.attr('disabled','disabled');
+  $.get("/item/img/url", {
+    url: fileUrlPtr.val()
+  }, function(data) {
+    try {
+      var fileUrlPtr = $("#fileurl");
+      fileUrlPtr.removeAttr('disabled');
+      var url = fileUrlPtr.val();
+      if(typeof data != "string" || data.match(/^\{\"fail/)) {
+        var jsonFailure = JSON.parse(data);
+        $.growl(jsonFailure.fail,growl_resp.fail);
+        return;
+      }
+      
+      if(url.match(/(\.|\/)(gif|jpe?g|png|bmp)$/i) == null) {
+        $.growl("Image url invalid",growl_resp.fail);
+        return;
+      }
+      var contentType = "image/png";
+      if(url.match(/(\.|\/)(gif)$/i)) {
+        contentType = "image/gif";
+      } else if(url.match(/(\.|\/)(jpe?g)$/i)) {
+        contentType = "image/jpeg";
+      } else if(url.match(/(\.|\/)(bmp)$/i)) {
+        contentType = "image/bmp";
+      }
+
+      var byteCharacters = atob(data);
+      var byteNumbers = new Array(byteCharacters.length);
+      for(var i = 0; i < byteCharacters.length; i++)
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      var byteArray = new Uint8Array(byteNumbers);
+      var blob = new Blob([byteArray], {type: contentType});
+      blob.name = url.match(/[^\/]+$/)[0];
+    
+      has_item_id = typeof item_id != "undefined";
+      var item_str = "img";
+      if(has_item_id) item_str = item_id + "/img";
+      var url = domain + "/items/" + item_str;
+      $("#fileupload").fileupload('send',{
+        files:[blob],
+        url: url,
+        dataType: 'json',
+        autoUpload: false,
+        acceptFileTypes: /(\.|\/)(gif|jpe?g|png|bmp)$/i,
+        maxFileSize: 100000000, // 100 MB
+        // Enable image resizing, except for Android and Opera,
+        // which actually support image resizing, but fail to
+        // send Blob objects via XHR requests:
+        disableImageResize: /Android(?!.*Chrome)|Opera/
+            .test(window.navigator.userAgent),
+        previewMaxWidth: 200,
+        previewMaxHeight: 200,
+        imageMaxWidth: 200,
+        imageMaxHeight: 200,
+        imageMinWidth: 200,
+        imageMinHeight: 200,
+        previewCrop: false
+      }).error(function(){
+        $.growl("Item image update failed",growl_resp.fail);
+      });
+    } catch(e2) {
+      $.growl("Could not parse image", growl_resp.fail);
+    }
+  });
+});
+
 function img_update_success(data) {
   if(data.success) {
+    $.growl("Item image updated",growl_resp.pass);
     if(has_item_id) {
-      $.growl("Item image updated",growl_resp.pass);
       window.location.reload(true);
     } else {
       // If data.result.rename is true, then this will be passed forward to the create as img_url_hash. Otherwise it is img_url.
@@ -122,7 +192,7 @@ function img_update_success(data) {
       else
         add_item_row.attr("img_url",data.result.file_name);
       $(add_item_row.children()[2]).children().attr("onclick","cleanEditImageModal(\""+ data.result.file_name +"\")");
-      // Hide the modal
+      // Hide the modal      
       $("#edit_image_modal").modal('hide');
     }
   } else {

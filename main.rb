@@ -7,6 +7,7 @@ require 'rest_client'
 require 'profiler'
 require 'sanitize'
 require 'cgi'
+require 'base64'
 require 'mail'
 
 configure do
