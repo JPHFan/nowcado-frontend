@@ -33,7 +33,10 @@ function sign_in(json) {
     $("#sign_in").modal("hide");
     // Use the encrypted auth token for further requests
     $("#user_bar").load("/user_bar/" + json.result.username + "?email=" + json.result.email +
-        "&auth_token=" + json.result.auth_token + "&ssid=" + json.result.ssid + "&store_owner=" + json.result.store_owner);
+        "&auth_token=" + json.result.auth_token + "&ssid=" + json.result.ssid + "&store_owner=" + json.result.store_owner, 
+        function(){
+          $(".navbar a").tooltip("hide");
+        });
   } else {
     $("#sign_in_error").html(json.message).show();
     if (json.message.substring(0,"FB Error:".length) === "FB Error:"){
