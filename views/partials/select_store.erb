@@ -2,8 +2,8 @@
   <div class="span<%= full_width ? "12" : "4" %>">
     <form id="map_search_form">                            
       <div class="input-append">
-        <input id="store_address_search" class="search-query" type="text" name="store_address" placeholder="Search by store location" style="background-color: rgb(255, 255, 255);z-index: 2000;"/>
-        <a type="submit" href="" data-original-title=""><i class="icon-search" style="margin-top:7px;z-index:2001;"></i></a>
+        <input id="store_address_search" class="search-query" type="text" name="store_address" placeholder="Search by store location" style="background-color: rgb(255, 255, 255);<%= full_width ? "z-index: 2000;" : ""%>"/>
+        <a type="submit" href="" data-original-title=""><i class="icon-search" style="margin-top:7px;<%= full_width ? "z-index: 2001;" : ""%>"></i></a>
       </div>
     </form>
     <div><small>You can also pan/zoom on the map below.</small></div>
