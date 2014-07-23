@@ -1,4 +1,4 @@
-var has_item_id = typeof item_id != "undefined";
+var has_item_id = typeof item_id != "undefined", img_url_upload = false;
 $(function () {
     'use strict';
     // Change this to the location of your server-side upload handler:
@@ -112,6 +112,7 @@ $("#apply_edit_image").click(function(e) {
 
 $("#set_image_url").submit(function(e) {
   e.preventDefault();
+  img_url_upload = true;
   var fileUrlPtr = $("#fileurl");
   fileUrlPtr.attr('disabled','disabled');
   $.get("/item/img/url", {
@@ -172,9 +173,11 @@ $("#set_image_url").submit(function(e) {
         imageMinHeight: 200,
         previewCrop: false
       }).error(function(){
+        img_url_upload = false;
         $.growl("Item image update failed",growl_resp.fail);
       });
     } catch(e2) {
+      img_url_upload = false;
       $.growl("Could not parse image", growl_resp.fail);
     }
   });
@@ -192,10 +195,13 @@ function img_update_success(data) {
       else
         add_item_row.attr("img_url",data.result.file_name);
       $(add_item_row.children()[2]).children().attr("onclick","cleanEditImageModal(\""+ data.result.file_name +"\")");
-      // Hide the modal      
-      $("#edit_image_modal").modal('hide');
+      // Hide the modal   
+      if(!img_url_upload)
+        $("#edit_image_modal").modal('hide');
+      cleanEditImageModal(data.result.file_name);
     }
   } else {
     $.growl(data.message,growl_resp.fail);
   }
+  img_url_upload = false;
 }

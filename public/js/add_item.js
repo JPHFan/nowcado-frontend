@@ -46,6 +46,7 @@ function addTypeahead(ele) {
 }
 
 function cleanEditImageModal(img_url) {
+  $("#fileurl").val("");
   if(img_url == null || img_url.trim() == "")
     $("#files").html("");
   else
@@ -66,9 +67,11 @@ function resetAddItemTable() {
   addTypeahead($("[rowid=1] input:first"));
 }
 
-// Set the current item row
-$("tbody").on("click","tr[rowid] td a", function(e) {
-  add_item_row = $(this).parents("tr")
+$("tbody").on("click","tr[rowid]", function(e) {
+  // Unhighlight other rows, highlight this one
+  if(add_item_row) add_item_row.removeClass("highlighted_row");
+  add_item_row = $(this);
+  add_item_row.addClass("highlighted_row");
 });
 
 $("tbody").on("focus","tr[rowid] td input", function(e) {
