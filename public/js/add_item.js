@@ -93,7 +93,7 @@ $("tbody").on("focus","tr[rowid] td input", function(e) {
 });
 
 $("tbody").on("blur","tr[rowid] td.first input",function(e) {
-  if($(this).attr("itemName") != $(this).val()) {
+  if($(this).attr("itemName") != null && $(this).attr("itemName") != $(this).val()) {
     $(this).attr("itemName",$(this).val());
     // Clear out the barcode
     $(this).parent().siblings("td:last").children("input").val("");
