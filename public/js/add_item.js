@@ -58,11 +58,11 @@ function resetAddItemTable() {
   all_item_data = {};
   dept_histories = {};
   $("tbody#addItemTableRows").html("<tr rowid=\"1\">" +
-            "<td class=\"first\"><input type=\"text\" autocomplete=\"off\" /></td>" +
+            "<td class=\"first\"><input type=\"text\" autocomplete=\"off\" style=\"width:95%\" /></td>" +
             "<td><input type=\"number\" min=\"0.00\" step=\"0.01\" class=\"input-mini\" /></td>" +
             "<td><a class=\"btn\" href=\"#edit_image_modal\" role=\"button\" data-toggle=\"modal\" onclick=\"cleanEditImageModal()\">Edit Image</a></td>" +
             "<td " + (devModeLock ? "class=\"dev-mode-lock\"" : "") + "><a class=\"btn\" href=\"#edit_department_modal\" role=\"button\" data-toggle=\"modal\" onclick=\"initDepartmentString(1);\">Edit Dept</a></td>" +
-            "<td><input type=\"text\" /></td>" +
+            "<td><input type=\"text\" style=\"width:120px\" /></td>" +
           "</tr>");
   addTypeahead($("[rowid=1] input:first"));
 }
@@ -81,11 +81,11 @@ $("tbody").on("focus","tr[rowid] td input", function(e) {
       next_row = parseInt(p_tr.attr("rowid"))+1;
   if(p_tr.parent().children().last()[0] == p_tr[0]) {
     var insertHtml = "<tr rowid=\"" + next_row + "\">" +
-              "<td class=\"first\"><input type=\"text\" autocomplete=\"off\" /></td>" +
+              "<td class=\"first\"><input type=\"text\" autocomplete=\"off\" style=\"width:95%\" /></td>" +
               "<td><input type=\"number\" min=\"0.00\" step=\"0.01\" class=\"input-mini\" /></td>" +
               "<td><a class=\"btn\" href=\"#edit_image_modal\" role=\"button\" data-toggle=\"modal\" onclick=\"cleanEditImageModal()\">Edit Image</a></td>" +
               "<td " + (devModeLock ? "class=\"dev-mode-lock\"" : "") + "><a class=\"btn\" href=\"#edit_department_modal\" role=\"button\" data-toggle=\"modal\" onclick=\"initDepartmentString(" + next_row + ");\">Edit Dept</a></td>" +
-              "<td><input type=\"text\" /></td>" +
+              "<td><input type=\"text\" style=\"width:120px\" /></td>" +
             "</tr>";
     $(insertHtml).insertAfter(p_tr);
     addTypeahead($("[rowid=" + next_row + "] input:first"));
