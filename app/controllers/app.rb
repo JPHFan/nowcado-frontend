@@ -238,9 +238,6 @@ get "/item/:id/?" do
 
   add_to_stores_hash(@store_ids, session["latitude"], session["longitude"])
 
-  puts "@item_results: #{@item_results}"
-  puts "$stores_hash: #{$stores_hash}"
-
   # Apply sort
   if params["sort"] == "Price"
     @item_results = @item_results.sort {|x,y| x["prices"]["1"].to_f <=> y["prices"]["1"].to_f}
@@ -417,9 +414,12 @@ end
 def add_to_stores_hash(store_ids, latitude=nil, longitude=nil)
   if $stores_hash.nil?
     $stores_hash = {}
+    $stores_hash_history = {}
   end
   store_ids.each{|store_id|
-    if !$stores_hash.has_key?(store_id)
+    # Update stores if we have no entry, no history as to when we last updated the entry, or the entry is over 1 day old.
+    if (!$stores_hash.has_key?(store_id) || !$stores_hash_history.has_key?(store_id) || 
+        (Time.now.utc - $stores_hash_history[store_id] > 86400))
       result = rest_call("/stores/"+store_id.to_s)
       if result["success"]
         store_hash = result["result"]
@@ -429,6 +429,7 @@ def add_to_stores_hash(store_ids, latitude=nil, longitude=nil)
           "latitude" => store_hash["latitude"],
           "longitude" => store_hash["longitude"]
         }
+        $stores_hash_history[store_id] = Time.now.utc
       end
     end
 
