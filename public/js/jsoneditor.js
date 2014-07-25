@@ -1252,17 +1252,24 @@ function typeaheadUpdater(t,k) {
     var d=filldown_options;
     a.children("li").remove();
     if(d[p]!==undefined){
-      var e=a.children("div").children("span")[0];
+      var addSpans = a.children("div").children("span");
+      var e = addSpans.last()[0];
       if(d[p].length==0){
         jE.addFormItem(e,2,p.toString(),1);
         a.children("li:first").children("input").attr("path",p);
       }
+      else {
+        $(e).siblings("span").hide();
+        a.addClass("dotted");
+      }
       for(var i=0;i<d[p].length;i++){
-        var g=p.concat(d[p][i]).toString();
+        var g=p.toString();//.concat(d[p][i]).toString();
         jE.addFormItem(e,4,g,1);
         var b=a.children("li:first");var c=b.children("input");c.val(d[p][i]);
         var f=b.children("ol");
+
         jE.addFormItem(f.children("div").children("span")[0],2,g,1);
+                g=p.concat(d[p][i]).toString();
         f.children("li:first").children("input").attr("path",g);
       }
       renderAutocomplete();
