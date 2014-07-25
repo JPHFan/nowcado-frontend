@@ -9,7 +9,7 @@
     <div class="modal-body">
     <% item_ids_arr = item_ids.split(",") %>
     <div>Select items you would be willing to swap for <%= @item_names[item_ids_arr[0]] %></div>
-    <% if @similar_items[item_ids_arr[0]].length != 0 %>
+    <% if @similar_items[item_ids_arr[0]] && @similar_items[item_ids_arr[0]].length != 0 %>
     <ul class="thumbnails">
       <% @similar_items[item_ids_arr[0]].to_enum.with_index(0).each do |result, i| %>
         <%= render_partial(:show_alternative_item, {:locals => {:id => result["id"], :name => result["name"], :img_url => result["img_url"],
