@@ -26,7 +26,7 @@ function updateStoreMarkers() {
         map: store_addresspicker_map,
         icon: store_icon        
       }));
-      $("#known_stores_table").append('<tr onclick="store={storeName:\'' + cur_store.name + '\',storeId:' + cur_store.id + '};findStoreRequestSuccess();"><td><img src="' + store_icon + '"></img></td><td>' + cur_store.name + '</td><td>' + cur_store.address + '</td></tr>');
+      $("#known_stores_table").append('<tr onclick="store={storeName:\'' + cur_store.name.replace(/'/g,'\\\'') + '\',storeId:' + cur_store.id + '};findStoreRequestSuccess();"><td><img src="' + store_icon + '"></img></td><td>' + cur_store.name + '</td><td>' + cur_store.address + '</td></tr>');
     }
     
   },"GET");
