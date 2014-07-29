@@ -205,6 +205,7 @@ get "/item/add/?" do
 end
 
 get "/item/:id/?" do
+  t = Time.now
   if(!get_or_set_session_var(params, ("latitude").to_sym) || !get_or_set_session_var(params, ("longitude").to_sym))
     redirect '/?fail=true'
     return
@@ -225,7 +226,7 @@ get "/item/:id/?" do
 
   result = rest_call("/items/" + item_id.to_s, {:store_ids => CGI.unescape(params[:store_ids].to_s)}.merge(item_params))
 
-  puts "result: #{result}"
+  puts "Getting items/#{item_id.to_s}: #{Time.now-t} seconds" 
 
   if result["success"]
     result["result"].each {|item|
@@ -250,12 +251,15 @@ get "/item/:id/?" do
   if !@item_results.empty? && !@item_results[0].empty?
     # Get relevant reviews
     @reviews = rest_call("/items/"+item_id.to_s+"/reviews", { :store_ids => CGI.unescape(params[:store_ids].to_s) })
+    puts "Getting items/#{item_id.to_s}/reviews: #{Time.now-t} seconds" 
 
     # Get similar items
     @similar_results = rest_call("/items/"+item_id.to_s+"/similar", {})["result"]
+    puts "Getting items/#{item_id.to_s}/similar: #{Time.now-t} seconds" 
 
     # Get history
     history = rest_call("/items/"+item_id.to_s+"/history", {})["result"]
+    puts "Getting items/#{item_id.to_s}/history: #{Time.now-t} seconds" 
 
     # Get item name history
     @item_name_history = history["name"]
@@ -269,6 +273,7 @@ get "/item/:id/?" do
     # Generate current department string
     @department_strings = get_department_strings(@item_results[0]["department"])
     
+    puts "Finishing: #{Time.now-t} seconds" 
     erb (settings.mobile+"item").to_sym
   end
 end

@@ -1269,7 +1269,7 @@ function typeaheadUpdater(t,k) {
         var f=b.children("ol");
 
         jE.addFormItem(f.children("div").children("span")[0],2,g,1);
-                g=p.concat(d[p][i]).toString();
+        g=p.concat(d[p][i]).toString();
         f.children("li:first").children("input").attr("path",g);
       }
       renderAutocomplete();
