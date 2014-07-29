@@ -238,7 +238,9 @@ get "/item/:id/?" do
   #@similar_items = rest_call("/items/similar", item_params.merge({"items" => item_ids[0]}))
   session["query_string"] = request.url
 
+  p "About to add_to_stores_hash: #{Time.now-t} seconds"
   add_to_stores_hash(@store_ids, session["latitude"], session["longitude"])
+  p "Finished add_to_stores_hash: #{Time.now-t} seconds"
 
   # Apply sort
   if params["sort"] == "Price"
