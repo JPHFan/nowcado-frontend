@@ -206,6 +206,7 @@ end
 
 get "/item/:id/?" do
   t = Time.now
+  puts "Starting function now"
   if(!get_or_set_session_var(params, ("latitude").to_sym) || !get_or_set_session_var(params, ("longitude").to_sym))
     redirect '/?fail=true'
     return
@@ -224,8 +225,8 @@ get "/item/:id/?" do
   @store_ids = params[:store_ids].to_s.gsub(/[\[\]\"\'\\\s]/,"").split(",").map {|val| val.to_i}
   item_id = params[:id].to_i
 
+  puts "About to get items/#{item_id.to_s}: #{Time.now-t} seconds" 
   result = rest_call("/items/" + item_id.to_s, {:store_ids => CGI.unescape(params[:store_ids].to_s)}.merge(item_params))
-
   puts "Getting items/#{item_id.to_s}: #{Time.now-t} seconds" 
 
   if result["success"]
@@ -250,14 +251,17 @@ get "/item/:id/?" do
 
   if !@item_results.empty? && !@item_results[0].empty?
     # Get relevant reviews
+    puts "About to get items/#{item_id.to_s}/reviews: #{Time.now-t} seconds" 
     @reviews = rest_call("/items/"+item_id.to_s+"/reviews", { :store_ids => CGI.unescape(params[:store_ids].to_s) })
     puts "Getting items/#{item_id.to_s}/reviews: #{Time.now-t} seconds" 
 
     # Get similar items
+    puts "About to get items/#{item_id.to_s}/similar: #{Time.now-t} seconds" 
     @similar_results = rest_call("/items/"+item_id.to_s+"/similar", {})["result"]
     puts "Getting items/#{item_id.to_s}/similar: #{Time.now-t} seconds" 
 
     # Get history
+    puts "About to get items/#{item_id.to_s}/history: #{Time.now-t} seconds" 
     history = rest_call("/items/"+item_id.to_s+"/history", {})["result"]
     puts "Getting items/#{item_id.to_s}/history: #{Time.now-t} seconds" 
 
