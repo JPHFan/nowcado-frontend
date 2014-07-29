@@ -238,9 +238,9 @@ get "/item/:id/?" do
   #@similar_items = rest_call("/items/similar", item_params.merge({"items" => item_ids[0]}))
   session["query_string"] = request.url
 
-  p "About to add_to_stores_hash: #{Time.now-t} seconds"
+  puts "About to add_to_stores_hash: #{Time.now-t} seconds"
   add_to_stores_hash(@store_ids, session["latitude"], session["longitude"])
-  p "Finished add_to_stores_hash: #{Time.now-t} seconds"
+  puts "Finished add_to_stores_hash: #{Time.now-t} seconds"
 
   # Apply sort
   if params["sort"] == "Price"
@@ -423,11 +423,13 @@ get "/cart/itinerary/?" do
 end
 
 def add_to_stores_hash(store_ids, latitude=nil, longitude=nil)
+  t = Time.now
   if $stores_hash.nil?
     $stores_hash = {}
     $stores_hash_history = {}
   end
   store_ids.each{|store_id|
+    puts "About to get a store #{store_id}: #{Time.now - t}"
     # Update stores if we have no entry, no history as to when we last updated the entry, or the entry is over 1 day old.
     if (!$stores_hash.has_key?(store_id) || !$stores_hash_history.has_key?(store_id) || 
         (Time.now.utc - $stores_hash_history[store_id] > 86400))
@@ -445,6 +447,7 @@ def add_to_stores_hash(store_ids, latitude=nil, longitude=nil)
     end
 
     session["store_distances"] = {} if session["store_distances"].nil?
+    puts "About to set distance for the store #{store_id}: #{Time.now - t}"
     session["store_distances"][store_id] = distance_between(
         [$stores_hash[store_id]["latitude"], $stores_hash[store_id]["longitude"]], [latitude, longitude])
   }
