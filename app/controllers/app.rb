@@ -205,8 +205,6 @@ get "/item/add/?" do
 end
 
 get "/item/:id/?" do
-  t = Time.now
-  puts "Starting function now"
   if(!get_or_set_session_var(params, ("latitude").to_sym) || !get_or_set_session_var(params, ("longitude").to_sym))
     redirect '/?fail=true'
     return
@@ -225,9 +223,7 @@ get "/item/:id/?" do
   @store_ids = params[:store_ids].to_s.gsub(/[\[\]\"\'\\\s]/,"").split(",").map {|val| val.to_i}
   item_id = params[:id].to_i
 
-  puts "About to get items/#{item_id.to_s}: #{Time.now-t} seconds" 
   result = rest_call("/items/" + item_id.to_s, {:store_ids => CGI.unescape(params[:store_ids].to_s)}.merge(item_params))
-  puts "Getting items/#{item_id.to_s}: #{Time.now-t} seconds" 
 
   if result["success"]
     result["result"].each {|item|
@@ -238,9 +234,7 @@ get "/item/:id/?" do
   #@similar_items = rest_call("/items/similar", item_params.merge({"items" => item_ids[0]}))
   session["query_string"] = request.url
 
-  puts "About to add_to_stores_hash: #{Time.now-t} seconds"
   add_to_stores_hash(@store_ids, session["latitude"], session["longitude"])
-  puts "Finished add_to_stores_hash: #{Time.now-t} seconds"
 
   # Apply sort
   if params["sort"] == "Price"
@@ -253,19 +247,13 @@ get "/item/:id/?" do
 
   if !@item_results.empty? && !@item_results[0].empty?
     # Get relevant reviews
-    puts "About to get items/#{item_id.to_s}/reviews: #{Time.now-t} seconds" 
     @reviews = rest_call("/items/"+item_id.to_s+"/reviews", { :store_ids => CGI.unescape(params[:store_ids].to_s) })
-    puts "Getting items/#{item_id.to_s}/reviews: #{Time.now-t} seconds" 
 
     # Get similar items
-    puts "About to get items/#{item_id.to_s}/similar: #{Time.now-t} seconds" 
     @similar_results = rest_call("/items/"+item_id.to_s+"/similar", {})["result"]
-    puts "Getting items/#{item_id.to_s}/similar: #{Time.now-t} seconds" 
 
     # Get history
-    puts "About to get items/#{item_id.to_s}/history: #{Time.now-t} seconds" 
     history = rest_call("/items/"+item_id.to_s+"/history", {})["result"]
-    puts "Getting items/#{item_id.to_s}/history: #{Time.now-t} seconds" 
 
     # Get item name history
     @item_name_history = history["name"]
@@ -279,7 +267,6 @@ get "/item/:id/?" do
     # Generate current department string
     @department_strings = get_department_strings(@item_results[0]["department"])
     
-    puts "Finishing: #{Time.now-t} seconds" 
     erb (settings.mobile+"item").to_sym
   end
 end
@@ -423,34 +410,39 @@ get "/cart/itinerary/?" do
 end
 
 def add_to_stores_hash(store_ids, latitude=nil, longitude=nil)
-  t = Time.now
   if $stores_hash.nil?
     $stores_hash = {}
     $stores_hash_history = {}
   end
+  
+  temp_stores_arr = []
+  session["store_distances"] = {} if session["store_distances"].nil?
+  
   store_ids.each{|store_id|
-    puts "About to get a store #{store_id}: #{Time.now - t}"
     # Update stores if we have no entry, no history as to when we last updated the entry, or the entry is over 1 day old.
     if (!$stores_hash.has_key?(store_id) || !$stores_hash_history.has_key?(store_id) || 
         (Time.now.utc - $stores_hash_history[store_id] > 86400))
-      result = rest_call("/stores/"+store_id.to_s)
-      if result["success"]
-        store_hash = result["result"]
-        $stores_hash[store_id] = {
-          "name" => store_hash["name"],
-          "address" => store_hash["address"],
-          "latitude" => store_hash["latitude"],
-          "longitude" => store_hash["longitude"]
-        }
-        $stores_hash_history[store_id] = Time.now.utc
-      end
+      temp_stores_arr.push(store_id)  
     end
-
-    session["store_distances"] = {} if session["store_distances"].nil?
-    puts "About to set distance for the store #{store_id}: #{Time.now - t}"
-    session["store_distances"][store_id] = distance_between(
-        [$stores_hash[store_id]["latitude"], $stores_hash[store_id]["longitude"]], [latitude, longitude])
   }
+  
+  result = rest_call("/stores",{store_ids: temp_stores_arr})
+  if result["success"]
+    store_results_hash = result["result"]
+    store_results_hash.each {|store_hash|
+      store_id = store_hash["id"].to_i
+      $stores_hash[store_id] = {
+        "name" => store_hash["name"],
+        "address" => store_hash["address"],
+        "latitude" => store_hash["latitude"],
+        "longitude" => store_hash["longitude"]
+      }
+      $stores_hash_history[store_id] = Time.now.utc    
+      session["store_distances"][store_id] = distance_between(
+          [$stores_hash[store_id]["latitude"], $stores_hash[store_id]["longitude"]], [latitude, longitude])
+    }
+  end
+
 end
 
 def calc_cart(params={})
