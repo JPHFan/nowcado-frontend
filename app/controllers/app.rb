@@ -426,22 +426,29 @@ def add_to_stores_hash(store_ids, latitude=nil, longitude=nil)
     end
   }
   
-  result = rest_call("/stores",{store_ids: temp_stores_arr})
-  if result["success"]
-    store_results_hash = result["result"]
-    store_results_hash.each {|store_hash|
-      store_id = store_hash["id"].to_i
-      $stores_hash[store_id] = {
-        "name" => store_hash["name"],
-        "address" => store_hash["address"],
-        "latitude" => store_hash["latitude"],
-        "longitude" => store_hash["longitude"]
+  if !temp_stores_arr.empty?
+    result = rest_call("/stores",{store_ids: temp_stores_arr})
+    if result["success"]
+      store_results_hash = result["result"]
+      store_results_hash.each {|store_hash|
+        store_id = store_hash["id"].to_i
+        $stores_hash[store_id] = {
+          "name" => store_hash["name"],
+          "address" => store_hash["address"],
+          "latitude" => store_hash["latitude"],
+          "longitude" => store_hash["longitude"]
+        }
+        $stores_hash_history[store_id] = Time.now.utc
       }
-      $stores_hash_history[store_id] = Time.now.utc    
-      session["store_distances"][store_id] = distance_between(
-          [$stores_hash[store_id]["latitude"], $stores_hash[store_id]["longitude"]], [latitude, longitude])
-    }
+    end
   end
+  
+  store_ids.each{|store_id|
+    if session["store_distances"][store_id].nil?
+      session["store_distances"][store_id] = distance_between(
+        [$stores_hash[store_id]["latitude"], $stores_hash[store_id]["longitude"]], [latitude, longitude])
+    end
+  }
 
 end
 
@@ -552,6 +559,7 @@ end
 def set_location(params)
   session["latitude"] = params[:latitude].to_f
   session["longitude"] = params[:longitude].to_f
+  session["store_distances"] = {}
 end
 
 # Takes two points in form [lat,lon]
