@@ -28,6 +28,14 @@ get "/api/?" do
   redirect settings.domain
 end
 
+get "/privacy/?" do
+  erb (settings.mobile+"privacy").to_sym
+end
+
+get "/tos/?" do
+  erb (settings.mobile+"tos").to_sym
+end
+
 get "/sign_out/?" do
   session["email"] = session["auth_token"] = session["ssid"] = session["user"] = nil
   erb (settings.mobile+"index").to_sym
@@ -364,6 +372,21 @@ end
 
 post "/remove/:type/:id/:review_id/?" do
   item_or_store_action(params,"","delete")
+end
+
+post "/cart/temp/add/?" do
+  session["t_c"] = {} if session["t_c"].nil?
+  session["t_c"][params[:id]] = params[:name]
+end
+
+post "/cart/temp/remove/?" do
+  session["t_c"].delete params[:id] unless session["t_c"].nil?
+end
+
+post "/cart/items/?" do
+  json = rest_call("/cart/item?ids=" + params[:ids].to_s,{},"post")
+  session["t_c"] = {} if json["success"]
+  return JSON.generate(json)
 end
 
 post "/cart/item/:id/?" do

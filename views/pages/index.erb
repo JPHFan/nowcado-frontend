@@ -1,34 +1,41 @@
 <div class="container">
   <div class="jumbotron">
     <h1>Optimize your local shopping NOW!</h1>
-    <% if !session["user"] %>
-    <p>
-      Note that all optimization calculations do require <a href="#sign_in" role="button" data-toggle="modal">signing in</a> to create a cart first.
-    </p>
-    <% end %>
-    <p class="lead">
-      To begin, either type in the address where you want to shop and hit enter, or automatically detect your location by clicking the button "Use my current location!"
-    </p>
   </div>
   <div class="container">
     <div class="row">
       <div class="span5">
-        <button id="manual_loc_button" class="btn btn-primary" style="width:380px;height: 30px;">Manually enter location</button>
-        <form id="location_search_form" class="form=search input-append" action="" style="display: none;">
-          <input type="text" class="input-medium span5" id="location_search" placeholder="Where do you want to shop?" />
+        <form id="location_search_form" class="form=search input-append" action="">
+          <input type="text" class="input-medium" id="location_search" placeholder="Current Location" />
           <button class="add-on" type="submit" style="height: 30px;">Set Location</button>
         </form>
-        <div style="width:380px;text-align:center"><h5>OR</h5></div>
-        <button class="btn btn-primary" style="width:380px" id="use_current_loc" data-loading-text="Finding your location...">Use my current location!</button>
-        <p></p>
-        <div id="location_status" class="alert" style="display: none;"></div>
-        <div id="location_found_div" style="display: none;">
-          <p id="search_explanation_text">If the location has been set correctly, you can now shop by searching for items using the search bar at the top of the screen.</p>
-        </div>
-      </div>
-      <div class="span4 offset2">
         <div id="location_search_error" class="alert alert-error" style="display: none;"></div>
         <div id="location_search_map" style="height: 300px;"></div>
+        <div id="location_status" class="alert" style="display: none;"></div>
+        <div id="location_found_div" style="display: none;">
+          <p>Shop by either:<ol><li id="search_explanation_text">Searching for individual items with the search bar at the top of the screen.</li><li id="cart_explanation_text">Fill out your entire shopping list using the form on the right.</li></ol></p>
+        </div>
+      </div>
+      <div class="span7">
+        <% if !session["user"] %>
+        <p>
+          Note that you must be <a href="#sign_in" role="button" data-toggle="modal">signed in</a> to optimize your shopping list.
+        </p>
+        <% end %>
+        <form id="cart_list_form" class="input-append" action="">
+          <input type="text" class="input-medium span6" id="add_cart_item_input" placeholder="Enter shopping list items" />
+          <button class="add-on" type="submit" style="height: 30px;">Add Item</button>
+        </form>
+        <table class="table span7" style="margin-left:0">
+          <tbody id="cart_items_list">
+          <% if !session["t_c"].nil? %>
+          <% session["t_c"].each do |id,name| %>
+            <tr><td><span nid="<%= id %>" class="badge closable" data-original-title="Remove from list" data-placement="left">x</span><%= name %></td></tr>
+          <% end %>
+          <% end %>
+          </tbody>
+        </table>
+        <button class="btn btn-success btn-large centered" id="quick_set_cart">View My Cart</button>
       </div>
     </div>
   </div>

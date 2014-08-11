@@ -26,6 +26,14 @@ body {
   max-width: none;
 }
 
+#location_search {
+  width: 276px;
+}
+
+.badge.closable {
+  cursor: pointer;
+}
+
 .icon-search {
   position: relative;
   right: 20px;

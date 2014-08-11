@@ -181,6 +181,12 @@ function map_center() {
 
     _selectAddress: function(event, ui) {
       this.selectedResult = ui.item;
+      geo_process({
+        coords: {
+          latitude: $("#latitude").val(),
+          longitude: $("#longitude").val()
+        }
+      });
     }
   });
 
