@@ -144,8 +144,13 @@
     <table>
       <tr>
         <td><b>Username: </b></td>
-        <td><input type="text" id="edit_account_username"></td>
+        <td><input type="text" id="edit_account_username" placeholder="<%= session["user"] %>" value="<%= session["user"] %>"></td>
         <td><div id="edit_account_username_error" class="alert alert-error" style="display: none;"></div></td>
+      </tr>
+       <tr>
+        <td><b>Email: </b></td>
+        <td><input type="email" id="edit_account_email" placeholder="<%= session["email"] %>" value="<%= session["email"] %>"></td>
+        <td><div id="edit_account_email_error" class="alert alert-error" style="display: none;"></div></td>
       </tr>
       <tr>
         <td><b>New Password: </b></td>

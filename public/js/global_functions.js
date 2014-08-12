@@ -31,6 +31,8 @@ function sign_in(json) {
   if(json.success) {
     $("#sign_in_error").hide();
     $("#sign_in").modal("hide");
+    $("#edit_account_username").attr("placeholder",json.result.username).val(json.result.username);
+    $("#edit_account_email").attr("placeholder",json.result.email).val(json.result.email);
     // Use the encrypted auth token for further requests
     $("#user_bar").load("/user_bar/" + json.result.username + "?email=" + json.result.email +
         "&auth_token=" + json.result.auth_token + "&ssid=" + json.result.ssid + "&store_owner=" + json.result.store_owner, 

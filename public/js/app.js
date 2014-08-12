@@ -98,17 +98,19 @@ $(document).ready(set_stars());
 $("#edit_account_submit").click(function(e) {
   e.preventDefault();
   // Hide all errors
-  $("#edit_account_password_confirm_error,#edit_account_password_error,#edit_account_username_error").hide();
+  $("#edit_account_password_confirm_error,#edit_account_password_error,#edit_account_email_error,#edit_account_username_error").hide();
   var username = $("#edit_account_username").val();
   var password = $("#edit_account_password").val();
   var password_conf = $("#edit_account_password_confirm").val();
+  var email = $("#edit_account_email").val();
   if(password != password_conf) {
     $("#edit_account_password_confirm_error").html("Password does not match confirmation.").show();
     return;
   }
   $.post("/user/edit", {
     username: username,
-    password: password},
+    password: password,
+    new_email: email},
     function(json) {
       if(json.success) {
         $("#edit_account").modal("hide");
@@ -124,6 +126,7 @@ $("#edit_account_submit").click(function(e) {
         if(json.message.password != null) {
           $("#edit_account_password_error").html(concat_err_string(json.message.password,"password")).show();
         }
+        // Not actually possible to have an email error here since we have not changed it yet.
       }
     },
     "json"
