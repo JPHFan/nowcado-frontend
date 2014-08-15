@@ -22,7 +22,7 @@
       <% if session[:error] %>
       <label class="label label-warning"><%= show_flash(:error) %></label>
       <% end %>
-      <div class="show-child-icon-on-hover <%= 'dev-mode-lock' if request.cookies['devModeUnlock'].to_i != 1 %>" style="width: 200px;height:20px;font-size:12px">
+      <div class="show-child-icon-on-hover <%= 'dev-mode-lock' if request.cookies['devModeUnlock'].to_i != 1 %>" style="width: 200px;min-height:20px;font-size:12px">
         <a id="edit_department_link" href="#edit_department_modal" role="button" data-toggle="modal"><i id="edit_department_icon" class="icon-pencil top-right-icon pull-right" data-original-title="Edit tags" data-placement="right"></i></a>
         <% @department_strings.each do |arr| %>
         <div style="margin-left: <%= 10*arr[0] %>px">
