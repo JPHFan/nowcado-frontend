@@ -149,7 +149,9 @@ get "/search/?" do
   @search_results = rest_call("/search", params)
   if @search_results["success"]
     @search_results = @search_results["result"]
-    @departments = @search_results["filters"]["department"] if @search_results && @search_results["filters"]
+    if params[:applied_filters] || (params[:multiple_selections] && params[:multiple_selections]) || params[:selected]
+      @departments = @search_results["filters"]["department"] if @search_results && @search_results["filters"]
+    end
     if @departments
       @applied_filters = @departments["applied_filters"].to_s.gsub("=>",":") if @departments["applied_filters"]
       if params["department[selected]"] && !params["department[multiple_selections]"]
