@@ -120,7 +120,7 @@ get "/search/?" do
     params.delete("open_now")
   end
 
-  if params[:applied_filters]
+  if params[:applied_filters] && params[:pf]
     if params[:applied_filters] != ""
       params["department[applied_filters]"] = params[:applied_filters]
     else
@@ -149,11 +149,11 @@ get "/search/?" do
   @search_results = rest_call("/search", params)
   if @search_results["success"]
     @search_results = @search_results["result"]
-    if params[:applied_filters] || (params[:multiple_selections] && params[:multiple_selections]) || params[:selected]
-      @departments = @search_results["filters"]["department"] if @search_results && @search_results["filters"]
-    end
+    @departments = @search_results["filters"]["department"] if @search_results && @search_results["filters"]
     if @departments
-      @applied_filters = @departments["applied_filters"].to_s.gsub("=>",":") if @departments["applied_filters"]
+      if @departments["applied_filters"] 
+        @applied_filters = @departments["applied_filters"].to_s.gsub("=>",":")
+      end
       if params["department[selected]"] && !params["department[multiple_selections]"]
         new_valid_selections = JSON.parse(params["department[selected]"])
         if @departments["valid_selections"]

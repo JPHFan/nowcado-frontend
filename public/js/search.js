@@ -38,12 +38,11 @@ $(document).ready(function() {
   var applied_selections_ordered_json = $("div#applied_selections_ordered").attr("json");
   if(applied_selections_ordered_json !== undefined)
     applied_selections_ordered = JSON.parse(decodeURIComponent(applied_selections_ordered_json.replace("+"," ")));
-  if(applied_filters_str == null)
-    return;
-  append_query_string("applied_filters",applied_filters_str);
-  append_query_string("selected",encodeURIComponent(JSON.stringify(selected_departments)));
-  append_query_string("multiple_selections",encodeURIComponent(JSON.stringify(applied_selections_ordered)));
-
+  if(applied_filters_str != null) {    
+    append_query_string("applied_filters",applied_filters_str);
+    append_query_string("selected",encodeURIComponent(JSON.stringify(selected_departments)));
+    append_query_string("multiple_selections",encodeURIComponent(JSON.stringify(applied_selections_ordered)));
+  }
   // Update widths appropriately
   var filter_width = 150;
 
@@ -125,6 +124,8 @@ $("div.sidebar-nav.well input:checkbox").click(function(e) {
           var select_index = selected_departments[key].indexOf(term);
           if(select_index != -1) {
             selected_departments[key].splice(select_index,1);
+            if(selected_departments[key].length == 0)
+              delete selected_departments[key];            
           }
         }
       }
@@ -182,11 +183,16 @@ $("#apply_filters").click(function(e) {
     }
   });
 
-  if(JSON.stringify(new_applied_selections_ordered) != JSON.stringify(applied_selections_ordered)) {
+  if(JSON.stringify(new_applied_selections_ordered) != JSON.stringify(applied_selections_ordered)) {      
     append_query_string("multiple_selections",encodeURIComponent(JSON.stringify(new_applied_selections_ordered)));
     remove_query_string("applied_filters");
   } else {
     append_query_string("applied_filters",$("div#applied_filters").attr("sha"));
+  }
+  if(new_applied_selections_ordered.length == 0 && Object.keys(selected_departments).length == 0) {
+    remove_query_string("pf");
+  } else {
+    append_query_string("pf",1);
   }
 
   load_query_page();
