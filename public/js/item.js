@@ -166,3 +166,4 @@ $(window).resize(function() {
     $("div#item_results_div").width(width-290);
   }
 });
+$(function() {$(window).resize()});
