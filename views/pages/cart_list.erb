@@ -1,5 +1,6 @@
 <h2>Shopping Cart</h2>
 
+<% if @cart && @cart.length > 0 %>
 <% @cart.each do |item_ids,items_array| %>
   <div id="alternatives_<%= item_ids %>" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="alternativesLabel_<%= item_ids %>" aria-hidden="true">
     <div class="modal-header">
@@ -39,5 +40,8 @@
   <% end %>
   </ul>
 </div>
+<% else %>
+<p>Your cart is empty.</p>
+<% end %>
 
 <%= js :cart_list %>

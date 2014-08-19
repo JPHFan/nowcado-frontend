@@ -506,11 +506,13 @@ get "/cart_list/?" do
   @similar_items = {}
   @item_names = {}
   @cart = rest_call("/cart", {})["result"]
-  @cart.each {|item_ids, items_array|
-    item_id = item_ids.split(",")[0]
-    @similar_items[item_id] = rest_call("/items/"+item_id+"/similar", {})["result"]
-    @item_names[item_id] = items_array[0]["name"]
-  }
+  if !@cart.nil?
+    @cart.each {|item_ids, items_array|
+      item_id = item_ids.split(",")[0]
+      @similar_items[item_id] = rest_call("/items/"+item_id+"/similar", {})["result"]
+      @item_names[item_id] = items_array[0]["name"]
+    }
+  end
   erb (settings.mobile+"cart_list").to_sym
 end
 
