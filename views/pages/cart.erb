@@ -2,16 +2,16 @@
 <div id="cart_alert" class="alert alert-info"><%= @cart_error %></div>
 <% else %>
 
-<h2>Shopping Cart</h2>
+<h2>Shopping Trip</h2>
 
 <div id="cart_email_message" class="alert" style="display:none;"></div>
 <div class="clearfix"></div>
-<a data-toggle="modal" role="button" href="#cart_preferences" class="btn btn-primary btn-success">Set cart preferences</a>
+<a data-toggle="modal" role="button" href="#cart_preferences" class="btn btn-primary btn-success">Set trip preferences</a>
 <button class="btn btn-primary" id="email_trip">Email Trip</button>
 <div id="cart_preferences" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="cart_preferencesLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-    <h3 id="cart_preferencesLabel">Set your cart preferences</h3>
+    <h3 id="cart_preferencesLabel">Set your trip preferences</h3>
   </div>
   <div class="modal-body">
     <p>Please enter your preferences for each of the following so that we can determine which items are best for you. An empty section indicates that you have no preference.</p>
