@@ -388,6 +388,7 @@ end
 post "/cart/items/?" do
   json = rest_call("/cart/item?ids=" + params[:ids].to_s,{},"post")
   session["t_c"] = {} if json["success"]
+  calc_cart(params)
   return JSON.generate(json)
 end
 
