@@ -28,6 +28,10 @@ get "/api/?" do
   redirect settings.domain
 end
 
+get "/about/?" do
+  erb (settings.mobile+"about").to_sym
+end
+
 get "/privacy/?" do
   erb (settings.mobile+"privacy").to_sym
 end

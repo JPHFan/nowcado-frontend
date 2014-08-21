@@ -4,6 +4,16 @@
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   <meta charset="utf-8">
   <title><%= render_partial :title %></title>
+  <meta name="keywords" content="shopping, trip, products, cheapest, closest, nowcado" />
+  <meta name="description" content="Save time and money on each of your local shopping trips with Nowcado!  Join others to create your list and discover your personalized trip within seconds."/>
+  <meta property="og:title" content="Nowcado Local Shopping Trip Advisor" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="http://nowcado.com" />
+  <meta property="og:image" content="http://nowcado.com/favicon.ico" />
+  <meta property="og:description" content="Save time and money on each of your local shopping trips with Nowcado!  Join others to create your list and discover your personalized trip within seconds." />
+  <meta property="og:determiner" content="" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="Nowcado" />
   <%= css :application %>
 </head>
 
@@ -12,7 +22,7 @@
   <div class="navbar-inner">
     <div class="container-fluid" style="width: auto;padding-left:10px;padding-right:10px;">
       <div class="nav-collapse in collapse" style="height: auto;">
-        <a class="brand" href="/" data-placement="bottom" data-original-title="Set your location"><%= render_partial :title %></a>
+        <a class="brand" href="/" data-placement="bottom" data-original-title="Set your location">Nowcado<!--<%= render_partial :title %>--></a>
         <form class="navbar-search" data-placement="bottom" action="/search" method="get">
           <div class="input-append">
             <input id="search-text" class="search-query span4" type="text" name="search" placeholder="Search for local items"  <%= params[:search] ? ("value=\"" + params[:search] + "\"") : "" %> />
@@ -42,8 +52,9 @@
 
 <div>
 <ul class="breadcrumb" style="text-align:center">
-    <li><a href="http://blog.nowcado.com">Blog</a> <span class="divider">/</span></li>
-    <li><a href="/privacy">Privacy Policy</a> <span class="divider">/</span></li>
+    <li><a href="/about">About</a> <span class="divider">|</span></li>
+    <li><a href="http://blog.nowcado.com">Blog</a> <span class="divider">|</span></li>
+    <li><a href="/privacy">Privacy Policy</a> <span class="divider">|</span></li>
     <li><a href="/tos">Terms of Service</a></li>
     <br />
     <li><div class="addthis_toolbox addthis_32x32_style addthis_default_style">
