@@ -10,6 +10,7 @@ function geo_process(position) {
     map_location(position.coords.latitude, position.coords.longitude, "location_search_map");
     $("#latitude").val(position.coords.latitude);
     $("#longitude").val(position.coords.longitude);
+    get_recently_purchased();
     $("#location_found_div").show();
     $(".navbar-search input").effect("highlight", {color: '#96F52F'}, 3000);
     $("#location_search_error").hide();
@@ -17,17 +18,34 @@ function geo_process(position) {
   });
 }
 
+function get_recently_purchased() {
+    var recently_purchased = $("#recently_purchased");
+    recently_purchased.html("");
+    cors_call("/items/recently_purchased?latitude=" + $("#latitude").val() + "&longitude=" + $("#longitude").val(),{},function(json) {
+      if(json.success) {
+        for(var i = 0; i < json.result.length; i++) {
+          var item = json.result[i];
+          recently_purchased.append('<a href="/item/' + item.id + '?store_ids=%5B' + encodeURIComponent(item.store_ids) + '%5D" style="width: 200px;color:#555555;text-decoration:none"><div class="thumbnail" style="height:270px"><h6 style="height:50px;width:200px">' + item.name + '</h6><img src="' + domain + item.img_url + '" style="max-width:200px;height:200px"></div></a>');
+        }
+        recently_purchased.carouFredSel({scroll:{duration:1000}});
+      }
+    },"GET");
+}
+
+// Assume SF
 function geo_declined(error) {
-  $("#use_current_loc").button('reset');
-  alert_error("#location_status",error_string.auto_location_denied);
+  geo_process({coords:{latitude:37.775,longitude:-122.418333}});
+  /*$("#use_current_loc").button('reset');
+  alert_error("#location_status",error_string.auto_location_denied);*/
 }
 
 function autolocate() {
   if(navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(geo_process, geo_declined);
   } else {
-    alert_error("#location_status",error_string.auto_location_support);
-    $(this).button('reset');
+    geo_process({coords:{latitude:37.775,longitude:-122.418333}});
+    /*alert_error("#location_status",error_string.auto_location_support);
+    $(this).button('reset');*/
   }
 }
 

@@ -731,3 +731,20 @@ DIV.xcIDIV_collapsed {
   background-color: #ffda19;
   color: #eeeeee;
 }
+
+#recently_purchased {
+  width: 100%;
+  height: 270px;
+  overflow: hidden;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+div.caroufredsel_wrapper {
+  margin: 0 auto 10px auto !important;
+}
+
+#recently_purchased a {
+  display: block;
+  float: left;
+}

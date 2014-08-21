@@ -1,6 +1,6 @@
 <div class="container">
   <div class="jumbotron">
-    <h1>Optimize your local shopping NOW!</h1>
+    <h1>Save time and money on your local shopping!</h1>
   </div>
   <div class="container">
     <div class="row">
@@ -39,9 +39,10 @@
       </div>
     </div>
   </div>
-
   <%= js :index %>
+  <h3>Other shoppers near you are buying...</h3>
 </div>
+<div id="recently_purchased"></div>
 <% if session["android"] == true %>
   <script>
     var android_confirmation = confirm("Would you like to download the Nowcado app to improve your experience?");
