@@ -25,7 +25,7 @@ function get_recently_purchased() {
       if(json.success) {
         for(var i = 0; i < json.result.length; i++) {
           var item = json.result[i];
-          recently_purchased.append('<a href="/item/' + item.id + '?store_ids=%5B' + encodeURIComponent(item.store_ids) + '%5D" style="width: 200px;color:#555555;text-decoration:none"><div class="thumbnail" style="height:270px"><h6 style="height:50px;width:200px">' + item.name + '</h6><img src="' + domain + item.img_url + '" style="max-width:200px;height:200px"></div></a>');
+          recently_purchased.append('<a href="/item/' + item.id + '?store_ids=%5B' + encodeURIComponent(item.store_ids) + '%5D" style="width: 210px;color:#555555;text-decoration:none"><div class="thumbnail" style="height:270px"><h6 style="height:50px;width:200px">' + item.name + '</h6><img src="' + domain + item.img_url + '" style="max-width:200px;height:200px"></div></a>');
         }
         recently_purchased.carouFredSel({scroll:{duration:1000}});
       }
