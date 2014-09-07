@@ -1,5 +1,5 @@
 <li style="width: 210px;">
-  <a href="/item/<%= id %>?store_ids=<%= CGI.escape(store_ids.to_s.gsub(" ","")) %>" style="color:#555555;text-decoration:none;">
+  <a href="/item/<%= id %>?store_ids=<%= CGI.escape(store_ids.to_s.gsub(" ","")) %>&sort=Price" style="color:#555555;text-decoration:none;">
     <div class="thumbnail">
       <h6 style="height: 50px;"><%= name.length > 90 ? "#{cap_words(name)[0..89]}..." : cap_words(name) %></h6>
       <img <%= !img_url.nil? ? "src=\"#{settings.domain}#{img_url}\"" : "data-src=\"holder.js/200x200}\""  %> style="max-width:200px;height:200px;">

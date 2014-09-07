@@ -1,0 +1,35 @@
+<div class="container-fluid leaderboard-centered userText">
+  <h2 style="text-align: center;">Leaderboard</h2>
+  <table class="leaderboard-table">
+    <thead>
+      <tr>
+        <th>Place</th>
+        <th>Username</th>
+        <th><div class="userNomsRow"><span class="userNomsIcon"></span><span class="userNomsLabel">Noms</span><div class="userNomsRow"></th>
+        <th>Rank</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if !@leaderboard.nil? && !@leaderboard["leaders"].nil? %>
+      <% @leaderboard["leaders"].to_enum.with_index(0).each do |result, i| %>
+        <tr>
+          <td><%= result["place"] %></td>
+          <td><%= result["username"] %></td>
+          <td><%= result["noms"] %></td>
+          <td><div class="<%= "rank#{result['rank']}Icon smallIcon" %>" ></div></td>
+        </tr>
+      <% end %>
+      <% end %>
+    </tbody>
+  </table>
+  <% if !@leaderboard.nil? && !@leaderboard["pages"].nil? %>
+  <div class="pagination pagination-centered">
+    <%= render_partial(:pagination, {:locals => {:page => @leaderboard["page"], :pages => @leaderboard["pages"]}}) %>
+  </div>
+  <% end %>
+  <div style="text-align: center;">
+    <button class="btn btn-primary userText" id="account_back_button">Back to Account</button>
+  </div>
+</div>
+
+<%= js :user %>

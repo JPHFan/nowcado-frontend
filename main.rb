@@ -69,7 +69,8 @@ configure do
     js :add_item, ['/js/add_item.js', '/js/select_store.js', '/js/load-image.js', '/js/canvas-to-blob.js',  '/js/jquery.iframe-transport.js', '/js/jquery.fileupload.js', '/js/jquery.fileupload-process.js', '/js/jquery.fileupload-image.js', '/js/jquery.fileupload-validate.js', '/js/edit_image.js', '/js/xregexp-min.js', '/js/edit_department.js', '/js/jsoneditor.js']
     js :search, ['/js/search.js']
     js :store, ['/js/review.js']
-    js :user, ['/js/user.js']
+    # user.js depends on skillset.js
+    js :user, ['/js/skillset.js', '/js/user.js']
 
     css :application, [
         '/css/jquery-ui-1.9.2.css',

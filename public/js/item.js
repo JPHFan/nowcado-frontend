@@ -104,6 +104,15 @@ $("#add_to_other_store_modal").on("shown", function(){
   google.maps.event.trigger(store_addresspicker_map, "resize");
 });
 
+$("#item_results_div li.dropdown ul a").click(function(e) {
+  e.preventDefault();
+  append_query_string($(this).attr("value"),$(this).attr("id"));
+  var new_query = $("#query_string").val();
+  if(new_query != window.location.href) {
+    window.location = new_query;
+  }
+});
+
 window.history.replaceState("","",$("#query_string").val());
 
 function toggleLoadingButton(a) {

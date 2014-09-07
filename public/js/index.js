@@ -127,7 +127,7 @@ $("tbody#cart_items_list").on("click","tr td span.badge.closable", function() {
 
 $("#quick_set_cart").click(function(e) {
   e.preventDefault();
-  if($("#edit_account_link").length < 1) {
+  if($("#view_account_link").length < 1) {
     $("#sign_in").modal("show");
     return;
   }

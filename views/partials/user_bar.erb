@@ -1,7 +1,7 @@
 <ul class="nav pull-right">
   <li class="divider-vertical"></li>
   <% if session["user"] %>
-    <li><a id="edit_account_link" href="#edit_account" role="button" data-toggle="modal" data-original-title="Edit account" data-placement="bottom">Welcome back, <%= session["user"] %></a></li>
+    <li><a id="view_account_link" href="/user" data-original-title="View account" data-placement="bottom">Welcome back, <%= session["user"] %></a></li>
     <li class="divider-vertical"></li>
     <li><a id="add_item_link" href="/item/add" data-original-title="Add items to Nowcado" data-placement="bottom"><i class="icon-plus icon-white"></i></a></li>
     <li class="divider-vertical"></li>

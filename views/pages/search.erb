@@ -41,34 +41,7 @@
       </div>
 
       <div class="span12 pagination pagination-centered" style="margin-left: 0;">
-        <ul>
-          <!-- This math corresponds to pages ranging from -5 to +4, handling edge cases -->
-          <% cur_page = @search_results["page"].to_i %>
-          <% total_pages = @search_results["pages"].to_i %>
-          <% start_page = (cur_page < 6) ? 1 : (cur_page - 5) %>
-          <% end_page = start_page + 9 %>
-          <% end_page = total_pages if (total_pages < end_page) %>
-          <% diff = start_page - end_page + 9 %>
-          <% start_page -= diff if (start_page > diff) %>
-          
-          <% if start_page > 1 %>
-            <li><span>...</span></li>
-          <% end %>
-          <% (start_page..end_page).each do |page| %>
-            <% if cur_page == page %>
-                <li class="active">
-                  <span><%= page %></span>
-                </li>
-            <% else %>
-                <li>
-                  <a href="" id="<%= page %>" value="page"><%= page %></a>
-                </li>
-            <% end %>
-          <% end %>
-          <% if end_page < total_pages %>
-            <li><span>...</span></li>
-          <% end %>
-        </ul>
+        <%= render_partial(:pagination, {:locals => {:page => @search_results["page"], :pages => @search_results["pages"]}}) %>
       </div>
     </div>
   </div>

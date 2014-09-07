@@ -187,6 +187,24 @@ function modalConfirm(header, body, fn_string) {
       .parent().modal("show");
 }
 
+function modalRankUp(header, body, rewards, rank) {
+  $("#modalAlertHeader").html('<h3>'+ header +'<div class=rank'+rank+'Icon smallIcon></div></h3>');
+  var rewards_html = rewards.map(function(str){
+    iconCls = "addIcon"
+    if (str.match(/Invites/i)){
+      iconCls = "invitesIcon"
+    }
+    else if (str.match(/Cart Size/i)){
+      iconCls = "cartIcon"
+    }
+    return '<span class="rankSquare"><div class='+iconCls+'></div><span class="rank_caption">'+ str +'</span></span>'
+  });
+  rewards_html.join();
+  $("#modalAlertBody").html('<div>'+rewards_html+'</div><p>'+body+'</p>');
+  $("#modalAlertFooter").html('<button class="btn" data-dismiss="modal" aria-hidden="true">OK</button>')
+      .parent().modal("show");
+}
+
 // item ids must be in the order: selected item, similar1 sorted, similar2 sorted, ...
 function addToCart(item_ids, quantity, sum, notify, refresh) {
   $.ajax({

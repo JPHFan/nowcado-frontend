@@ -1,5 +1,26 @@
 $(".navbar a").tooltip("hide");
 
+// Perform a call to the Sinatra backend.
+function jsonp_call(url, params, callback, method, failure){
+  method = ((typeof method !== 'undefined') ? method : 'GET');
+  failure = ((typeof failure !== 'undefined') ? failure : function(data){
+    $.growl("Connection error.", growl_resp.fail);
+    return false;
+  })
+  
+  $.ajax({
+    url: url,
+    type: method,
+    data: JSON.stringify(params),
+    dataType: "json",
+    success: function(response) {
+      // TODO Can handle extras in response as modalAlerts here, for calls that don't render a page.  Still need to handle the rendered page case by putting it in a hidden field in layout.erb? and checking its value (perhaps in a $(function(){}) in app.js)
+      callback(response);
+    },
+    error: failure
+  });
+}
+
 // Perform a CORS call to the backend.
 function cors_call(url, params, callback, method){
   method = ((typeof method !== 'undefined') ? method : 'GET');
@@ -16,19 +37,19 @@ function cors_call(url, params, callback, method){
         modalAlert("Error 500","Sorry, we messed something up. Please bear with us, we're working on it.");
       },
       502: function(data){
-        modalAlert("Error 502","Our config appears to be hosed. Employing the slaves - er, interns - to recover.");
+        modalAlert("Error 502","Our config appears to be crumbled. Please bear with us, we're working on it.");
       },
       503: function(data){
-        modalAlert("Error 503","Help, we're drowning!... Please try again later.");
+        modalAlert("Error 503","Gah, we're drowning in traffic!... Please try again later.");
       },
       504: function(data){
-        modalAlert("Error 504","WHERE NOWCADO GO?!?... Please try again later.");
+        modalAlert("Error 504","Hmm, someone seems to have nommed our internets... Please try again later.");
       },
       404: function(data){
         modalAlert("Error 404","I'm sorry, I'm afraid I can't do that.");
       },
       422: function(data){
-        modalAlert("Error 422","Whatchu talkin' 'bout?");
+        modalAlert("Error 422","I'm sorry, I'm afraid I can't do that.");
       }
     },
     xhrFields: {
@@ -116,7 +137,7 @@ $("#edit_account_submit").click(function(e) {
         $("#edit_account").modal("hide");
         // Update signed in username if present
         if(username != "")
-          $("#edit_account_link").html("Welcome back, " + username);
+          $("#view_account_link").html("Welcome back, " + username);
         $.growl("Account successfully updated.",growl_resp.pass);
       } else {
         // Display errors

@@ -14,6 +14,54 @@ get "/?" do
   erb (settings.mobile+"index").to_sym
 end
 
+def rank_name(rank)
+  if rank == 1
+    "Newbie"
+  elsif rank == 2
+    "Nibbler"
+  elsif rank == 3
+    "Natural"
+  elsif rank == 4
+    "kNight"
+  elsif rank == 5
+    "Nobility"
+  elsif rank == 6
+    "Ninja"
+  elsif rank >= 7
+    "Narwhal"
+  else
+    ""
+  end
+end
+
+def rest_call(address, params = {}, verb="get", domain=settings.domain)
+  if session["user"]
+    params.merge!({"email" => session["email"], "auth_token" => session["auth_token"], "ssid" => session["ssid"]})
+  end
+  params.merge!({"remote_ip" => request.ip})
+  json_types = {:content_type => :json, :accept => :json}
+  if verb.match(/put/i)
+    result = JSON.parse RestClient.put (domain + address.to_s), params, json_types
+  elsif verb.match(/post/i)
+    result = JSON.parse RestClient.post (domain + address.to_s), params, json_types
+  elsif verb.match(/delete/i)
+    result = JSON.parse RestClient.delete (domain + address.to_s), params: params
+  else
+    # Assume get
+    result = JSON.parse RestClient.get (domain + address.to_s), params: params
+  end
+  
+  if result && result["extras"]
+    if @extras.nil?
+      @extras = result["extras"]
+    else
+      @extras.merge(result["extras"]){|key, oldval, newval| Array.wrap(oldval) + Array.wrap(newval)}
+    end
+  end
+
+  return result
+end
+
 post "/feedback/?" do
   email_hash = {
     :to => 'nowcado@gmail.com',
@@ -47,8 +95,14 @@ end
 
 get "/user/?" do
   401 unless session["user"]
-  @memberships = rest_call("/memberships/all")
-  @user_memberships = rest_call("/memberships")
+  # @memberships = rest_call("/memberships/all")
+  # @user_memberships = rest_call("/memberships")
+  session["query_string"] = request.url
+  @user = rest_call("/users/stats")
+  if @user
+    @user = @user["result"]
+    (@user["rank_name"] = rank_name(@user["rank"])) if @user
+  end
   erb (settings.mobile+"user").to_sym
 end
 
@@ -58,28 +112,15 @@ post "/user/edit/?" do
   return JSON.generate(response)
 end
 
-post "/set_memberships/?" do
-  rest_call("/memberships",{"memberships" => params[:memberships]},"post")
+get "/leaderboard/?" do
+  session["query_string"] = request.url
+  @leaderboard = rest_call("/users/leaderboard", {:per_page => 30, :page => params["page"] || 1})
+  @leaderboard = @leaderboard["result"] if @leaderboard
+  erb (settings.mobile+"leaderboard").to_sym
 end
 
-def rest_call(address, params = {}, verb="get", domain=settings.domain)
-  if session["user"]
-    params.merge!({"email" => session["email"], "auth_token" => session["auth_token"], "ssid" => session["ssid"]})
-  end
-  params.merge!({"remote_ip" => request.ip})
-  json_types = {:content_type => :json, :accept => :json}
-  if verb.match(/put/i)
-    result = JSON.parse RestClient.put (domain + address.to_s), params, json_types
-  elsif verb.match(/post/i)
-    result = JSON.parse RestClient.post (domain + address.to_s), params, json_types
-  elsif verb.match(/delete/i)
-    result = JSON.parse RestClient.delete (domain + address.to_s), params: params
-  else
-    # Assume get
-    result = JSON.parse RestClient.get (domain + address.to_s), params: params
-  end
-
-  return result
+post "/set_memberships/?" do
+  rest_call("/memberships",{"memberships" => params[:memberships]},"post")
 end
 
 get "/settings/?" do
