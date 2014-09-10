@@ -1,9 +1,9 @@
 <% @user = {} if @user.nil? %>
 <div class="container-fluid userText">
   <h2>Welcome back, <%= @user["username"] %></h2>
-  <div class="userNomsRow" style="margin-bottom: 3px;"><div class="userNomsLabel">Invite Code: </div><button class="btn btn-primary userText" id="invite_button"><%= @user["sign_up_token"] %></button></div>
+  <div class="vertCenterRow" style="margin-bottom: 3px;"><div class="vertCenterLabel">Invite Code: </div><button class="btn btn-primary userText" id="invite_button"><%= @user["sign_up_token"] %></button></div>
   <span>Invites Remaining: <%= @user["sign_up_token_ct"] %></span>
-  <div class="userNomsRow"><div class="userNomsIcon"></div><span class="userNomsLabel">Noms: <b><%= @user["noms"] %></b></span></div>
+  <div class="vertCenterRow"><div class="userNomsIcon"></div><span class="vertCenterLabel">Noms: <b><%= @user["noms"] %></b></span></div>
   <p>Rank: <%= @user["rank_name"] %></p>
   <input id="rank" type="hidden" value = <%= @user["rank"] %> />
   <!-- Ranks display with images and progress bar -->

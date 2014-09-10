@@ -1,27 +1,6 @@
 $(".navbar a").tooltip("hide");
 
-// Perform a call to the Sinatra backend.
-function jsonp_call(url, params, callback, method, failure){
-  method = ((typeof method !== 'undefined') ? method : 'GET');
-  failure = ((typeof failure !== 'undefined') ? failure : function(data){
-    $.growl("Connection error.", growl_resp.fail);
-    return false;
-  })
-  
-  $.ajax({
-    url: url,
-    type: method,
-    data: JSON.stringify(params),
-    dataType: "json",
-    success: function(response) {
-      // TODO Can handle extras in response as modalAlerts here, for calls that don't render a page.  Still need to handle the rendered page case by putting it in a hidden field in layout.erb? and checking its value (perhaps in a $(function(){}) in app.js)
-      callback(response);
-    },
-    error: failure
-  });
-}
-
-// Perform a CORS call to the backend.
+// Perform a CORS call to the Nowcado backend.
 function cors_call(url, params, callback, method){
   method = ((typeof method !== 'undefined') ? method : 'GET');
 
@@ -32,7 +11,7 @@ function cors_call(url, params, callback, method){
     dataType: "json",
     data: JSON.stringify(params),
     statusCode: {
-      200: callback,
+      200: get_ext_cb(callback),
       500: function(data){
         modalAlert("Error 500","Sorry, we messed something up. Please bear with us, we're working on it.");
       },
@@ -114,7 +93,11 @@ $("#forgot_password_link").click(function(e) {
     );
 });
 
-$(document).ready(set_stars());
+$(document).ready(function(){
+  set_stars();
+  // On every page load, check to see if there are any outstanding messages that should be displayed.
+  queue_extras(JSON.parse($("#extras").val()));
+});
 
 $("#edit_account_submit").click(function(e) {
   e.preventDefault();

@@ -13,6 +13,82 @@ growl_resp = {
   fail: {type:'error',offset:{from:'top',amount:65}}
 };
 
+function handle_next_msg(){
+  // sessvars is saved in window.name using sessvars.js in order to persist extras_list between pages.
+  sessvars.extras_list.shift();
+  handle_first_msg();
+}
+
+function handle_first_msg(){
+  var next_msg = sessvars.extras_list[0];
+  if (next_msg != null){
+    // Priority of display is notifications, then rank_ups, followed by all toasts.
+    if (typeof next_msg === "object"){
+      // If next_msg is a notification.
+      if (next_msg["rank"] == undefined){
+        modalAlertFn(next_msg["title"], next_msg["message"], "handle_next_msg()");
+      }
+      // If next_msg is a rank_up.
+      else {
+        modalRankUp(next_msg["title"], next_msg["message"], next_msg["rewards"], next_msg["rank"], 
+          "handle_next_msg()");
+      }
+    }
+    // Else if next_msg is a toast.
+    else if (typeof next_msg === "string"){
+      $.growl(next_msg, growl_resp.pass);
+      handle_next_msg();
+    }
+  }
+}
+
+function queue_extras(extras){
+  if (extras){
+    sessvars.extras_list = sessvars.extras_list || [];
+    var first_msg = null;
+    if (extras["notifications"] && extras["notifications"].length > 0){
+      first_msg = extras["notifications"][0];
+      sessvars.extras_list = sessvars.extras_list.concat(extras["notifications"]);
+    }
+    if (extras["rank_ups"] && extras["rank_ups"].length > 0){
+      if (first_msg == null){
+        first_msg = extras["rank_ups"][0];
+      }
+      sessvars.extras_list = sessvars.extras_list.concat(extras["rank_ups"]);
+    }
+    if (extras["toasts"] && extras["toasts"].length > 0){
+      if (first_msg == null){
+        first_msg = extras["toasts"][0];
+      }
+      sessvars.extras_list = sessvars.extras_list.concat(extras["toasts"]);
+    }
+    
+    // If all previous msgs have already been displayed - display the first new msg.
+    if (first_msg == sessvars.extras_list[0]){
+      handle_first_msg();
+    }
+  }
+}
+
+function get_ext_cb(callback) {
+  // Handle any extras msgs in the case where there is no client render.
+  return function(response) {
+    if (response != null) {
+      queue_extras(response["extras"]);
+    }
+    callback(response);
+  }
+}
+
+var $origAjax = $.ajax;
+$.ajax = function(options) {
+  var cb = options.success;
+  if (cb && (typeof cb === "function")){
+    options.success = get_ext_cb(cb);
+  }
+  return $origAjax.call(this, options);
+}
+
 function alert_error(div_id, error_string) {
   $(div_id).removeClass("alert-success").addClass("alert-error").html(error_string).show();
 }
@@ -38,7 +114,10 @@ function sign_in(json) {
         "&auth_token=" + json.result.auth_token + "&ssid=" + json.result.ssid + "&store_owner=" + json.result.store_owner, 
         function(){
           $(".navbar a").tooltip("hide");
-        });
+        }
+    );
+    // When we sign in, check to see if there are any outstanding messages that should be displayed (e.g. this is the first sign-in for a account registered with email).
+    handle_first_msg();
   } else {
     $("#sign_in_error").html(json.message).show();
     if (json.message.substring(0,"FB Error:".length) === "FB Error:"){
@@ -187,8 +266,15 @@ function modalConfirm(header, body, fn_string) {
       .parent().modal("show");
 }
 
-function modalRankUp(header, body, rewards, rank) {
-  $("#modalAlertHeader").html('<h3>'+ header +'<div class=rank'+rank+'Icon smallIcon></div></h3>');
+function modalAlertFn(header, body, fn_string){
+  $("#modalAlertHeader").html('<h3>' + header + '</h3>');
+  $("#modalAlertBody").html(body);
+  $("#modalAlertFooter").html('<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="'+fn_string+'">OK</button>')
+      .parent().modal("show");
+}
+
+function modalRankUp(header, body, rewards, rank, fn_string) {
+  $("#modalAlertHeader").html('<h3 class="vertCenterRow"><span class="vertCenterLabel">'+ header +'</span><div class="rank'+rank+'Icon" style="display: inline-block;margin-left: 10px;"></div></h3>');
   var rewards_html = rewards.map(function(str){
     iconCls = "addIcon"
     if (str.match(/Invites/i)){
@@ -197,11 +283,11 @@ function modalRankUp(header, body, rewards, rank) {
     else if (str.match(/Cart Size/i)){
       iconCls = "cartIcon"
     }
-    return '<span class="rankSquare"><div class='+iconCls+'></div><span class="rank_caption">'+ str +'</span></span>'
+    return '<span class="rankSquare"><div class='+iconCls+'></div><span class="userText">'+ str +'</span></span>'
   });
-  rewards_html.join();
-  $("#modalAlertBody").html('<div>'+rewards_html+'</div><p>'+body+'</p>');
-  $("#modalAlertFooter").html('<button class="btn" data-dismiss="modal" aria-hidden="true">OK</button>')
+  rewards_html.join("  ");
+  $("#modalAlertBody").html('<div style="text-align: center;margin-bottom: 20px;">'+rewards_html+'</div><p class="userText">'+body+'</p>');
+  $("#modalAlertFooter").html('<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="'+fn_string+'">OK</button>')
       .parent().modal("show");
 }
 

@@ -55,7 +55,7 @@ def rest_call(address, params = {}, verb="get", domain=settings.domain)
     if @extras.nil?
       @extras = result["extras"]
     else
-      @extras.merge(result["extras"]){|key, oldval, newval| Array.wrap(oldval) + Array.wrap(newval)}
+      @extras.merge(result["extras"]){|key, oldval, newval| oldval + newval}
     end
   end
 
@@ -256,6 +256,8 @@ get "/item/add/?" do
     redirect '/?fail=true'
     return
   end
+  # Must do this extra call to check for first visit - cors_call from JS doesn't pass auth triplet.
+  rest_call("/stores/nearby_stores", {:lat=>params[:latitude],:lng=>params[:longitude]})
   erb (settings.mobile+"item_add").to_sym
 end
 

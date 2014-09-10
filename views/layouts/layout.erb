@@ -15,6 +15,7 @@
   <meta property="og:locale" content="en_US" />
   <meta property="og:site_name" content="Nowcado" />
   <%= css :application %>
+  <%= js :head_js %>
 </head>
 
 <body>
@@ -40,7 +41,8 @@
   </div>
 </div>
 <input id="domain" type="hidden" value=<%= settings.domain %> />
-<input id="query_string" type="hidden" value = <%= session["query_string"] %> />
+<input id="query_string" type="hidden" value=<%= session["query_string"] %> />
+<input id="extras" type="hidden" value="<%= @extras.to_json.gsub(/"/,"&quot;") %>" />
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
 <script src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
@@ -182,7 +184,7 @@
   </div>
 </div>
 
-<div class="modal hide fade" tabindex="1" role="dialog" aria-hidden="true">
+<div class="modal hide fade" tabindex="1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false" >
   <div id="modalAlertHeader" class="modal-header"></div>
   <div id="modalAlertBody" class="modal-body"></div>
   <div id="modalAlertFooter" class="modal-footer"></div>

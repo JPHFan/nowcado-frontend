@@ -930,16 +930,11 @@ font-size: 0.9em;
   font-size: 20px;
 }
 
-.userNomsRow {
-/*  height: 20px;
-  line-height: 20px;*/
+.vertCenterRow {
   display: table;
 }
 
-.userNomsLabel {
-/*  display: inline-block;
-  vertical-align: middle;
-  line-height: normal;*/
+.vertCenterLabel {
   display: table-cell;
   vertical-align: middle;
   position: static;
@@ -983,6 +978,36 @@ font-size: 0.9em;
 
 .disabledText {
   color: #AAA;
+}
+
+.addIcon {
+  background-image: url("/img/ic_add.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 64px 64px;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+}
+
+.invitesIcon {
+  background-image: url("/img/ic_social_add_person.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 64px 64px;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+}
+
+.cartIcon {
+  background-image: url("/img/ic_cart.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 64px 64px;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
 }
 
 .rank1Icon {
