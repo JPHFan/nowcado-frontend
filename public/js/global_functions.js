@@ -268,7 +268,7 @@ function modalConfirm(header, body, fn_string) {
 
 function modalAlertFn(header, body, fn_string){
   $("#modalAlertHeader").html('<h3>' + header + '</h3>');
-  $("#modalAlertBody").html(body);
+  $("#modalAlertBody").html('<p class="userText">'+body+'</p>');
   $("#modalAlertFooter").html('<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="'+fn_string+'">OK</button>')
       .parent().modal("show");
 }
